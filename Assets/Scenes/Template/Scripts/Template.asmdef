@@ -1,0 +1,10 @@
+{
+    "name": "Template",
+    "references": [
+        "CommonScripts"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}
