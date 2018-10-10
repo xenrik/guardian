@@ -6,28 +6,34 @@ using UnityEngine.UI;
 
 public class ThrusterRegulator : MonoBehaviour {
 
-    public Text text;
-
-    private ActorSettings actorSettings;
+    private Actor actor;
 
     private ParticleSystem.EmissionModule emissionModule;
     private ParticleSystem.MainModule mainModule;
 
+    private float force;
+    private float currentForce;
+
 	// Use this for initialization
 	void Start () {
-        actorSettings = GetComponentInParent<ActorSettings>();
+        actor = GetComponentInParent<Actor>();
+        actor.OnForceListener += OnForceApplied;
 
         ParticleSystem ps = GetComponent<ParticleSystem>();
         mainModule = ps.main;
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
-
-        if (text) {
-            text.text = $"{actorSettings.InstantaneousAcceleration} - {actorSettings.InstantaneousAcceleration.magnitude}";
-        }
-
-        mainModule.startLifetimeMultiplier = actorSettings.InstantaneousAcceleration.magnitude / actorSettings.MaxThrust;
+        currentForce = Mathf.Lerp(currentForce, force, 0.5f);
+        float f = currentForce / actor.MaxThrust;
+        mainModule.startSpeedMultiplier = f;
+        mainModule.startSizeMultiplier = f;
+        force = 0;
 	}
+
+    private void OnForceApplied(object sender, Vector3 force) {
+        this.force += force.magnitude / Time.fixedDeltaTime;
+        this.force = Mathf.Min(this.force, actor.MaxThrust);
+    }
 }

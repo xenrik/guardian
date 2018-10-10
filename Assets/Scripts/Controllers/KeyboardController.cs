@@ -13,31 +13,42 @@ public class KeyboardController : MonoBehaviour {
     public string YawPositiveKey;
     public string YawNegativeKey;
 
-    private ActorSettings actorSettings;
-    private new Rigidbody rigidbody;
+    private Actor actor;
 
     void Start () {
-        rigidbody = GetComponent<Rigidbody>();
-        actorSettings = GetComponent<ActorSettings>();
+        actor = GetComponent<Actor>();
 	}
 	
 	void FixedUpdate () {
+        Vector3 force = Vector3.zero;
+        Vector3 torque = Vector3.zero;
+
         if (Input.GetButton(ThrustPositiveKey)) {
-            rigidbody.AddForce(transform.forward * actorSettings.MaxThrust);
+            force += transform.forward;
         } else if (Input.GetButton(ThrustNegativeKey)) {
-            rigidbody.AddForce(transform.forward * -actorSettings.MaxThrust);
+            force -= transform.forward;
         }
 
         if (Input.GetButton(PitchPositiveKey)) {
-            rigidbody.AddTorque(transform.right * actorSettings.MaxTorque);
+            torque += transform.right;
         } else if (Input.GetButton(PitchNegativeKey)) {
-            rigidbody.AddTorque(transform.right * -actorSettings.MaxTorque);
+            torque -= transform.right;
         }
 
         if (Input.GetButton(YawPositiveKey)) {
-            rigidbody.AddTorque(transform.up * -actorSettings.MaxTorque);
+            torque -= transform.up;
         } else if (Input.GetButton(YawNegativeKey)) {
-            rigidbody.AddTorque(transform.up * actorSettings.MaxTorque);
+            torque += transform.up;
+        }
+
+        if (!force.Equals(Vector3.zero)) {
+            force = force.normalized * actor.MaxThrust;
+            actor.AddForce(force);
+        }
+
+        if (!torque.Equals(Vector3.zero)) {
+            torque = torque.normalized * actor.MaxTorque;
+            actor.AddTorque(torque);
         }
     }
 }

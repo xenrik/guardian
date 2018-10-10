@@ -201,7 +201,7 @@ Transform:
   m_GameObject: {fileID: 119335576}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: -0.6, y: 0.7, z: -1.3}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.75, y: 1, z: 0.75}
   m_Children: []
   m_Father: {fileID: 739517493}
   m_RootOrder: 1
@@ -342,7 +342,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 10
+      scalar: 1
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -395,7 +395,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.1
+      scalar: 1
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -511,7 +511,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.75
+      scalar: 1
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -1036,7 +1036,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 10
+      scalar: 100
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -4807,7 +4807,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8310e56ff9c2e4c47ae851d4818892bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  text: {fileID: 1618120553}
 --- !u!1 &170076733
 GameObject:
   m_ObjectHideFlags: 0
@@ -4900,7 +4899,7 @@ Transform:
   m_GameObject: {fileID: 485122881}
   m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
   m_LocalPosition: {x: 0.6, y: 0.7, z: -1.3}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.75, y: 1, z: 0.75}
   m_Children: []
   m_Father: {fileID: 739517493}
   m_RootOrder: 2
@@ -5041,7 +5040,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 10
+      scalar: 1
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -5094,7 +5093,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.1
+      scalar: 1
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -5210,7 +5209,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.75
+      scalar: 1
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -5735,7 +5734,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 10
+      scalar: 100
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -9506,7 +9505,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8310e56ff9c2e4c47ae851d4818892bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  text: {fileID: 0}
 --- !u!1 &534669902
 GameObject:
   m_ObjectHideFlags: 0
@@ -9663,12 +9661,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!4 &739517493 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 400006, guid: 9cd8b28f9c5ab9f4ca24c1364cd818df,
-    type: 3}
-  m_PrefabInternal: {fileID: 739517486}
---- !u!114 &739517494
+--- !u!114 &739517490
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9676,11 +9669,112 @@ MonoBehaviour:
   m_GameObject: {fileID: 739517487}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 47810021b2916bf408232eb9412ea0d3, type: 3}
+  m_Script: {fileID: 11500000, guid: ca19e2d68d8329643a610dd1c1e139c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   MaxThrust: 10
   MaxTorque: 1
+--- !u!4 &739517493 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 400006, guid: 9cd8b28f9c5ab9f4ca24c1364cd818df,
+    type: 3}
+  m_PrefabInternal: {fileID: 739517486}
+--- !u!1 &953578888
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 953578889}
+  - component: {fileID: 953578890}
+  m_Layer: 0
+  m_Name: Weapon-Left
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &953578889
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 953578888}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.31, y: 0.08, z: 4.15}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 739517493}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &953578890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 953578888}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e9e816629ebe2f4284ba53c41721400, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 1141851858938388, guid: d9766e6e0a3015e46864c575dd33e05d, type: 2}
+  Force: 5
+  Delay: 0.1
+  Lifetime: 2
+  PhysicalDamage: 1
+  ShieldDamage: 1
+  FireKey: mouse 0
+  text: {fileID: 1618120553}
+--- !u!1 &1094503748
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1094503749}
+  - component: {fileID: 1094503750}
+  m_Layer: 0
+  m_Name: Weapon-Right
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1094503749
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1094503748}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.31, y: 0.08, z: 4.15}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 739517493}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1094503750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1094503748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e9e816629ebe2f4284ba53c41721400, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 1141851858938388, guid: d9766e6e0a3015e46864c575dd33e05d, type: 2}
+  Force: 5
+  Delay: 0.1
+  Lifetime: 2
+  PhysicalDamage: 1
+  ShieldDamage: 1
+  FireKey: mouse 0
+  text: {fileID: 1618120553}
 --- !u!1 &1618120551
 GameObject:
   m_ObjectHideFlags: 0
