@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 public class KeyboardController : MonoBehaviour {
@@ -13,22 +14,38 @@ public class KeyboardController : MonoBehaviour {
     public string YawPositiveKey;
     public string YawNegativeKey;
 
+    public float ThrustSpeed;
+
     private Actor actor;
+    private float currentThrust;
 
     void Start () {
         actor = GetComponent<Actor>();
-	}
+    }
 	
 	void FixedUpdate () {
-        Vector3 force = Vector3.zero;
-        Vector3 torque = Vector3.zero;
-
         if (Input.GetButton(ThrustPositiveKey)) {
-            force += transform.forward;
+            if (currentThrust < 0) {
+                currentThrust = 0;
+            }
+            float thrustDelta = actor.MaxForwardThrust * (Time.deltaTime / ThrustSpeed);
+            currentThrust = Mathf.Min(actor.MaxForwardThrust, currentThrust + thrustDelta);
         } else if (Input.GetButton(ThrustNegativeKey)) {
-            force -= transform.forward;
+            if (currentThrust > 0) {
+                currentThrust = 0;
+            }
+            float thrustDelta = actor.MaxReverseThrust * (Time.deltaTime / ThrustSpeed);
+            currentThrust = Mathf.Max(-actor.MaxReverseThrust, currentThrust - thrustDelta);
+        } else {
+            currentThrust = 0;
         }
 
+        if (currentThrust != 0) {
+            Vector3 force = transform.forward * currentThrust;
+            actor.AddForce(force);
+        }
+
+        Vector3 torque = Vector3.zero;
         if (Input.GetButton(PitchPositiveKey)) {
             torque += transform.right;
         } else if (Input.GetButton(PitchNegativeKey)) {
@@ -39,11 +56,6 @@ public class KeyboardController : MonoBehaviour {
             torque -= transform.up;
         } else if (Input.GetButton(YawNegativeKey)) {
             torque += transform.up;
-        }
-
-        if (!force.Equals(Vector3.zero)) {
-            force = force.normalized * actor.MaxThrust;
-            actor.AddForce(force);
         }
 
         if (!torque.Equals(Vector3.zero)) {

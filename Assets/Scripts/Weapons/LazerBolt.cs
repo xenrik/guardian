@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 
 using UnityEngine;
-using UnityEngine.UI;
 
 public class LazerBolt : MonoBehaviour {
 
@@ -18,18 +17,6 @@ public class LazerBolt : MonoBehaviour {
     public string FireKey;
 
     private float recharging;
-
-    public Text text;
-    private int boltCount;
-    private float maxDistance;
-
-    public void Start() {
-        Debug.Log($"Max Bolts: {Lifetime / Delay}");
-
-        float velocity = MathsUtils.GetFinalVelocity(prefab.GetComponent<Rigidbody>(), Force, Lifetime);
-        Debug.Log($"Final Velocity: {velocity}");
-        Debug.Log($"Max Range: {velocity * Lifetime}");
-    }
 
     public void Update() {
         if (recharging > 0) {
@@ -49,10 +36,6 @@ public class LazerBolt : MonoBehaviour {
     }
 
     private IEnumerator AnimateBolt(GameObject bolt) {
-        ++boltCount;
-        text.text = $"Active Bolts: {boltCount} - Max Distance: {maxDistance}";
-
-        Vector3 origin = bolt.transform.position;
         float ttl = Lifetime;
         Rigidbody rigidbody = bolt.GetComponent<Rigidbody>();
 
@@ -64,12 +47,6 @@ public class LazerBolt : MonoBehaviour {
             ttl -= Time.fixedDeltaTime;
         }
 
-        Vector3 finalPosition = bolt.transform.position;
-        maxDistance = Mathf.Max(maxDistance, (finalPosition - origin).magnitude);
-
         Destroy(bolt);
-        --boltCount;
-
-        text.text = $"Active Bolts: {boltCount} - Max Distance: {maxDistance}";
     }
 }

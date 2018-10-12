@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Actor : MonoBehaviour {
-    public float MaxThrust;
+    public float MaxForwardThrust;
+    public float MaxReverseThrust;
+
     public float MaxTorque;
 
     public event ForceListener OnForceListener;
