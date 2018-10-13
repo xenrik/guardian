@@ -33,6 +33,8 @@ public static class MathsUtils {
 
     /**
      * Get a normal distribution of the given value with a given sigma and mu
+     * 
+     * If sigma=0.2f, mu=1, then the result will be normally distributed with a peak of 1, for the value 1.
      */
     public static float NormalDistribution(float sigma, float mu, float value) {
         float sigma_sq = sigma * sigma;
