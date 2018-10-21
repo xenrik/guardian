@@ -1,33 +1,36 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 using UnityEngine;
 
 public class LazerBolt : MonoBehaviour {
 
-    public GameObject prefab;
-    public GameObject target;
-    public GameObject target2;
+    public GameObject BoltPrefab;
+    public GameObject ReticlePrefab;
 
-    public float Force;
-    public float Delay;
-    public float Lifetime;
+    public float BoltForce;
+    public float BoltDelay;
+    public float BoltLifetime;
 
     public float PhysicalDamage;
     public float ShieldDamage;
 
     public string FireKey;
 
+    private Actor actor;
+    private Rigidbody actorRidigbody;
     private float recharging;
+    private float boltMass;
+
+    private IEnumerable<Rigidbody> targets;
+    private List<GameObject> reticles = new List<GameObject>();
 
     private void Start() {
-        target = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        target.transform.localScale = Vector3.one * 0.1f;
-        target.GetComponent<MeshRenderer>().material.color = Color.red;
+        boltMass = BoltPrefab.GetComponent<Rigidbody>().mass;
 
-        target2 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        target2.transform.localScale = Vector3.one * 0.1f;
-        target2.GetComponent<MeshRenderer>().material.color = Color.blue;
+        actor = GetComponentInParent<Actor>();
+        actorRidigbody = actor.GetComponent<Rigidbody>();
     }
 
     public void Update() {
@@ -36,58 +39,72 @@ public class LazerBolt : MonoBehaviour {
         }
 
         if (Input.GetKey(FireKey) && recharging <= 0) {
-            GameObject bolt = Instantiate(prefab);
-            bolt.hideFlags = HideFlags.HideInHierarchy;
-
-            bolt.transform.position = transform.position;
-            bolt.transform.rotation = transform.rotation;
-
-            StartCoroutine(AnimateBolt(bolt));
-            recharging = Delay;
+            StartCoroutine(FireBolt());
+            recharging = BoltDelay;
         }
+
+        targets = GameObject.FindGameObjectsWithTag("Target").Select(gameObject => gameObject.GetComponent<Rigidbody>());
+        while (reticles.Count > targets.Count()) {
+            GameObject reticle = reticles[reticles.Count - 1];
+            reticles.RemoveAt(reticles.Count - 1);
+
+            Destroy(reticle);
+        }
+        while (reticles.Count < targets.Count()) {
+            reticles.Add(Instantiate(ReticlePrefab));
+        }
+        Debug.Log(targets.Count());
     }
 
     public void FixedUpdate() {
-        target.transform.position = ProjectPosition(1f);
+        if (targets != null) {
+            int i = 0;
+            foreach (Rigidbody target in targets) {
+                GameObject reticle = reticles[i++];
+                UpdateReticle(target, reticle);
+            }
+        }
     }
 
     /**
-     * Project where the projectile will be after t seconds
+     * Update the position of the reticle
      */
-    public Vector3 ProjectPosition(float t) {
-        //t += 1;
+    private void UpdateReticle(Rigidbody target, GameObject reticle) {
+        Vector3 targetVelocity = target.velocity;
+        Vector3 relativePosition = target.transform.position - transform.position;
+        float boltVelocity = (BoltForce / boltMass);
 
-        // Work out where the target would be if we were not rotating
-        Rigidbody myRb = prefab.GetComponent<Rigidbody>();
-        float a = Force / myRb.mass;
+        float t = MathsUtils.CalculateInterceptTime(boltVelocity, relativePosition, targetVelocity);
+        if (t <= 0) {
+            reticle.transform.position = transform.position;
+            reticle.transform.LookAt(actor.transform, actor.transform.up);
 
-        Vector3 p = transform.forward * (a/2) * t * t;
-        target2.transform.position = transform.position + p;
+            //reticle.SetActive(false);
+        } else {
+            float reticleX = target.transform.position.x + (targetVelocity.x * t);
+            float reticleY = target.transform.position.y + (targetVelocity.y * t);
+            float reticleZ = target.transform.position.z + (targetVelocity.z * t);
 
-        // Calculate how much we will have rotated
-        GameObject ship = GetComponentInParent<Actor>().gameObject;
-        Rigidbody shipRb = ship.GetComponent<Rigidbody>();
-
-        Vector3 angularRotation = -shipRb.angularVelocity * t;
-        Quaternion rotation = Quaternion.Euler(Mathf.Rad2Deg * angularRotation.x,
-            Mathf.Rad2Deg * angularRotation.y,
-            Mathf.Rad2Deg * angularRotation.z);
-
-        // Adjust the final position
-        p = rotation * p;
-        return transform.position + p;
+            reticle.transform.position = new Vector3(reticleX, reticleY, reticleZ);
+            reticle.transform.LookAt(actor.transform, actor.transform.up);
+            //reticle.SetActive(true);
+        }
     }
 
-    private IEnumerator AnimateBolt(GameObject bolt) {
+    private IEnumerator FireBolt() {
         yield return new WaitForFixedUpdate();
 
-        float ttl = Lifetime;
+        GameObject bolt = Instantiate(BoltPrefab);
+        bolt.hideFlags = HideFlags.HideInHierarchy;
+
+        bolt.transform.position = transform.position;
+        bolt.transform.rotation = transform.rotation;
+
         Rigidbody rigidbody = bolt.GetComponent<Rigidbody>();
+        rigidbody.AddForce(bolt.transform.forward * BoltForce, ForceMode.Impulse);
 
-        //rigidbody.AddForce(bolt.transform.forward * Force, ForceMode.Impulse);
+        float ttl = BoltLifetime;
         while (ttl > 0) {
-            rigidbody.AddForce(bolt.transform.forward * Force);
-
             yield return new WaitForFixedUpdate();
             ttl -= Time.fixedDeltaTime;
         }
