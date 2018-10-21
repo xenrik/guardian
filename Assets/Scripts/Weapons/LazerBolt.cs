@@ -26,11 +26,18 @@ public class LazerBolt : MonoBehaviour {
     private IEnumerable<Rigidbody> targets;
     private List<GameObject> reticles = new List<GameObject>();
 
+    private Stack<GameObject> oldBolts = new Stack<GameObject>();
+
     private void Start() {
         boltMass = BoltPrefab.GetComponent<Rigidbody>().mass;
 
         actor = GetComponentInParent<Actor>();
         actorRidigbody = actor.GetComponent<Rigidbody>();
+
+        float maxBullets = (BoltLifetime / BoltDelay) + 1;
+        for (int i = 0; i < maxBullets; ++i) {
+            oldBolts.Push(Instantiate(BoltPrefab));
+        }
     }
 
     public void Update() {
@@ -53,7 +60,6 @@ public class LazerBolt : MonoBehaviour {
         while (reticles.Count < targets.Count()) {
             reticles.Add(Instantiate(ReticlePrefab));
         }
-        Debug.Log(targets.Count());
     }
 
     public void FixedUpdate() {
@@ -94,13 +100,21 @@ public class LazerBolt : MonoBehaviour {
     private IEnumerator FireBolt() {
         yield return new WaitForFixedUpdate();
 
-        GameObject bolt = Instantiate(BoltPrefab);
+        GameObject bolt = null;
+        if (oldBolts.Count == 0) {
+            bolt = Instantiate(BoltPrefab);
+        } else {
+            bolt = oldBolts.Pop();
+            bolt.SetActive(true);
+        }
         bolt.hideFlags = HideFlags.HideInHierarchy;
 
         bolt.transform.position = transform.position;
         bolt.transform.rotation = transform.rotation;
 
         Rigidbody rigidbody = bolt.GetComponent<Rigidbody>();
+        rigidbody.velocity = Vector3.zero;
+        rigidbody.angularVelocity = Vector3.zero;
         rigidbody.AddForce(bolt.transform.forward * BoltForce, ForceMode.Impulse);
 
         float ttl = BoltLifetime;
@@ -109,6 +123,7 @@ public class LazerBolt : MonoBehaviour {
             ttl -= Time.fixedDeltaTime;
         }
 
-        Destroy(bolt);
+        bolt.SetActive(false);
+        oldBolts.Push(bolt);
     }
 }

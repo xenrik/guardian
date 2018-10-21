@@ -14,7 +14,9 @@ public class ThrusterRegulator : MonoBehaviour {
     private ParticleSystem.MainModule mainModule;
 
     private float maxThrust;
+
     private Vector3 torqueVector;
+    private bool acceptTorque;
 
     private float targetForce;
     private float currentForce;
@@ -28,12 +30,15 @@ public class ThrusterRegulator : MonoBehaviour {
         mainModule = ps.main;
 
         // Work out if we are a forward/reverse thruster, or just an attitude thruster
-        if (transform.forward.Equals(actor.gameObject.transform.forward)) {
+        if (transform.forward.Equals(-actor.gameObject.transform.forward)) {
             maxThrust = actor.MaxForwardThrust;
-        } else if (transform.forward.Equals(-actor.gameObject.transform.forward)) {
+            acceptTorque = false;
+        } else if (transform.forward.Equals(actor.gameObject.transform.forward)) {
             maxThrust = actor.MaxReverseThrust;
+            acceptTorque = false;
         } else {
             maxThrust = actor.MaxTorque;
+            acceptTorque = true;
             torqueVector = actor.GetComponent<Rigidbody>().CalculateTorqueForForceAtPosition(-transform.forward, transform.position, ForceMode.Impulse).normalized;
         }
 	}
@@ -45,35 +50,38 @@ public class ThrusterRegulator : MonoBehaviour {
         }
     }
 
-    private void Update () {
+    private void FixedUpdate() {
+        // Smooth it a little
         currentForce = Mathf.Lerp(currentForce, targetForce, 0.5f);
         float f = currentForce / maxThrust;
+
         mainModule.startSpeedMultiplier = f;
         mainModule.startSizeMultiplier = f;
+
         targetForce = 0;
-	}
+    }
 
     private void OnForceApplied(object sender, Vector3 force) {
         float factor = CalculateEmissionFactor(-transform.forward, force);
-        this.targetForce = maxThrust * factor;
+        this.targetForce = (force.magnitude * factor);
     }
 
     private void OnTorqueApplied(object sender, Vector3 force) {
-        float factor = CalculateEmissionFactor(torqueVector, force);
-        this.targetForce = maxThrust * factor;
-    }
-
-    private float CalculateEmissionFactor(Vector3 forward, Vector3 v) {
-        // Find the angle between the target force and forward
-        float costheta = Vector3.Dot(forward, v) / (forward.magnitude * v.magnitude);
-        float theta = Mathf.Acos(costheta);
-        if (theta > Mathf.PI) {
-            theta -= Mathf.PI;
+        if (!acceptTorque) {
+            return;
         }
 
-        if (theta > -Mathf.PI && theta < Mathf.PI) {
+        torqueVector = actor.GetComponent<Rigidbody>().CalculateTorqueForForceAtPosition(-transform.forward, transform.position, ForceMode.Impulse).normalized;
+        float factor = CalculateEmissionFactor(torqueVector, force);
+        this.targetForce = (force.magnitude * factor);
+    }
+
+    private float CalculateEmissionFactor(Vector3 forward, Vector3 force) {
+        // Find the angle between the target force and forward
+        float angle = Vector3.Angle(forward, force);
+        if (angle < 90) {
             // Get the percentile between zero and PI
-            float d = Mathf.Clamp(1 - (Mathf.Abs(theta) / Mathf.PI), 0, 1);
+            float d = Mathf.Clamp(1 - (angle / 90), 0, 1);
 
             // Normal distribution
             return MathsUtils.NormalDistribution(0.2f, 1, d) / 2.0f;
