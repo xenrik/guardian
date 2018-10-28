@@ -46865,8 +46865,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BoltPrefab: {fileID: 1141851858938388, guid: d9766e6e0a3015e46864c575dd33e05d, type: 2}
-  ReticlePrefab: {fileID: 1674614761235228, guid: 7e8899e6383fc324fa126bda39830fa0,
+  TargetReticlePrefab: {fileID: 1674614761235228, guid: 7e8899e6383fc324fa126bda39830fa0,
     type: 2}
+  HeadingReticle: {fileID: 1868734047}
   BoltForce: 15
   BoltDelay: 0.1
   BoltLifetime: 2
@@ -46915,8 +46916,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BoltPrefab: {fileID: 1141851858938388, guid: d9766e6e0a3015e46864c575dd33e05d, type: 2}
-  ReticlePrefab: {fileID: 1674614761235228, guid: 7e8899e6383fc324fa126bda39830fa0,
+  TargetReticlePrefab: {fileID: 1674614761235228, guid: 7e8899e6383fc324fa126bda39830fa0,
     type: 2}
+  HeadingReticle: {fileID: 1122550391}
   BoltForce: 15
   BoltDelay: 0.1
   BoltLifetime: 2
@@ -46965,6 +46967,11 @@ Prefab:
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7e8899e6383fc324fa126bda39830fa0, type: 2}
   m_IsPrefabAsset: 0
+--- !u!1 &1122550391 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1674614761235228, guid: 7e8899e6383fc324fa126bda39830fa0,
+    type: 2}
+  m_PrefabInternal: {fileID: 1122550390}
 --- !u!1 &1320422056
 GameObject:
   m_ObjectHideFlags: 0
@@ -79638,6 +79645,11 @@ Prefab:
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7e8899e6383fc324fa126bda39830fa0, type: 2}
   m_IsPrefabAsset: 0
+--- !u!1 &1868734047 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1674614761235228, guid: 7e8899e6383fc324fa126bda39830fa0,
+    type: 2}
+  m_PrefabInternal: {fileID: 1868734046}
 --- !u!1 &2028605616
 GameObject:
   m_ObjectHideFlags: 0

@@ -7,7 +7,8 @@ using UnityEngine;
 public class LazerBolt : MonoBehaviour {
 
     public GameObject BoltPrefab;
-    public GameObject ReticlePrefab;
+    public GameObject TargetReticlePrefab;
+    public GameObject HeadingReticle;
 
     public float BoltForce;
     public float BoltDelay;
@@ -58,7 +59,24 @@ public class LazerBolt : MonoBehaviour {
             Destroy(reticle);
         }
         while (reticles.Count < targets.Count()) {
-            reticles.Add(Instantiate(ReticlePrefab));
+            reticles.Add(Instantiate(TargetReticlePrefab));
+        }
+
+        GameObject closestTarget = null;
+        float closestDistance = 100f;
+        Ray ray = new Ray(transform.position, transform.forward);
+        foreach (Rigidbody target in targets) {
+            Vector3 cross = Vector3.Cross(ray.direction, target.transform.position - ray.origin);
+            if (cross.sqrMagnitude < closestDistance) {
+                closestTarget = target.gameObject;
+            }
+        }
+
+        if (closestTarget != null) {
+            HeadingReticle.SetActive(true);
+            HeadingReticle.transform.position = ray.origin + ray.direction * Vector3.Dot(ray.direction, closestTarget.transform.position - ray.origin);
+        } else {
+            HeadingReticle.SetActive(false);
         }
     }
 
