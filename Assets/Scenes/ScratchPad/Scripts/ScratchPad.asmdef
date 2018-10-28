@@ -1,7 +1,8 @@
 {
     "name": "ScratchPad",
     "references": [
-        "CommonScripts"
+        "CommonScripts",
+        "QuickOutline"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

@@ -42184,6 +42184,7 @@ MonoBehaviour:
   ThrustNegativeKey: ThrustNegative
   RollPositiveKey: YawPositive
   RollNegativeKey: YawNegative
+  ToggleMouseMovementKey: ToggleMouse
 --- !u!4 &739517493 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400006, guid: 9cd8b28f9c5ab9f4ca24c1364cd818df,

@@ -18,37 +18,50 @@ public class MouseController : MonoBehaviour {
     public string RollPositiveKey;
     public string RollNegativeKey;
 
+    public string ToggleMouseMovementKey;
+
     private Actor actor;
     private GameObject cursor;
     private float currentThrust;
+    private bool mouseMovementEnabled;
 
-    // Use this for initialization
     void Start () {
         actor = GetComponentInParent<Actor>();
 
         cursor = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         cursor.transform.localScale = Vector3.one * 0.2f;
+        cursor.SetActive(false);
 	}
 
     void FixedUpdate() {
+        Vector3 torque = Vector3.zero;
+
+        if (Input.GetButtonDown(ToggleMouseMovementKey)) {
+            mouseMovementEnabled = !mouseMovementEnabled;
+            cursor.SetActive(mouseMovementEnabled);
+            Cursor.visible = !mouseMovementEnabled;
+            Cursor.lockState = mouseMovementEnabled ? CursorLockMode.Confined : CursorLockMode.None;
+        }
+
         // Heading
-        Vector3 pos = Input.mousePosition;
-        pos.z = ZDepth - Camera.transform.localPosition.z;
-        pos = Camera.ScreenToWorldPoint(pos);
-        //pos = Vector3.Slerp(transform.forward, pos, 0.9f);
+        if (mouseMovementEnabled) {
+            Vector3 pos = Input.mousePosition;
+            pos.z = ZDepth - Camera.transform.localPosition.z;
+            pos = Camera.ScreenToWorldPoint(pos);
 
-        cursor.transform.position = pos;
+            cursor.transform.position = pos;
 
-        Vector3 delta = pos - transform.position;
-        float angle = Vector3.Angle(transform.forward, delta);
-        float p = Mathf.Clamp(angle / 45.0f, 0, 1);
+            Vector3 delta = pos - transform.position;
+            float angle = Vector3.Angle(transform.forward, delta);
+            float p = Mathf.Clamp(angle / 45.0f, 0, 1);
 
-        Vector3 cross = Vector3.Cross(transform.forward, delta);
-        Vector3 torque = (cross * angle).normalized;
+            Vector3 cross = Vector3.Cross(transform.forward, delta);
+            torque = (cross * angle).normalized;
 
-        torque *= actor.MaxTorque;
-        torque *= MathsUtils.NormalDistribution(0.3f, 1, p);
-        torque *= TorqueFactor;
+            torque *= actor.MaxTorque;
+            torque *= MathsUtils.NormalDistribution(0.3f, 1, p);
+            torque *= TorqueFactor;
+        }
 
         // Roll
         if (Input.GetButton(RollPositiveKey)) {

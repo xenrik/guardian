@@ -36,7 +36,7 @@ public class LazerBolt : MonoBehaviour {
 
         float maxBullets = (BoltLifetime / BoltDelay) + 1;
         for (int i = 0; i < maxBullets; ++i) {
-            oldBolts.Push(Instantiate(BoltPrefab));
+            oldBolts.Push(CreateBolt());
         }
     }
 
@@ -72,6 +72,14 @@ public class LazerBolt : MonoBehaviour {
         }
     }
 
+    private GameObject CreateBolt() {
+        GameObject bolt = Instantiate(BoltPrefab);
+        bolt.hideFlags = HideFlags.HideInHierarchy;
+        bolt.SetActive(false);
+
+        return bolt;
+    }
+
     /**
      * Update the position of the reticle
      */
@@ -102,13 +110,12 @@ public class LazerBolt : MonoBehaviour {
 
         GameObject bolt = null;
         if (oldBolts.Count == 0) {
-            bolt = Instantiate(BoltPrefab);
+            bolt = CreateBolt();
         } else {
             bolt = oldBolts.Pop();
-            bolt.SetActive(true);
         }
-        bolt.hideFlags = HideFlags.HideInHierarchy;
 
+        bolt.SetActive(true);
         bolt.transform.position = transform.position;
         bolt.transform.rotation = transform.rotation;
 
