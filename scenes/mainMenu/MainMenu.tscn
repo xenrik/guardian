@@ -1,0 +1,69 @@
+[gd_scene load_steps=2 format=3 uid="uid://b8dxxlwkb82c7"]
+
+[ext_resource type="Script" path="res://scenes/mainMenu/MainMenu.cs" id="1_xtw4g"]
+
+[node name="MainMenu" type="Node3D"]
+script = ExtResource("1_xtw4g")
+
+[node name="TitleMenu" type="CanvasLayer" parent="."]
+
+[node name="TitleLabel" type="Label" parent="TitleMenu"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -36.0
+offset_right = 36.0
+offset_bottom = 23.0
+grow_horizontal = 2
+theme_type_variation = &"TitleLabel"
+text = "Guardian"
+horizontal_alignment = 1
+
+[node name="Start" type="Button" parent="TitleMenu/TitleLabel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -53.0
+offset_top = 20.0
+offset_right = 53.0
+grow_horizontal = 2
+theme_type_variation = &"TitleButton"
+text = "Start"
+
+[node name="Ship Editor" type="Button" parent="TitleMenu/TitleLabel/Start"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -104.0
+offset_top = 20.0
+offset_right = 104.0
+grow_horizontal = 2
+theme_type_variation = &"TitleButton"
+text = "Ship Editor
+"
+metadata/_edit_use_anchors_ = true
+
+[node name="Quit" type="Button" parent="TitleMenu/TitleLabel/Start/Ship Editor"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -53.0
+offset_top = 20.0
+offset_right = 53.0
+grow_horizontal = 2
+theme_type_variation = &"TitleButton"
+text = "Quit
+"
+
+[connection signal="pressed" from="TitleMenu/TitleLabel/Start" to="." method="StartButtonPressed"]
+[connection signal="pressed" from="TitleMenu/TitleLabel/Start/Ship Editor" to="." method="ShipEditorButtonPressed"]
+[connection signal="pressed" from="TitleMenu/TitleLabel/Start/Ship Editor/Quit" to="." method="ExitButtonPressed"]
