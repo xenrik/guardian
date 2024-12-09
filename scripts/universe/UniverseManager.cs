@@ -2,7 +2,7 @@ using Godot;
 using System;
 
 [Singleton]
-public partial class OriginManager : Node {
+public partial class UniverseManager : Node {
     public Vector3 Origin { get; set; }
 
     private Node3D root;
