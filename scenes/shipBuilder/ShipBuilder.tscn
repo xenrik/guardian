@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://dslpgnc6xiaj"]
+
+[ext_resource type="PackedScene" uid="uid://bkedf7xo68dxq" path="res://assets/modules/simpleTriangle/simpleTriangle.blend" id="1_oq2ce"]
+
+[node name="ShipBuilder" type="Node3D"]
+
+[node name="simpleTriangle" parent="." instance=ExtResource("1_oq2ce")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.102536, 0, -0.163602)
