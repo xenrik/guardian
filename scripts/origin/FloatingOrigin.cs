@@ -22,8 +22,8 @@ public partial class FloatingOrigin : Node3D {
         }
     }
 
-    private Vector3 _origin;
-    public Vector3 Origin {
+    private Vector3d _origin;
+    public Vector3d Origin {
         get {
             return _origin;
         }
@@ -78,8 +78,8 @@ public partial class FloatingOrigin : Node3D {
                 return true;
             });
 
-            // Finally signal anyone else interested
-            EmitSignal(SignalName.OriginChanged, oldOrigin, Origin);
+            // Finally signal anyone else interested (have to downcast to Vector3!)
+            EmitSignal(SignalName.OriginChanged, (Vector3)oldOrigin, (Vector3)Origin);
         }
     }
 }

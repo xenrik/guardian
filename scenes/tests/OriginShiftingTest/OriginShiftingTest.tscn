@@ -1,0 +1,84 @@
+[gd_scene load_steps=5 format=3 uid="uid://djwtbconlerdo"]
+
+[ext_resource type="Script" path="res://scenes/tests/OriginShiftingTest/OriginShiftingTest.cs" id="1_unvet"]
+[ext_resource type="Script" path="res://scripts/origin/FloatingOrigin.cs" id="2_pshgs"]
+[ext_resource type="PackedScene" uid="uid://codsiavhu14il" path="res://assets/debug/primitives/RigidCube.tscn" id="3_5ko48"]
+[ext_resource type="Script" path="res://scripts/controllers/SimpleController.cs" id="4_pek21"]
+
+[node name="OriginShiftingTest" type="Node3D" node_paths=PackedStringArray("originLabel", "boxGlobalLabel", "boxUniversalLabel", "box")]
+script = ExtResource("1_unvet")
+originLabel = NodePath("CanvasLayer/OriginValue")
+boxGlobalLabel = NodePath("CanvasLayer/CubeGlobalValue")
+boxUniversalLabel = NodePath("CanvasLayer/CubeUniversalValue")
+box = NodePath("FloatingOrigin/FloatingOriginCube")
+
+[node name="FloatingOrigin" type="Node3D" parent="."]
+script = ExtResource("2_pshgs")
+MaxDistance = 20.0
+
+[node name="FloatingOriginCube" parent="FloatingOrigin" instance=ExtResource("3_5ko48")]
+gravity_scale = 0.0
+
+[node name="Player" type="Node3D" parent="FloatingOrigin"]
+script = ExtResource("4_pek21")
+Speed = 1.0
+SprintSpeed = 10.0
+
+[node name="Camera3D" type="Camera3D" parent="FloatingOrigin/Player"]
+transform = Transform3D(1, 0, 0, 0, 0.865344, 0.501179, 0, -0.501179, 0.865344, 0, 5.69326, 15.4242)
+
+[node name="FixedCube" parent="." instance=ExtResource("3_5ko48")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.03596, 0, 0)
+gravity_scale = 0.0
+
+[node name="FixedCube2" parent="." instance=ExtResource("3_5ko48")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.03596, 0, -16.4998)
+gravity_scale = 0.0
+
+[node name="FixedCube3" parent="." instance=ExtResource("3_5ko48")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.03596, 0, 15.9894)
+gravity_scale = 0.0
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="OriginLabel" type="Label" parent="CanvasLayer"]
+offset_left = 5.0
+offset_top = 5.0
+offset_right = 140.0
+offset_bottom = 26.0
+text = "Origin Position:"
+
+[node name="OriginValue" type="Label" parent="CanvasLayer"]
+offset_left = 146.0
+offset_top = 5.0
+offset_right = 207.0
+offset_bottom = 26.0
+text = "{value}"
+
+[node name="CubeGlobalLabel" type="Label" parent="CanvasLayer"]
+offset_left = 5.0
+offset_top = 32.0
+offset_right = 192.0
+offset_bottom = 53.0
+text = "Cube Global Position:"
+
+[node name="CubeGlobalValue" type="Label" parent="CanvasLayer"]
+offset_left = 200.0
+offset_top = 32.0
+offset_right = 387.0
+offset_bottom = 53.0
+text = "{cube global}"
+
+[node name="CubeUniversalLabel" type="Label" parent="CanvasLayer"]
+offset_left = 5.0
+offset_top = 59.0
+offset_right = 192.0
+offset_bottom = 80.0
+text = "Cube Universal Pos:"
+
+[node name="CubeUniversalValue" type="Label" parent="CanvasLayer"]
+offset_left = 200.0
+offset_top = 59.0
+offset_right = 387.0
+offset_bottom = 80.0
+text = "{cube universal}"

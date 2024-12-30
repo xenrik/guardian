@@ -19,6 +19,22 @@ public partial class DependencyInjector : Node {
 
     private static DependencyInjector instance;
 
+    public static void Update(Node node) {
+        if (instance == null) {
+            throw new Exception("Dependency Injector has not been setup");
+        }
+
+        instance.DoUpdate(node);
+    }
+
+    public static T GetSingleton<T>() where T : class {
+        if (instance == null) {
+            throw new Exception("Dependency Injector has not been setup");
+        }
+
+        return instance.singletonsByType[typeof(T)] as T;
+    }
+
     public override void _EnterTree() {
         base._EnterTree();
 
@@ -59,14 +75,6 @@ public partial class DependencyInjector : Node {
                 singletonsByName.Remove(attr.Name);
             }
         }
-    }
-
-    public static void Update(Node node) {
-        if (instance == null) {
-            throw new Exception("Dependency Injector has not been setup");
-        }
-
-        instance.DoUpdate(node);
     }
 
     /**
