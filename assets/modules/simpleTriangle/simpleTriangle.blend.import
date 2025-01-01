@@ -3,7 +3,7 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://bkedf7xo68dxq"
+uid="uid://iydckch5saw6"
 path="res://.godot/imported/simpleTriangle.blend-3e87583b3d33a0b87745ff33ce8722df.scn"
 
 [deps]
@@ -13,7 +13,7 @@ dest_files=["res://.godot/imported/simpleTriangle.blend-3e87583b3d33a0b87745ff33
 
 [params]
 
-nodes/root_type="RigidBody3D"
+nodes/root_type="Node"
 nodes/root_name=""
 nodes/apply_root_scale=true
 nodes/root_scale=1.0
@@ -31,16 +31,7 @@ animation/trimming=false
 animation/remove_immutable_tracks=true
 animation/import_rest_as_RESET=false
 import_script/path=""
-_subresources={
-"nodes": {
-"PATH:Camera": {
-"import/skip_import": true
-},
-"PATH:Light": {
-"import/skip_import": true
-}
-}
-}
+_subresources={}
 blender/nodes/visible=0
 blender/nodes/active_collection_only=false
 blender/nodes/punctual_lights=true

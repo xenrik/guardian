@@ -1,0 +1,47 @@
+[gd_scene load_steps=5 format=4 uid="uid://nw3g7nsc5l6"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_s5ojx"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_p4rjn"]
+_surfaces = [{
+"aabb": AABB(-0.866025, -0.5, -1, 1.73205, 1, 1.5),
+"format": 34896613377,
+"index_count": 36,
+"index_data": PackedByteArray("AAADAAEAAAACAAMABgAFAAcABgAEAAUAAQAHAAUABAABAAUABAAAAAEAAAAGAAIAAgAHAAMAAgAGAAcAAwAHAAEABAAGAAAA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("/38AAAAAAAD/f///AAAAAP//AAD//wAA////////AAAAAAAA//8AAAAA/////wAA/38AAMzMAAD/f///zMwAAA==")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_hjpgg"]
+resource_name = "simpleTriangle_Cylinder"
+_surfaces = [{
+"aabb": AABB(-0.866025, -0.5, -1, 1.73205, 1, 1.5),
+"attribute_data": PackedByteArray("/3+Pyf/fCMv/3wjL//+Pyf9//3//nwjL/58Iy////39U1Y/Jmfr//1TVj8lU1f9/mbr//1TV/3+pqo/JZMX//6mqj8mpqv9/ZIX//6mq/3//v4/J/9/////f////v4/J/7//f/+f////n////7//fw=="),
+"format": 34896613399,
+"index_count": 36,
+"index_data": PackedByteArray("AwANAAcAAwAKAA0AFwATABsAFwAQABMABQAZABIADgAEABEADgAAAAQAAgAWAAkACAAYAAsACAAUABgADAAaAAYADwAVAAEA"),
+"material": SubResource("StandardMaterial3D_s5ojx"),
+"primitive": 3,
+"uv_scale": Vector4(2, 1.74, 0, 0),
+"vertex_count": 28,
+"vertex_data": PackedByteArray("/38AAAAAVNX/fwAAAADgPv9/AAAAAOA+/38AAAAAVNX/f///AABU1f9///8AAB7B/3///wAAHsH/f///AABU1f//AAD//5WN//8AAP//4D7//wAA//9U1f///////5WN////////HsH///////9U1QAAAAD//1TVAAAAAP//4D4AAAAA//+VjQAA/////1TVAAD/////HsEAAP////+Vjf9/AADMzJWN/38AAMzM4D7/fwAAzMzgPv9/AADMzJWN/3///8zMlY3/f///zMwewf9////MzB7B/3///8zMlY3/f///OyDhbx0QO6D/fwAA/3///+Hvw1/D3x2Q/38AAP9///8dEDug/38AAP9////D3x2Q/38AAP9///87IOFv/38AAP9////h78Nf/38AAP9///87IOFvHRA7oP9/AAD/f///4e/DX8PfHZD/fwAA")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_p4rjn")
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_4fey1"]
+points = PackedVector3Array(0, -0.45, -0.9, -0.779423, -0.45, 0.45, 0, 0.45, -0.9, 0.779423, -0.45, 0.45, -0.779423, 0.45, 0.45, 0.779423, 0.45, 0.45)
+
+[node name="simpleTriangle" type="RigidBody3D"]
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
+mesh = SubResource("ArrayMesh_hjpgg")
+skeleton = NodePath("")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
+shape = SubResource("ConvexPolygonShape3D_4fey1")
