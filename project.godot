@@ -11,14 +11,13 @@ config_version=5
 [application]
 
 config/name="Guardian"
-run/main_scene="res://Main.tscn"
+run/main_scene="res://scenes/shipBuilder/ShipBuilder.tscn"
 config/features=PackedStringArray("4.3", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
 DependencyInjector="*res://scripts/dependencyInjector/DependencyInjector.cs"
-OriginManager="*res://scripts/origin/OriginManager.cs"
 
 [dotnet]
 
@@ -28,7 +27,16 @@ project/assembly_name="Guardian"
 
 script/templates_search_path="res://editor/templates"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/anthonyec.camera_preview/plugin.cfg")
+
 [gui]
 
 theme/custom="res://assets/fonts/defaultTheme.tres"
 theme/custom_font="res://assets/fonts/audiowide/Audiowide-Regular.ttf"
+
+[layer_names]
+
+3d_physics/layer_1="Snap"
+3d_physics/layer_2="Module"

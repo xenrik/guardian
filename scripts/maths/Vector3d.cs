@@ -68,7 +68,7 @@ public struct Vector3d : IEquatable<Vector3d> {
         return X == other.X && Y == other.Y && Z == other.Z;
     }
 
-    public readonly string ToString(string? format) {
+    public readonly string ToString(string format) {
         return $"({X.ToString(format, CultureInfo.InvariantCulture)}, {Y.ToString(format, CultureInfo.InvariantCulture)}, {Z.ToString(format, CultureInfo.InvariantCulture)})";
     }
 }
