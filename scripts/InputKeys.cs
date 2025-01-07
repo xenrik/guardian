@@ -8,4 +8,8 @@ public static class InputKeys {
         public const string ExitGame = "Debug.ExitGame";
         public const string PauseGame = "Debug.PauseGame";
     }
+
+    public static class Editor {
+        public const string SelectModule = "Editor.SelectModule";
+    }
 }

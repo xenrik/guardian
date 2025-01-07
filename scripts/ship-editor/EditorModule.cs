@@ -3,9 +3,9 @@ using System;
 
 public partial class EditorModule : Node3D {
     [Signal]
-    public delegate void MouseEnteredEventHandler();
+    public delegate void MouseEnteredEventHandler(EditorModule module);
     [Signal]
-    public delegate void MouseExitedEventHandler();
+    public delegate void MouseExitedEventHandler(EditorModule module);
     [Signal]
     public delegate void SnapCollisionEnteredEventHandler();
     [Signal]
@@ -16,7 +16,6 @@ public partial class EditorModule : Node3D {
     public delegate void BodyCollisionExitedEventHandler();
 
     public void OnMouseEnter() {
-        Logger.Debug("OnMouseEnter");
         EmitSignal(SignalName.MouseEntered, this);
     }
 

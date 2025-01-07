@@ -1,0 +1,99 @@
+[gd_scene load_steps=8 format=3 uid="uid://dijrgyaabvjad"]
+
+[ext_resource type="Script" path="res://scenes/tests/RigidBodyParentingTest/RigidBodyParentingTest.cs" id="1_eyggq"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_5rtcb"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_btnq8"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_fih18"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_x14st"]
+size = Vector3(0.0977783, 0.0995178, 0.098938)
+
+[sub_resource type="SphereMesh" id="SphereMesh_vif1p"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_is7ut"]
+radius = 0.100193
+
+[node name="RigidBodyParentingTest" type="Node3D"]
+script = ExtResource("1_eyggq")
+Force = Vector3(0, 0, 1)
+
+[node name="Cube" type="RigidBody3D" parent="."]
+gravity_scale = 0.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Cube"]
+mesh = SubResource("BoxMesh_5rtcb")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cube"]
+shape = SubResource("BoxShape3D_btnq8")
+
+[node name="Sattelite" type="StaticBody3D" parent="Cube"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.861163, 0, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Cube/Sattelite"]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("BoxMesh_fih18")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cube/Sattelite"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.000671387, 0.000106812, -0.000457764)
+shape = SubResource("BoxShape3D_x14st")
+
+[node name="Projectile" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.861, 0, -5)
+mass = 0.1
+gravity_scale = 0.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Projectile"]
+transform = Transform3D(0.199995, 0, 0.00147304, 0, 0.2, 0, -0.00147304, 0, 0.199995, 0, 0, 0)
+mesh = SubResource("SphereMesh_vif1p")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Projectile"]
+shape = SubResource("SphereShape3D_is7ut")
+
+[node name="Projectile2" type="RigidBody3D" parent="."]
+transform = Transform3D(0.99863, 0, 0.052336, 0, 1, 0, -0.052336, 0, 0.99863, 0, 0, -5)
+mass = 0.1
+gravity_scale = 0.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Projectile2"]
+transform = Transform3D(0.199995, 0, 0.00147304, 0, 0.2, 0, -0.00147304, 0, 0.199995, 0, 0, 0)
+mesh = SubResource("SphereMesh_vif1p")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Projectile2"]
+shape = SubResource("SphereShape3D_is7ut")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(-0.0745609, -0.600793, 0.79592, -1.36233e-08, 0.798142, 0.60247, -0.997217, 0.0449207, -0.0595101, 5.41255, 3.82242, -3.70037)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.397052, 0.917796, 0, -0.917796, 0.397052, 0, 2.92644, 0)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Shoot" type="Button" parent="CanvasLayer"]
+offset_left = 17.0
+offset_top = 14.0
+offset_right = 84.0
+offset_bottom = 43.0
+text = "Shoot 1"
+
+[node name="Shoot2" type="Button" parent="CanvasLayer"]
+offset_left = 16.0
+offset_top = 53.0
+offset_right = 96.0
+offset_bottom = 82.0
+text = "Shoot 2"
+
+[node name="Reset" type="Button" parent="CanvasLayer"]
+offset_left = 19.0
+offset_top = 97.0
+offset_right = 80.0
+offset_bottom = 126.0
+text = "Reset
+"
+
+[connection signal="pressed" from="CanvasLayer/Shoot" to="." method="Shoot1"]
+[connection signal="pressed" from="CanvasLayer/Shoot2" to="." method="Shoot2"]
+[connection signal="pressed" from="CanvasLayer/Reset" to="." method="Reset"]

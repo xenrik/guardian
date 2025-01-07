@@ -160,9 +160,34 @@ public partial class DependencyInjector : Node {
     private void UpdateNodeAttributes(Node node, MemberInfo member) {
         NodeAttribute[] attrs = (NodeAttribute[])member.GetCustomAttributes(typeof(NodeAttribute), false);
         foreach (var attr in attrs) {
+            var filters = new List<NodeFilter>();
             string path = attrs[0].Path;
             Type type = (member is FieldInfo) ? ((FieldInfo)member).FieldType : ((PropertyInfo)member).PropertyType;
-            Node childNode = FindNode(node, path, member.Name, type, attr.SearchChildren);
+
+            // If path is set, we only use that
+            if (path != null) {
+                filters.Add((node) => node.GetNodeOrNull(path));
+            } else {
+                // Otherwise try by name first
+                var matchName = member.Name.ToLower();
+                filters.Add((node) => {
+                    foreach (var child in node.GetChildren()) {
+                        if (child.Name.ToString().ToLower() == matchName) {
+                            return child;
+                        }
+                    }
+
+                    return null;
+                });
+
+                // Then by type
+                filters.Add((node) => {
+                    GD.Print("Finding by type!");
+                    return type.IsAssignableFrom(node.GetType()) ? node : null;
+                });
+            }
+
+            Node childNode = FindNode(node, attr.SearchChildren, filters.ToArray());
             if (childNode == null) {
                 string recursive = $"(Searched children: {attr.SearchChildren}";
                 if (path != null) {
@@ -180,32 +205,50 @@ public partial class DependencyInjector : Node {
         }
     }
 
-    private Node FindNode(Node rootNode, string path, string name, Type type, bool recurse) {
-        Queue<Node> toSearch = new Queue<Node>();
-        toSearch.Enqueue(rootNode);
+    private delegate Node NodeFilter(Node node);
+    private Node FindNode(Node rootNode, bool recurse, params NodeFilter[] filters) {
+        foreach (NodeFilter filter in filters) {
+            Queue<Node> toSearch = new Queue<Node>();
+            toSearch.Enqueue(rootNode);
 
-        Node matchedNode = null;
-        while (toSearch.Count > 0 && matchedNode == null) {
-            Node current = toSearch.Dequeue();
-            if (path != null) {
-                matchedNode = current.GetNodeOrNull(path);
-            } else {
-                matchedNode = current.GetNodeOrNull(name);
-
-                if (matchedNode == null && type.IsAssignableFrom(current.GetType())) {
-                    matchedNode = current;
-                }
-            }
-
-            if (matchedNode == null && recurse) {
-                foreach (Node child in current.GetChildren()) {
-                    toSearch.Enqueue(child);
+            Node matchedNode = null;
+            while (toSearch.Count > 0 && matchedNode == null) {
+                Node current = toSearch.Dequeue();
+                Node node = filter(current);
+                if (node != null) {
+                    return node;
+                } else if (recurse) {
+                    foreach (Node child in current.GetChildren()) {
+                        toSearch.Enqueue(child);
+                    }
                 }
             }
         }
 
-        return matchedNode;
+        return null;
+        /*
+                    if (path != null) {
+                        matchedNode = current.GetNodeOrNull(path);
+                    } else {
+                        matchedNode = current.GetNodeOrNull(name);
+
+                        if (matchedNode == null && type.IsAssignableFrom(current.GetType())) {
+                            matchedNode = current;
+                        }
+                    }
+
+                    if (matchedNode == null && recurse) {
+                        foreach (Node child in current.GetChildren()) {
+                            toSearch.Enqueue(child);
+                        }
+                    }
+                }
+
+                return matchedNode;
+            }
+            */
     }
+
 
     /**
     * Accessor class used to lazy load singletons

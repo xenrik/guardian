@@ -8,8 +8,8 @@
 - Add EditorModule script
 - Drag in the model scene
 - Add snap collision points
-    - Layer: Snap
-    - Add Anchors
+	- Layer: Snap
+	- Add Anchors
 - Link Signals to script
-    - Body Collision
-    - Snap Collisions
+	- Body Collision
+	- Snap Collisions
