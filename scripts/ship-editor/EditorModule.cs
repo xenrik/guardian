@@ -16,10 +16,12 @@ public partial class EditorModule : Node3D {
     public delegate void BodyCollisionExitedEventHandler();
 
     public void OnMouseEnter() {
+        Logger.Debug("Enter!");
         EmitSignal(SignalName.MouseEntered, this);
     }
 
     public void OnMouseExit() {
+        Logger.Debug("Exit!");
         EmitSignal(SignalName.MouseExited, this);
     }
 

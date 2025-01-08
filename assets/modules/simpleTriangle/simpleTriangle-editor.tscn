@@ -1,7 +1,41 @@
-[gd_scene load_steps=4 format=3 uid="uid://bdbiu2lgjvrof"]
+[gd_scene load_steps=7 format=4 uid="uid://bdbiu2lgjvrof"]
 
 [ext_resource type="Script" path="res://scripts/ship-editor/EditorModule.cs" id="1_7w383"]
-[ext_resource type="PackedScene" uid="uid://nw3g7nsc5l6" path="res://assets/modules/simpleTriangle/simpleTriangle.tscn" id="1_l4y58"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xgyrq"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_axkl8"]
+_surfaces = [{
+"aabb": AABB(-0.866025, -0.5, -1, 1.73205, 1, 1.5),
+"format": 34896613377,
+"index_count": 36,
+"index_data": PackedByteArray("AAADAAEAAAACAAMABgAFAAcABgAEAAUAAQAHAAUABAABAAUABAAAAAEAAAAGAAIAAgAHAAMAAgAGAAcAAwAHAAEABAAGAAAA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("/38AAAAAAAD/f///AAAAAP//AAD//wAA////////AAAAAAAA//8AAAAA/////wAA/38AAP//AAD/f/////8AAA==")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_swnm5"]
+resource_name = "simpleTriangle_Cylinder"
+_surfaces = [{
+"aabb": AABB(-0.866025, -0.5, -1, 1.73205, 1, 1.5),
+"attribute_data": PackedByteArray("/3+Pyf/fCMv//4/J/3//f/+fCMv///9/mfr//1TVj8lU1Y/JVNX/f5m6//9U1f9/qaqPyWTF//+pqo/Jqar/f6mq/39khf///9////+/j8n/v/9//5///w=="),
+"format": 34896613399,
+"index_count": 36,
+"index_data": PackedByteArray("AgALAAUAAgAIAAsAEwAQABQAEwAOABAABAAVABEADAADAA8ADAAAAAMAAQASAAYABwAUAAkABwATABQACgAVAAQADQASAAEA"),
+"material": SubResource("StandardMaterial3D_xgyrq"),
+"primitive": 3,
+"uv_scale": Vector4(2, 1.74, 0, 0),
+"vertex_count": 22,
+"vertex_data": PackedByteArray("/38AAAAAVNX/fwAAAAD/P/9/AAAAAFTV/3///wAAVNX/f///AAD/v/9///8AAFTV//8AAP///z///wAA//8AgP//AAD//1TV////////AID/////////v////////1TVAAAAAP//VNUAAAAA////PwAAAAD//wCAAAD/////VNUAAP////8AgAAA//////+//38AAP///z//fwAA//8AgP9//////wCA/3///////7//f///AAD/f/9/AAD/f///////f/9/AAAAAP9//3////9/AAD/f///////f/9/AAD/f///AAD/f/9/////f////3///////38AAP9//3////9///////9/")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_axkl8")
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_1diou"]
+points = PackedVector3Array(0, -0.45, -0.9, 0, 0.45, -0.9, 0.779423, -0.45, 0.45, -0.779423, -0.45, 0.45, -0.779423, 0.45, 0.45, 0.779423, 0.45, 0.45)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ysoko"]
 size = Vector3(1, 1, 0.5)
@@ -9,37 +43,41 @@ size = Vector3(1, 1, 0.5)
 [node name="SimpleTriangle-editor" type="Node3D"]
 script = ExtResource("1_7w383")
 
-[node name="simpleTriangle" parent="." instance=ExtResource("1_l4y58")]
-collision_layer = 2
-collision_mask = 2
-gravity_scale = 0.0
-max_contacts_reported = 1
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
 
-[node name="Snaps" type="Area3D" parent="simpleTriangle"]
+[node name="Mesh" type="MeshInstance3D" parent="StaticBody3D"]
+transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
+mesh = SubResource("ArrayMesh_swnm5")
+skeleton = NodePath("")
 
-[node name="Snap1" type="CollisionShape3D" parent="simpleTriangle/Snaps"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
+shape = SubResource("ConvexPolygonShape3D_1diou")
+
+[node name="Snaps" type="Area3D" parent="StaticBody3D"]
+
+[node name="Snap1" type="CollisionShape3D" parent="StaticBody3D/Snaps"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.75)
 shape = SubResource("BoxShape3D_ysoko")
 
-[node name="Anchor" type="Node3D" parent="simpleTriangle/Snaps/Snap1"]
+[node name="Anchor" type="Node3D" parent="StaticBody3D/Snaps/Snap1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.25)
 
-[node name="Snap2" type="CollisionShape3D" parent="simpleTriangle/Snaps"]
+[node name="Snap2" type="CollisionShape3D" parent="StaticBody3D/Snaps"]
 transform = Transform3D(-0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, -0.65, 0, 0.375)
 shape = SubResource("BoxShape3D_ysoko")
 
-[node name="Anchor" type="Node3D" parent="simpleTriangle/Snaps/Snap2"]
+[node name="Anchor" type="Node3D" parent="StaticBody3D/Snaps/Snap2"]
 transform = Transform3D(-0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, 0, 0, 0.25)
 
-[node name="Snap3" type="CollisionShape3D" parent="simpleTriangle/Snaps"]
+[node name="Snap3" type="CollisionShape3D" parent="StaticBody3D/Snaps"]
 transform = Transform3D(-0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, 0.65, 0, 0.375)
 shape = SubResource("BoxShape3D_ysoko")
 
-[node name="Anchor" type="Node3D" parent="simpleTriangle/Snaps/Snap3"]
+[node name="Anchor" type="Node3D" parent="StaticBody3D/Snaps/Snap3"]
 transform = Transform3D(-0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, 0, 0, 0.25)
 
-[connection signal="mouse_entered" from="simpleTriangle" to="." method="OnMouseEnter"]
-[connection signal="mouse_exited" from="simpleTriangle" to="." method="OnMouseExit"]
-[connection signal="body_shape_entered" from="simpleTriangle/Snaps" to="." method="OnSnapCollisionEnter"]
-[connection signal="body_shape_exited" from="simpleTriangle/Snaps" to="." method="OnSnapCollisionExit"]
-[connection signal="mouse_entered" from="simpleTriangle/Snaps" to="." method="OnMouseEnter"]
+[connection signal="mouse_entered" from="StaticBody3D" to="." method="OnMouseEnter"]
+[connection signal="mouse_exited" from="StaticBody3D" to="." method="OnMouseExit"]
+[connection signal="body_shape_entered" from="StaticBody3D/Snaps" to="." method="OnSnapCollisionEnter"]
+[connection signal="body_shape_exited" from="StaticBody3D/Snaps" to="." method="OnSnapCollisionExit"]

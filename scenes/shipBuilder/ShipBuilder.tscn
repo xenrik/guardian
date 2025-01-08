@@ -10,7 +10,7 @@ script = ExtResource("1_cmeaf")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.38111)
 
 [node name="tri2" parent="." instance=ExtResource("1_j5epr")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2.64254)
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, -2.64254)
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.0871558, 0.996195, 0, -0.996195, 0.0871558, 0, 10, 1)
@@ -22,3 +22,5 @@ transform = Transform3D(1, 0, 0, 0, 0.757508, 0.652826, 0, -0.652826, 0.757508, 
 [connection signal="MouseExited" from="tri1" to="." method="OnModuleExited"]
 [connection signal="MouseEntered" from="tri2" to="." method="OnModuleEntered"]
 [connection signal="MouseExited" from="tri2" to="." method="OnModuleExited"]
+
+[editable path="tri1"]
