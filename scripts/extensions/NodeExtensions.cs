@@ -49,4 +49,20 @@ public static class NodeExtensions {
 
         return false;
     }
+
+    /**
+     * Generic version of FindChildren
+     */
+    public static Godot.Collections.Array<T> FindChildren<[MustBeVariant] T>(this Node node, string pattern, bool recursive = true, bool owned = true) where T : class {
+        Godot.Collections.Array<Node> rawArray = node.FindChildren(pattern, "", recursive, owned);
+        Godot.Collections.Array<T> typedArray = new();
+
+        foreach (Node n in rawArray) {
+            if (n is T) {
+                typedArray.Add(n as T);
+            }
+        }
+
+        return typedArray;
+    }
 }

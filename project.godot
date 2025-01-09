@@ -57,8 +57,14 @@ Editor.SelectModule={
 
 [layer_names]
 
-3d_physics/layer_1="Snap"
-3d_physics/layer_2="Module"
+3d_physics/layer_2="Module-Body"
+3d_physics/layer_10="Snap"
+3d_physics/layer_11="Snap-NE"
+3d_physics/layer_12="Snap-NW"
+3d_physics/layer_13="Snap-E"
+3d_physics/layer_14="Snap-W"
+3d_physics/layer_15="Snap-SE"
+3d_physics/layer_16="Snap-SW"
 
 [physics]
 

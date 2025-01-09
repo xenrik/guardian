@@ -54,30 +54,38 @@ skeleton = NodePath("")
 transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
 shape = SubResource("ConvexPolygonShape3D_1diou")
 
-[node name="Snaps" type="Area3D" parent="StaticBody3D"]
+[node name="Snap1" type="Area3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.5)
+collision_layer = 0
+collision_mask = 0
 
-[node name="Snap1" type="CollisionShape3D" parent="StaticBody3D/Snaps"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.75)
+[node name="Shape" type="CollisionShape3D" parent="StaticBody3D/Snap1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
 shape = SubResource("BoxShape3D_ysoko")
 
-[node name="Anchor" type="Node3D" parent="StaticBody3D/Snaps/Snap1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.25)
+[node name="Snap2" type="Area3D" parent="StaticBody3D"]
+transform = Transform3D(-0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, -0.433, 0, 0.25)
+collision_layer = 0
+collision_mask = 0
 
-[node name="Snap2" type="CollisionShape3D" parent="StaticBody3D/Snaps"]
-transform = Transform3D(-0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, -0.65, 0, 0.375)
+[node name="Shape" type="CollisionShape3D" parent="StaticBody3D/Snap2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
 shape = SubResource("BoxShape3D_ysoko")
 
-[node name="Anchor" type="Node3D" parent="StaticBody3D/Snaps/Snap2"]
-transform = Transform3D(-0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, 0, 0, 0.25)
+[node name="Snap3" type="Area3D" parent="StaticBody3D"]
+transform = Transform3D(-0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, 0.433, 0, 0.25)
+collision_layer = 0
+collision_mask = 0
 
-[node name="Snap3" type="CollisionShape3D" parent="StaticBody3D/Snaps"]
-transform = Transform3D(-0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, 0.65, 0, 0.375)
+[node name="Shape" type="CollisionShape3D" parent="StaticBody3D/Snap3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
 shape = SubResource("BoxShape3D_ysoko")
-
-[node name="Anchor" type="Node3D" parent="StaticBody3D/Snaps/Snap3"]
-transform = Transform3D(-0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, 0, 0, 0.25)
 
 [connection signal="mouse_entered" from="StaticBody3D" to="." method="OnMouseEnter"]
 [connection signal="mouse_exited" from="StaticBody3D" to="." method="OnMouseExit"]
-[connection signal="body_shape_entered" from="StaticBody3D/Snaps" to="." method="OnSnapCollisionEnter"]
-[connection signal="body_shape_exited" from="StaticBody3D/Snaps" to="." method="OnSnapCollisionExit"]
+[connection signal="body_shape_entered" from="StaticBody3D/Snap1" to="." method="OnSnapCollisionEnter"]
+[connection signal="body_shape_exited" from="StaticBody3D/Snap1" to="." method="OnSnapCollisionExit"]
+[connection signal="body_shape_entered" from="StaticBody3D/Snap2" to="." method="OnSnapCollisionEnter"]
+[connection signal="body_shape_exited" from="StaticBody3D/Snap2" to="." method="OnSnapCollisionExit"]
+[connection signal="body_shape_entered" from="StaticBody3D/Snap3" to="." method="OnSnapCollisionEnter"]
+[connection signal="body_shape_exited" from="StaticBody3D/Snap3" to="." method="OnSnapCollisionExit"]
