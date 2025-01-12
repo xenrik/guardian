@@ -7,9 +7,9 @@ public partial class EditorModule : Node3D {
     [Signal]
     public delegate void MouseExitedEventHandler(EditorModule module);
     [Signal]
-    public delegate void SnapCollisionEnteredEventHandler();
+    public delegate void SnapEnteredEventHandler(Area3D snap, Area3D otherSnap);
     [Signal]
-    public delegate void SnapCollisionExitedEventHandler();
+    public delegate void SnapExitedEventHandler(Area3D snap, Area3D otherSnap);
     [Signal]
     public delegate void BodyCollisionEnteredEventHandler();
     [Signal]
@@ -22,21 +22,19 @@ public partial class EditorModule : Node3D {
     }
 
     public void OnMouseEnter() {
-        Logger.Debug("Enter!");
         EmitSignal(SignalName.MouseEntered, this);
     }
 
     public void OnMouseExit() {
-        Logger.Debug("Exit!");
         EmitSignal(SignalName.MouseExited, this);
     }
 
-    public void OnSnapCollisionEnter(Rid bodyRid, Node body, int bodyShapeIndex, int localShapeIndex) {
-        //EmitSignal(SignalName.SnapCollisionEntered, this, collision);
+    public void OnSnapEnter(Rid areaRid, Area3D area, int areaShapeIndex, int localShapeIndex, string snapName) {
+        EmitSignal(SignalName.SnapEntered, FindChild(snapName), area);
     }
 
-    public void OnSnapCollisionExit(Rid bodyRid, Node body, int bodyShapeIndex, int localShapeIndex) {
-        // EmitSignal(SignalName.SnapCollisionExited, this, collision);
+    public void OnSnapExit(Rid areaRid, Area3D area, int areaShapeIndex, int localShapeIndex, string snapName) {
+        EmitSignal(SignalName.SnapExited, FindChild(snapName), area);
     }
 
     public void OnBodyCollisionEnter() {
@@ -54,24 +52,44 @@ public partial class EditorModule : Node3D {
      * parent
      */
     private void UpdateSnaps() {
-        Array<Node3D> snapNodes = this.FindChildren<Node3D>("Snap?");
+        Array<Area3D> snapNodes = this.FindChildren<Area3D>("Snap?");
         Logger.Debug($"{Name} has {snapNodes.Count} snaps");
 
-        Vector3 modulePos = GlobalPosition;        
-        foreach (Node3D node in snapNodes) {
+        Vector3 modulePos = GlobalPosition;
+        foreach (Area3D node in snapNodes) {
             string suffix = "";
             Vector3 nodePos = node.GlobalPosition;
 
             float dz = nodePos.Z - modulePos.Z;
             float dx = nodePos.X - modulePos.X;
-            if (Mathf.Abs(dz) > Mathf.Epsilon) {
-                suffix += dz > 0 ? "S" : "N";
-            }
-            if (Mathf.Abs(dx) > Mathf.Epsilon) {
-                suffix += dx > 0 ? "E" : "W";
+
+            dz = Mathf.Abs(dz) > Mathf.Epsilon ? Mathf.Sign(dz) : 0;
+            dx = Mathf.Abs(dx) > Mathf.Epsilon ? Mathf.Sign(dx) : 0;
+
+            if (dz > 0 && dx > 0) {
+                node.CollisionLayer = LayerConstants.Snap_NE.Mask;
+                node.CollisionMask = LayerConstants.Snap_SW.Mask;
+            } else if (dz < 0 && dx > 0) {
+                node.CollisionLayer = LayerConstants.Snap_NW.Mask;
+                node.CollisionMask = LayerConstants.Snap_SE.Mask;
+            } else if (dz > 0 && dx < 0) {
+                node.CollisionLayer = LayerConstants.Snap_SE.Mask;
+                node.CollisionMask = LayerConstants.Snap_NW.Mask;
+            } else if (dz < 0 && dx < 0) {
+                node.CollisionLayer = LayerConstants.Snap_SW.Mask;
+                node.CollisionMask = LayerConstants.Snap_NE.Mask;
+            } else if (dz > 0 && dx == 0) {
+                node.CollisionLayer = LayerConstants.Snap_E.Mask;
+                node.CollisionMask = LayerConstants.Snap_W.Mask;
+            } else if (dz < 0 && dx == 0) {
+                node.CollisionLayer = LayerConstants.Snap_W.Mask;
+                node.CollisionMask = LayerConstants.Snap_E.Mask;
+            } else {
+                Logger.Error($"{Name} has a snap {node.Name} which doesn't seem to have a valid rotation! (dz: {dz} - dx: {dx})");
+                continue;
             }
 
-            Logger.Debug($"   Snap: {node.Name} - Suffix: {suffix}");
+            Logger.Debug($"   Snap: {node.Name} - Layer: {LayerConstants.ToString(node.CollisionLayer)} - Mask: {LayerConstants.ToString(node.CollisionMask)}");
         }
     }
 }

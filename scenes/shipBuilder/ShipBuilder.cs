@@ -1,56 +1,109 @@
 using Godot;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 public partial class ShipBuilder : Node3D {
-    private EditorModule currentModule = null;
+    private List<EditorModule> activeModules = new();
+    private List<Tuple<Area3D, Area3D>> activeSnaps = new();
 
-    private bool isEditing = false;
+    private EditorModule editingModule = null;
+    private EditorModule snapper = null;
 
-    private Vector3 moduleDragStart;
-    private Vector3 dragStart;
+    private Vector3 moduleStartPos;
+    private Vector3 mouseStartPos;
+    private Vector3 targetPosition;
 
     public override void _Process(double delta) {
         base._Process(delta);
 
-        if (Input.IsActionPressed(InputKeys.Editor.SelectModule) && currentModule != null) {
+        if (Input.IsActionPressed(InputKeys.Editor.SelectModule)) {
             var camera = GetViewport().GetCamera3D();
             var currentPos = camera.ProjectPosition(GetViewport().GetMousePosition(), camera.GlobalPosition.Y);
 
-            if (isEditing) {
+            if (editingModule == null && activeModules.Count > 0) {
+                // Start Editing
+                editingModule = activeModules[0];
+                moduleStartPos = editingModule.GlobalPosition;
+                mouseStartPos = currentPos;
+
+                // Create the invisible snapper
+                snapper = (EditorModule)editingModule.Duplicate(~(int)DuplicateFlags.Signals);
+                AddChild(snapper);
+
+                snapper.FindChildren<MeshInstance3D>().ToList().ForEach(mesh => mesh.Visible = false);
+                snapper.SnapEntered += OnSnapEntered;
+                snapper.SnapExited += OnSnapExited;
+
+                // Disable the snaps on the current module
+                editingModule.FindChildren<Area3D>("Snap?").ToList().ForEach(snap => snap.ProcessMode = ProcessModeEnum.Disabled);
+            } else if (editingModule != null) {
                 // Drag
-                var dragDelta = currentPos - dragStart;
-                var newPos = moduleDragStart + dragDelta;
-                newPos.Y = moduleDragStart.Y;
+                var mouseDelta = currentPos - mouseStartPos;
+                var newPos = moduleStartPos + mouseDelta;
+                newPos.Y = moduleStartPos.Y;
 
-                currentModule.GlobalPosition = newPos;
-            } else {
-                // Start editing
-                isEditing = true;
-
-                moduleDragStart = currentModule.GlobalPosition;
-                dragStart = currentPos;
+                // Reposition the snapper
+                snapper.GlobalPosition = newPos;
             }
-        } else if (isEditing && currentModule != null) {
-            // Stop editing
-            isEditing = false;
+        } else if (editingModule != null) {
+            // End Editing
+
+            // Reenable the snaps on the current module
+            editingModule.FindChildren<Area3D>("Snap?").ToList().ForEach(snap => snap.ProcessMode = ProcessModeEnum.Always);
+
+            // Tidy up
+            editingModule = null;
+
+            snapper.QueueFree();
+            snapper = null;
+            activeSnaps.Clear();
+        }
+    }
+
+    public override void _PhysicsProcess(double delta) {
+        base._PhysicsProcess(delta);
+
+        if (editingModule == null) {
+            return;
+        }
+
+        // If the snapper is causing collisions then move to the snapped position,
+        // otherwise move to the snapper position
+        if (activeSnaps.NotEmpty()) {
+            var activeSnap = activeSnaps[0];
+            var snapOffset = activeSnap.Item1.GlobalPosition - snapper.GlobalPosition;
+            var targetSnapPos = activeSnap.Item2.GlobalPosition;
+
+            editingModule.GlobalPosition = targetSnapPos - snapOffset;
+        } else {
+            editingModule.GlobalPosition = snapper.GlobalPosition;
         }
     }
 
     private void OnModuleEntered(EditorModule module) {
-        if (isEditing) {
-            return;
+        if (!activeModules.Contains(module)) {
+            activeModules.Add(module);
         }
-
-        currentModule = module;
     }
 
     private void OnModuleExited(EditorModule module) {
-        if (isEditing) {
+        activeModules.Remove(module);
+    }
+
+    private void OnSnapEntered(Area3D snap, Area3D otherSnap) {
+        if (snapper == null || !snap.HasParent(snapper)) {
             return;
         }
 
-        if (currentModule == module) {
-            currentModule = null;
+        var activeSnap = new Tuple<Area3D, Area3D>(snap, otherSnap);
+        if (!activeSnaps.Contains(activeSnap)) {
+            activeSnaps.Add(activeSnap);
         }
+    }
+
+    private void OnSnapExited(Area3D snap, Area3D otherSnap) {
+        var activeSnap = new Tuple<Area3D, Area3D>(snap, otherSnap);
+        activeSnaps.Remove(activeSnap);
     }
 }
