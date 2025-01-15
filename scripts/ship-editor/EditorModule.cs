@@ -1,7 +1,7 @@
 using Godot;
 using Godot.Collections;
 
-public partial class EditorModule : Node3D {
+public partial class EditorModule : Module {
     [Signal]
     public delegate void MouseEnteredEventHandler(EditorModule module);
     [Signal]
@@ -57,7 +57,6 @@ public partial class EditorModule : Node3D {
 
         Vector3 modulePos = GlobalPosition;
         foreach (Area3D node in snapNodes) {
-            string suffix = "";
             Vector3 nodePos = node.GlobalPosition;
 
             float dz = nodePos.Z - modulePos.Z;
