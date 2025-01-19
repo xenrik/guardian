@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://wukmcnjk2jjk"]
+
+[ext_resource type="Script" path="res://tests/JsonFileWriterTest.cs" id="1_hup31"]
+
+[node name="TestRunnerScene" type="Node"]
+
+[node name="JsonFileWriterTest" type="Node" parent="."]
+script = ExtResource("1_hup31")

@@ -24,10 +24,5 @@ transform = Transform3D(1, 0, 0, 0, 0.757508, 0.652826, 0, -0.652826, 0.757508, 
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5877, 0, 0)
 mesh = SubResource("BoxMesh_kh2jf")
 
-[connection signal="MouseEntered" from="bridge" to="." method="OnModuleEntered"]
-[connection signal="MouseExited" from="bridge" to="." method="OnModuleExited"]
-[connection signal="MouseEntered" from="tri2" to="." method="OnModuleEntered"]
-[connection signal="MouseExited" from="tri2" to="." method="OnModuleExited"]
-
 [editable path="bridge"]
 [editable path="tri2"]

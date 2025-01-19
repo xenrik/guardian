@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3 uid="uid://dijrgyaabvjad"]
 
-[ext_resource type="Script" path="res://scenes/tests/RigidBodyParentingTest/RigidBodyParentingTest.cs" id="1_eyggq"]
+[ext_resource type="Script" path="res://tests/RigidBodyParentingTest/RigidBodyParentingTest.cs" id="1_eyggq"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_5rtcb"]
 

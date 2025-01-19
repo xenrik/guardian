@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=4 uid="uid://bdbiu2lgjvrof"]
 
-[ext_resource type="Script" path="res://scripts/ship-editor/EditorModule.cs" id="1_7w383"]
+[ext_resource type="Script" path="res://scripts/modules/EditorModule.cs" id="1_7w383"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xgyrq"]
 
@@ -42,7 +42,7 @@ size = Vector3(1, 1, 0.5)
 
 [node name="SimpleTriangle-editor" type="Node3D"]
 script = ExtResource("1_7w383")
-ModuleId = "SimpleTriangley"
+ModuleId = "SimpleTriangle"
 
 [node name="StaticBody3D" type="StaticBody3D" parent="."]
 
