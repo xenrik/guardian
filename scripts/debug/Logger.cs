@@ -32,7 +32,7 @@ public static class Logger {
         Log(LogLevel.TRACE, msg, caller, filePath, lineNumber);
     }
 
-    private static void Log(LogLevel level, string msg, string caller, string filePath, int lineNumber) {
+    public static void Log(LogLevel level, string msg, string caller, string filePath, int lineNumber) {
         string date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
         string name = caller + "@" + lineNumber;
 
@@ -46,6 +46,20 @@ public static class Logger {
         }
 
         name = filePath + ";" + name;
-        GD.Print($"[{date}] {level,-5} [{name,50}] - {msg}");
+        msg = $"[{date}] {level,-5} [{name,50}] - {msg}";
+
+        switch (level) {
+            case LogLevel.ERROR:
+                GD.PushError(msg);
+                break;
+
+            case LogLevel.WARN:
+                GD.PushError(msg);
+                break;
+
+            default:
+                GD.Print(msg);
+                break;
+        }
     }
 }

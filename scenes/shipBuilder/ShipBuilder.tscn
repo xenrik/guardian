@@ -8,7 +8,7 @@
 [node name="ShipBuilder" type="Node3D"]
 script = ExtResource("1_cmeaf")
 
-[node name="tri1" parent="." instance=ExtResource("1_j5epr")]
+[node name="bridge" parent="." instance=ExtResource("1_j5epr")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.38111)
 
 [node name="tri2" parent="." instance=ExtResource("1_j5epr")]
@@ -24,10 +24,10 @@ transform = Transform3D(1, 0, 0, 0, 0.757508, 0.652826, 0, -0.652826, 0.757508, 
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5877, 0, 0)
 mesh = SubResource("BoxMesh_kh2jf")
 
-[connection signal="MouseEntered" from="tri1" to="." method="OnModuleEntered"]
-[connection signal="MouseExited" from="tri1" to="." method="OnModuleExited"]
+[connection signal="MouseEntered" from="bridge" to="." method="OnModuleEntered"]
+[connection signal="MouseExited" from="bridge" to="." method="OnModuleExited"]
 [connection signal="MouseEntered" from="tri2" to="." method="OnModuleEntered"]
 [connection signal="MouseExited" from="tri2" to="." method="OnModuleExited"]
 
-[editable path="tri1"]
+[editable path="bridge"]
 [editable path="tri2"]

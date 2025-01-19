@@ -42,6 +42,7 @@ size = Vector3(1, 1, 0.5)
 
 [node name="SimpleTriangle-editor" type="Node3D"]
 script = ExtResource("1_7w383")
+ModuleId = "SimpleTriangley"
 
 [node name="StaticBody3D" type="StaticBody3D" parent="."]
 
