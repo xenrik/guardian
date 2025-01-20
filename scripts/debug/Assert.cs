@@ -16,13 +16,19 @@ public static class Assert {
         }
     }
 
-    public static void Equals<T>(T left, T right, string msg = "", [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0) {
-        if (EqualityComparer<T>.Default.Equals(left, right)) {
+    public static void AreEqual<T>(T expected, T actual, string msg = "", [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0) {
+        if (EqualityComparer<T>.Default.Equals(expected, actual)) {
             return;
         }
 
         if (msg == "") {
-            msg = $"Expected {left},  buf found {right}";
+            var expectedStr = expected.ToString();
+            // expectedStr = expectedStr.Length < 50 ? expectedStr : (expectedStr.Substring(0, 50) + "...");
+
+            var actualStr = actual.ToString();
+            // actualStr = actualStr.Length < 50 ? actualStr : (actualStr.Substring(0, 50) + "...");
+
+            msg = $"Expected {expectedStr},  but found {actualStr}";
         }
         Logger.Log(LogLevel.ERROR, msg, caller, filePath, lineNumber);
     }

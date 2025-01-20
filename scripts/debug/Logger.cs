@@ -50,11 +50,8 @@ public static class Logger {
 
         switch (level) {
             case LogLevel.ERROR:
-                GD.PushError(msg);
-                break;
-
             case LogLevel.WARN:
-                GD.PushError(msg);
+                GD.PrintErr(msg);
                 break;
 
             default:

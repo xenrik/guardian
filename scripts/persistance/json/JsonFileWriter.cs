@@ -1,5 +1,4 @@
 using Godot;
-using Godot.NativeInterop;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -7,8 +6,9 @@ using System.Text;
 
 public class JsonFileWriter : IWriter {
     private string filename;
-    private bool wroteElement;
     private ITypeMapper mapper;
+
+    private bool wroteElement;
 
     private FileAccess file;
 
@@ -29,7 +29,7 @@ public class JsonFileWriter : IWriter {
         if (file == null) {
             throw new Exception("Writer is closed");
         } else if (wroteElement) {
-            throw new Exception("JsonWriter cannot be used to write multiple values");
+            throw new Exception("JsonFileWriter cannot be used to write multiple values");
         }
 
         string json = ToJson(value);
