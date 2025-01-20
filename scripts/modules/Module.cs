@@ -1,8 +1,7 @@
 using Godot;
 
-public partial class Module : Node3D, IPersistable {
+public partial class Module : Node3D {
     [Export]
-    [Persist]
     public string ModuleId;
 
     [Singleton]

@@ -3,7 +3,7 @@ using Godot;
 [GlobalClass]
 public partial class ModuleRegistryElement : Resource {
     [Export]
-    public string ModuleId;
+    public ModuleDef Definition;
 
     [Export]
     public PackedScene GameScene;

@@ -1,16 +1,17 @@
-[gd_scene load_steps=6 format=3 uid="uid://b2m832r7bqvt4"]
+[gd_scene load_steps=7 format=3 uid="uid://b2m832r7bqvt4"]
 
 [ext_resource type="Script" path="res://scripts/modules/ModuleRegistry.cs" id="1_1aleh"]
 [ext_resource type="PackedScene" uid="uid://bdbiu2lgjvrof" path="res://assets/modules/simpleTriangle/simpleTriangle-editor.tscn" id="2_1bxef"]
+[ext_resource type="Resource" uid="uid://b48ucyi3wbp01" path="res://assets/modules/simpleTriangle/simpleTriangle.tres" id="2_o5atk"]
 [ext_resource type="PackedScene" uid="uid://nw3g7nsc5l6" path="res://assets/modules/simpleTriangle/simpleTriangle.tscn" id="3_xwj77"]
 [ext_resource type="Script" path="res://scripts/modules/ModuleRegistryElement.cs" id="4_difdv"]
 
-[sub_resource type="Resource" id="Resource_mluac"]
+[sub_resource type="Resource" id="Resource_inios"]
 script = ExtResource("4_difdv")
-ModuleId = "SimpleTriangle"
+Definition = ExtResource("2_o5atk")
 GameScene = ExtResource("3_xwj77")
 EditorScene = ExtResource("2_1bxef")
 
 [node name="DefaultModuleRegistry" type="Node"]
 script = ExtResource("1_1aleh")
-Elements = Array[Object]([SubResource("Resource_mluac")])
+Elements = Array[Object]([SubResource("Resource_inios")])

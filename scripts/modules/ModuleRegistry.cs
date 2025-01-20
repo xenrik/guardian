@@ -11,7 +11,7 @@ public partial class ModuleRegistry : Node {
         // Validate the registry if we in the editor
         if (OS.HasFeature("editor")) {
             foreach (ModuleRegistryElement elem in Elements) {
-                var id = elem.ModuleId;
+                var id = elem.Definition.ModuleId;
 
                 Node gameNode = elem.GameScene.Instantiate();
 
