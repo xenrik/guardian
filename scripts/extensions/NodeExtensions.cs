@@ -55,6 +55,23 @@ public static class NodeExtensions {
     }
 
     /**
+     * Return the a parent of this node that has the given type searching recursively
+     */
+    public static T FindParent<[MustBeVariant] T>(this Node node) where T : Node {
+        node = node.GetParent();
+        while (node != null) {
+            if (node is T) {
+                return (T)node;
+            }
+
+            node = node.GetParent();
+        }
+
+        // Not found
+        return null;
+    }
+
+    /**
      * Generic version of FindChild
      */
     public static T FindChild<[MustBeVariant] T>(this Node node, string pattern, bool recursive = true, bool owned = true) where T : class {

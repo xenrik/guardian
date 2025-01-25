@@ -57,6 +57,26 @@ public partial class ShipBuilder : Node3D {
             // Reenable the snaps on the current module
             editingModule.FindChildren<Area3D>("Snap?").ToList().ForEach(snap => snap.ProcessMode = ProcessModeEnum.Always);
 
+            // Connect the module to its new parent if it's snapped
+            editingModule.GetParent().RemoveChild(editingModule);
+            if (activeSnaps.NotEmpty()) {
+                var activeSnap = activeSnaps[0];
+                var newParent = activeSnap.Item2.FindParent<EditorModule>();
+                if (newParent == null) {
+                    Logger.Warn("Had a snap, but couldn't find the parent!?");
+                } else {
+                    newParent.AddChild(editingModule);
+                }
+            }
+
+            // Organise Modules
+            Callable.From(() => {
+                List<Module> unattached = rootModule.OrganiseModules();
+
+                // Any unattached modules are parented by us
+                unattached.ForEach(module => AddChild(module));
+            }).CallDeferred();
+
             // Tidy up
             editingModule = null;
 

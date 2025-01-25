@@ -28,6 +28,7 @@ public class ModuleTree {
 
     public static ModuleTree ToModuleTree(Module module) {
         ModuleTreeNode node = ToNode(module);
+
         return new(node);
     }
 

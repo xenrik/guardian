@@ -32,6 +32,14 @@ offset_right = 8.0
 offset_bottom = 8.0
 text = "Save"
 
+[connection signal="MouseEntered" from="bridge" to="." method="OnModuleEntered"]
+[connection signal="MouseExited" from="bridge" to="." method="OnModuleExited"]
+[connection signal="SnapEntered" from="bridge" to="." method="OnSnapEntered"]
+[connection signal="SnapExited" from="bridge" to="." method="OnSnapExited"]
+[connection signal="MouseEntered" from="tri2" to="." method="OnModuleEntered"]
+[connection signal="MouseExited" from="tri2" to="." method="OnModuleExited"]
+[connection signal="SnapEntered" from="tri2" to="." method="OnSnapEntered"]
+[connection signal="SnapExited" from="tri2" to="." method="OnSnapExited"]
 [connection signal="pressed" from="GUI/Button" to="." method="OnSaveButtonPressed"]
 
 [editable path="bridge"]
