@@ -5,8 +5,9 @@
 
 [sub_resource type="BoxMesh" id="BoxMesh_kh2jf"]
 
-[node name="ShipBuilder" type="Node3D"]
+[node name="ShipBuilder" type="Node3D" node_paths=PackedStringArray("rootModule")]
 script = ExtResource("1_cmeaf")
+rootModule = NodePath("bridge")
 
 [node name="bridge" parent="." instance=ExtResource("1_j5epr")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.38111)
@@ -23,6 +24,15 @@ transform = Transform3D(1, 0, 0, 0, 0.757508, 0.652826, 0, -0.652826, 0.757508, 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5877, 0, 0)
 mesh = SubResource("BoxMesh_kh2jf")
+
+[node name="GUI" type="CanvasLayer" parent="."]
+
+[node name="Button" type="Button" parent="GUI"]
+offset_right = 8.0
+offset_bottom = 8.0
+text = "Save"
+
+[connection signal="pressed" from="GUI/Button" to="." method="OnSaveButtonPressed"]
 
 [editable path="bridge"]
 [editable path="tri2"]

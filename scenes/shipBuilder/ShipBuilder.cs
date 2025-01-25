@@ -4,6 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 
 public partial class ShipBuilder : Node3D {
+    // Current "root" module
+    [Export]
+    private EditorModule rootModule;
+
+    // Dragging Support
     private List<EditorModule> activeModules = new();
     private List<Tuple<Area3D, Area3D>> activeSnaps = new();
 
@@ -105,5 +110,10 @@ public partial class ShipBuilder : Node3D {
     private void OnSnapExited(Area3D snap, Area3D otherSnap) {
         var activeSnap = new Tuple<Area3D, Area3D>(snap, otherSnap);
         activeSnaps.Remove(activeSnap);
+    }
+
+    private void OnSaveButtonPressed() {
+        ModuleTree tree = ModuleTree.ToModuleTree(rootModule);
+        tree.Save("user://ShipDesigns/test.json");
     }
 }

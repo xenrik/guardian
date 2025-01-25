@@ -10,21 +10,29 @@ public partial class ModuleRegistry : Node {
 
         // Validate the registry if we in the editor
         if (OS.HasFeature("editor")) {
+            bool valid = true;
+
             foreach (ModuleRegistryElement elem in Elements) {
                 var id = elem.Definition.ModuleId;
 
                 Node gameNode = elem.GameScene.Instantiate();
 
-                Assert.OfType<Module>(gameNode, $"The game scene for module {id} does not have the 'Module' script!")
-                    .WithType((node) => {
-                        Assert.AreEqual(id, node.ModuleId, $"The game scene for module {id} does not have a matching module id");
-                    });
+                Assert.IsType<Module>(gameNode, $"The game scene for module {id} does not have the 'Module' script!")
+                    .WhenTrue((node) => {
+                        valid = valid & Assert.AreEqual(id, node.ModuleDef.ModuleId, $"The game scene for module {id} does not have a matching module id");
+                    })
+                    .WhenFalse((node) => valid = false);
 
                 Node editorNode = elem.EditorScene.Instantiate();
-                Assert.OfType<EditorModule>(editorNode, $"The editor scene for module {id} does not have the 'EditorModule' script!")
-                    .WithType((node) => {
-                        Assert.AreEqual(id, node.ModuleId, $"The editor scene for module {id} does not have a matching module id");
-                    });
+                Assert.IsType<EditorModule>(editorNode, $"The editor scene for module {id} does not have the 'EditorModule' script!")
+                    .WhenTrue((node) => {
+                        valid = valid & Assert.AreEqual(id, node.ModuleDef.ModuleId, $"The editor scene for module {id} does not have a matching module id");
+                    })
+                    .WhenFalse((node) => valid = false);
+            }
+
+            if (valid) {
+                Logger.Debug("ModuleRegistry is valid");
             }
         }
     }

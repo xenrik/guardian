@@ -1,6 +1,7 @@
-[gd_scene load_steps=7 format=4 uid="uid://bdbiu2lgjvrof"]
+[gd_scene load_steps=8 format=4 uid="uid://bdbiu2lgjvrof"]
 
 [ext_resource type="Script" path="res://scripts/modules/EditorModule.cs" id="1_7w383"]
+[ext_resource type="Resource" uid="uid://b48ucyi3wbp01" path="res://assets/modules/simpleTriangle/simpleTriangle.tres" id="2_40hk8"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xgyrq"]
 
@@ -42,7 +43,7 @@ size = Vector3(1, 1, 0.5)
 
 [node name="SimpleTriangle-editor" type="Node3D"]
 script = ExtResource("1_7w383")
-ModuleId = "SimpleTriangle"
+ModuleDef = ExtResource("2_40hk8")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="."]
 

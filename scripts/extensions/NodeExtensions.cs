@@ -1,5 +1,6 @@
 using Godot;
 using System.Collections.Generic;
+using System.Linq;
 
 public static class NodeExtensions {
     /**
@@ -86,5 +87,20 @@ public static class NodeExtensions {
         }
 
         return typedArray;
+    }
+
+    /**
+     * Generic version of GetChildren. Only returns children which the matching type
+     */
+    public static Godot.Collections.Array<T> GetChildren<[MustBeVariant] T>(this Node node, bool includeInternal = false) where T : Node {
+        var children = node.GetChildren(includeInternal);
+        Godot.Collections.Array<T> filteredChildren = new();
+        foreach (Node child in children) {
+            if (child is T) {
+                filteredChildren.Add((T)child);
+            }
+        }
+
+        return filteredChildren;
     }
 }

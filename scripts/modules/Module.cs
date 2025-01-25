@@ -2,7 +2,7 @@ using Godot;
 
 public partial class Module : Node3D {
     [Export]
-    public string ModuleId;
+    public ModuleDef ModuleDef;
 
     [Singleton]
     private ModuleRegistry registry;

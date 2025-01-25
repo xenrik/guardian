@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=4 uid="uid://nw3g7nsc5l6"]
+[gd_scene load_steps=7 format=4 uid="uid://nw3g7nsc5l6"]
 
 [ext_resource type="Script" path="res://scripts/modules/Module.cs" id="1_w3e0i"]
+[ext_resource type="Resource" uid="uid://b48ucyi3wbp01" path="res://assets/modules/simpleTriangle/simpleTriangle.tres" id="2_a3vts"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6eyvh"]
 
@@ -39,7 +40,7 @@ points = PackedVector3Array(0, -0.45, -0.9, 0, 0.45, -0.9, 0.779423, -0.45, 0.45
 
 [node name="simpleTriangle" type="RigidBody3D"]
 script = ExtResource("1_w3e0i")
-ModuleId = "SimpleTriangle"
+ModuleDef = ExtResource("2_a3vts")
 
 [node name="Mesh" type="MeshInstance3D" parent="."]
 transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
