@@ -27,21 +27,22 @@ public partial class Module : Node3D {
     }
 
     public void OnSnapEnter(Rid areaRid, Area3D area, int areaShapeIndex, int localShapeIndex, string snapName) {
-        Area3D snap = this.FindChild<Area3D>(snapName);
-        Module otherModule = area.FindParent<Module>();
-
-        touchingSnaps.Add(new SnapCollision(this, snap, otherModule, area));
-
-        EmitSignal(SignalName.SnapEntered, snap, area);
+        SnapCollision collision = new SnapCollision(this, snapName, area, areaRid);
+        if (collision.IsValid()) {
+            touchingSnaps.Add(collision);
+            EmitSignal(SignalName.SnapEntered, collision.Snap, collision.OtherSnap);
+        }
     }
 
     public void OnSnapExit(Rid areaRid, Area3D area, int areaShapeIndex, int localShapeIndex, string snapName) {
-        Area3D snap = this.FindChild<Area3D>(snapName);
-        Module otherModule = area.FindParent<Module>();
+        SnapCollision collision = new SnapCollision(this, snapName, area, areaRid);
 
-        touchingSnaps.Remove(new SnapCollision(this, snap, otherModule, area));
+        // Remove even if it's not valid!
+        touchingSnaps.Remove(collision);
 
-        EmitSignal(SignalName.SnapExited, snap, area);
+        if (collision.IsValid()) {
+            EmitSignal(SignalName.SnapExited, collision.Snap, collision.OtherSnap);
+        }
     }
 
     public void OnBodyCollisionEnter() {
@@ -60,7 +61,7 @@ public partial class Module : Node3D {
      */
     private void UpdateSnaps() {
         Godot.Collections.Array<Area3D> snapNodes = this.FindChildren<Area3D>("Snap?");
-        Logger.Debug($"{Name} has {snapNodes.Count} snaps");
+        // Logger.Debug($"{Name} has {snapNodes.Count} snaps");
 
         Vector3 modulePos = GlobalPosition;
         foreach (Area3D node in snapNodes) {
@@ -95,7 +96,7 @@ public partial class Module : Node3D {
                 continue;
             }
 
-            Logger.Debug($"   Snap: {node.Name} - Layer: {LayerConstants.ToString(node.CollisionLayer)} - Mask: {LayerConstants.ToString(node.CollisionMask)}");
+            // Logger.Debug($"   Snap: {node.Name} - Layer: {LayerConstants.ToString(node.CollisionLayer)} - Mask: {LayerConstants.ToString(node.CollisionMask)}");
         }
     }
 
@@ -105,8 +106,10 @@ public partial class Module : Node3D {
      * and therefore if modules have been moved you should wait for a physics update to get accurate results
      */
     public List<Module> OrganiseModules() {
+        Logger.Debug("Optimising!");
+
         // First collect all nodes and reset their depth
-        Godot.Collections.Array<Module> allModules = this.GetChildren<Module>();
+        Godot.Collections.Array<Module> allModules = this.FindChildren<Module>();
         Dictionary<Module, int> depth = new();
         Dictionary<Module, Module> parent = new();
 
@@ -119,26 +122,34 @@ public partial class Module : Node3D {
 
         // Calculate the best depth and best parent
         var updated = true;
+        var loops = 0;
         while (updated) {
+            updated = false;
+
             foreach (Module module in allModules) {
                 int newDepth = -1;
                 Module newParent = null;
 
                 foreach (SnapCollision collision in module.touchingSnaps) {
-                    int otherDepth = depth[collision.otherModule];
+                    int otherDepth = depth[collision.OtherModule];
                     if (otherDepth == -1) {
                         continue;
                     } else if (newDepth == -1 || otherDepth < newDepth) {
                         newDepth = otherDepth;
-                        newParent = collision.otherModule;
+                        newParent = collision.OtherModule;
                     }
                 }
 
-                if (parent[module] != newParent) {
+                if (newDepth != depth[module]) {
                     depth[module] = newDepth;
                     parent[module] = newParent;
                     updated = true;
                 }
+            }
+
+            if (loops++ > 1000) {
+                Logger.Error("LOOOOP OVERFLOW!");
+                break;
             }
         }
 
@@ -147,16 +158,19 @@ public partial class Module : Node3D {
         foreach (Module module in allModules) {
             var newParent = parent[module];
             if (newParent != module.GetParent()) {
-                module.GetParent().RemoveChild(module);
-
                 if (newParent != null) {
-                    newParent.AddChild(module);
+                    Logger.Debug($"module: {module.Name} is now parented by: {newParent.Name}");
+                    module.Reparent(newParent);
                 } else {
+                    Logger.Debug($"module: {module.Name} is unnattached");
                     unattachedModules.Add(module);
                 }
+            } else {
+                Logger.Debug($"module: {module.Name} is unmodified");
             }
         }
 
+        Logger.Debug("Finished Optimising!");
         return unattachedModules;
     }
 }

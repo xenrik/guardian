@@ -34,14 +34,15 @@ public partial class ShipBuilder : Node3D {
 
                 // Create the invisible snapper
                 snapper = (EditorModule)editingModule.Duplicate(~(int)DuplicateFlags.Signals);
+                snapper.Name = editingModule.Name + "_snapper";
                 AddChild(snapper);
 
-                snapper.FindChildren<MeshInstance3D>().ToList().ForEach(mesh => mesh.Visible = false);
+                snapper.FindChildren<MeshInstance3D>().ForEach(mesh => mesh.Visible = false);
                 snapper.SnapEntered += OnSnapEntered;
                 snapper.SnapExited += OnSnapExited;
 
                 // Disable the snaps on the current module
-                editingModule.FindChildren<Area3D>("Snap?").ToList().ForEach(snap => snap.ProcessMode = ProcessModeEnum.Disabled);
+                editingModule.FindChildren<Area3D>("Snap?").ForEach(snap => snap.ProcessMode = ProcessModeEnum.Disabled);
             } else if (editingModule != null) {
                 // Drag
                 var mouseDelta = currentPos - mouseStartPos;
@@ -55,18 +56,19 @@ public partial class ShipBuilder : Node3D {
             // End Editing
 
             // Reenable the snaps on the current module
-            editingModule.FindChildren<Area3D>("Snap?").ToList().ForEach(snap => snap.ProcessMode = ProcessModeEnum.Always);
+            editingModule.FindChildren<Area3D>("Snap?").ForEach(snap => snap.ProcessMode = ProcessModeEnum.Always);
 
             // Connect the module to its new parent if it's snapped
-            editingModule.GetParent().RemoveChild(editingModule);
             if (activeSnaps.NotEmpty()) {
                 var activeSnap = activeSnaps[0];
                 var newParent = activeSnap.Item2.FindParent<EditorModule>();
                 if (newParent == null) {
                     Logger.Warn("Had a snap, but couldn't find the parent!?");
                 } else {
-                    newParent.AddChild(editingModule);
+                    editingModule.Reparent(newParent);
                 }
+            } else {
+                editingModule.Reparent(this);
             }
 
             // Organise Modules
@@ -74,7 +76,10 @@ public partial class ShipBuilder : Node3D {
                 List<Module> unattached = rootModule.OrganiseModules();
 
                 // Any unattached modules are parented by us
-                unattached.ForEach(module => AddChild(module));
+                unattached.ForEach(module => {
+                    Logger.Debug($"unnattached module: {module.Name} being attached to the builder node");
+                    module.Reparent(this);
+                });
             }).CallDeferred();
 
             // Tidy up

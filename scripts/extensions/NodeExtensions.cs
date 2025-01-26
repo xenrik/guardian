@@ -8,6 +8,9 @@ public static class NodeExtensions {
      */
     public delegate bool TreeWalker(Node node);
 
+    /**
+     * Walk the tree of nodes from this node. Breadth first.
+     */
     public static void WalkTree(this Node node, TreeWalker consumer, bool includeInternal = false) {
         var nodesToWalk = new Queue<Node>();
         nodesToWalk.Enqueue(node);
@@ -22,6 +25,9 @@ public static class NodeExtensions {
         }
     }
 
+    /**
+     * Iterate the tree of nodes from this node. Breadth first
+     */
     public static IEnumerable<Node> IterateTree(this Node node, bool includeInternal = false) {
         var nodesToWalk = new Queue<Node>();
         nodesToWalk.Enqueue(node);
@@ -55,7 +61,7 @@ public static class NodeExtensions {
     }
 
     /**
-     * Return the a parent of this node that has the given type searching recursively
+     * Return the a parent of this node that has the given type searching recursively 
      */
     public static T FindParent<[MustBeVariant] T>(this Node node) where T : Node {
         node = node.GetParent();
@@ -74,44 +80,51 @@ public static class NodeExtensions {
     /**
      * Generic version of FindChild
      */
-    public static T FindChild<[MustBeVariant] T>(this Node node, string pattern, bool recursive = true, bool owned = true) where T : class {
-        Node childNode = node.FindChild(pattern, recursive, owned);
-        return childNode is T ? childNode as T : null;
+    public static T FindChild<[MustBeVariant] T>(this Node node, string pattern = "", bool recursive = true, bool owned = true) where T : Node {
+        if (pattern == "") {
+            foreach (Node n in node.IterateTree()) {
+                if (n is T) {
+                    return (T)n;
+                }
+            }
+
+            return null;
+        } else {
+            Node childNode = node.FindChild(pattern, recursive, owned);
+            return childNode is T ? (T)childNode : null;
+        }
     }
 
     /**
      * Generic version of FindChildren
      */
-    public static Godot.Collections.Array<T> FindChildren<[MustBeVariant] T>(this Node node, string pattern = "", bool recursive = true, bool owned = true) where T : class {
+    public static Godot.Collections.Array<T> FindChildren<[MustBeVariant] T>(this Node node, string pattern = "", bool recursive = true, bool owned = true) where T : Node {
         Godot.Collections.Array<T> typedArray = new();
         if (pattern == "") {
-            // Find all children of the given type
-            node.WalkTree(node => {
-                if (node is T && (node.Owner != null || owned == false)) {
-                    typedArray.Add(node as T);
+            node.WalkTree(n => {
+                if (n is T) {
+                    typedArray.Add((T)n);
                 }
-
-                return recursive && (node.Owner != null || owned == false);
+                return true;
             });
         } else {
             Godot.Collections.Array<Node> rawArray = node.FindChildren(pattern, "", recursive, owned);
             foreach (Node n in rawArray) {
                 if (n is T) {
-                    typedArray.Add(n as T);
+                    typedArray.Add((T)n);
                 }
             }
-
         }
 
         return typedArray;
     }
 
     /**
-     * Generic version of GetChildren. Only returns children which the matching type
+     * Generic version of GetChildren. Only returns children which the matching type, allows for a recursive search
      */
     public static Godot.Collections.Array<T> GetChildren<[MustBeVariant] T>(this Node node, bool includeInternal = false) where T : Node {
-        var children = node.GetChildren(includeInternal);
         Godot.Collections.Array<T> filteredChildren = new();
+        var children = node.GetChildren(includeInternal);
         foreach (Node child in children) {
             if (child is T) {
                 filteredChildren.Add((T)child);

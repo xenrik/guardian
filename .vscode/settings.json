@@ -1,5 +1,8 @@
 {
     "files.associations": {
         "**/editor/templates/*.cs": "ignore"
-    }
+    },
+    "cSpell.words": [
+        "Reparent"
+    ]
 }
