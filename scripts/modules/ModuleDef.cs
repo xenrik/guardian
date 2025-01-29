@@ -4,4 +4,7 @@ using Godot;
 public partial class ModuleDef : Resource {
     [Export]
     public string ModuleId;
+
+    [Export]
+    public bool IsRootModule;
 }

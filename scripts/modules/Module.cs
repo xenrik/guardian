@@ -29,6 +29,8 @@ public partial class Module : Node3D {
     public void OnSnapEnter(Rid areaRid, Area3D area, int areaShapeIndex, int localShapeIndex, string snapName) {
         SnapCollision collision = new SnapCollision(this, snapName, area, areaRid);
         if (collision.IsValid()) {
+            Logger.Debug($"{Name} - SnapEnter: {snapName} - Other Module: {collision.OtherModule.Name}");
+
             touchingSnaps.Add(collision);
             EmitSignal(SignalName.SnapEntered, collision.Snap, collision.OtherSnap);
         }
@@ -41,6 +43,8 @@ public partial class Module : Node3D {
         touchingSnaps.Remove(collision);
 
         if (collision.IsValid()) {
+            Logger.Debug($"{Name} - SnapExit: {snapName} - Other Module: {collision.OtherModule.Name}");
+
             EmitSignal(SignalName.SnapExited, collision.Snap, collision.OtherSnap);
         }
     }
@@ -130,13 +134,19 @@ public partial class Module : Node3D {
                 int newDepth = -1;
                 Module newParent = null;
 
+                Logger.Debug($"Checking collisions for module {module.Name}");
                 foreach (SnapCollision collision in module.touchingSnaps) {
+                    Logger.Debug($"   Has a link from snap: {collision.SnapName} to module: {collision.OtherModule.Name}");
+
                     int otherDepth = depth[collision.OtherModule];
                     if (otherDepth == -1) {
+                        Logger.Debug($"   Other module has no depth yet");
                         continue;
                     } else if (newDepth == -1 || otherDepth < newDepth) {
-                        newDepth = otherDepth;
+                        newDepth = otherDepth + 1;
                         newParent = collision.OtherModule;
+
+                        Logger.Debug($"   Setting depth to: " + newDepth);
                     }
                 }
 
@@ -148,7 +158,7 @@ public partial class Module : Node3D {
             }
 
             if (loops++ > 1000) {
-                Logger.Error("LOOOOP OVERFLOW!");
+                Logger.Error("LOOP OVERFLOW!");
                 break;
             }
         }
@@ -166,7 +176,7 @@ public partial class Module : Node3D {
                     unattachedModules.Add(module);
                 }
             } else {
-                Logger.Debug($"module: {module.Name} is unmodified");
+                Logger.Debug($"module: {module.Name} is unmodified (newParent: {newParent.Name} - currentParent: {module.GetParent().Name})");
             }
         }
 
