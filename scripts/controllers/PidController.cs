@@ -23,15 +23,14 @@ public abstract class PidController<T> {
 
     private PidSettings pid;
 
-    public static PidController<T> Instantiate(T initial = default, PidSettings pid = default) {
-        Type type = typeof(T);
-        if (type == typeof(float)) {
-            return new PidController_float((float)(object)initial, pid) as PidController<T>;
-        } else if (type == typeof(Vector2)) {
-            return new PidController_Vector2((Vector2)(object)initial, pid) as PidController<T>;
-        } else {
-            throw new ArgumentException("Unsupported type: " + type);
-        }
+    public static PidController<float> Instantiate(float initial = default, PidSettings pid = default) {
+        return new PidController_float(initial, pid);
+    }
+    public static PidController<Vector2> Instantiate(Vector2 initial = default, PidSettings pid = default) {
+        return new PidController_Vector2(initial, pid);
+    }
+    public static PidController<Vector3> Instantiate(Vector3 initial = default, PidSettings pid = default) {
+        return new PidController_Vector3(initial, pid);
     }
 
     protected PidController(T initial, PidSettings pid) {
@@ -88,6 +87,24 @@ public abstract class PidController<T> {
             float y = Update(Target.Y, Current.Y, Last.Y, delta, Min.Y, Max.Y, ref termIntegral.Y);
 
             return new Vector2(x, y);
+        }
+    }
+
+    private class PidController_Vector3 : PidController<Vector3> {
+        private Vector3 termIntegral;
+
+        public PidController_Vector3(Vector3 initial, PidSettings pid = default)
+                : base(initial, pid) {
+            Min = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+            Max = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+        }
+
+        public override Vector3 Update(float delta) {
+            float x = Update(Target.X, Current.X, Last.X, delta, Min.X, Max.X, ref termIntegral.X);
+            float y = Update(Target.Y, Current.Y, Last.Y, delta, Min.Y, Max.Y, ref termIntegral.Y);
+            float z = Update(Target.Z, Current.Z, Last.Z, delta, Min.Z, Max.Z, ref termIntegral.Z);
+
+            return new Vector3(x, y, z);
         }
     }
 }

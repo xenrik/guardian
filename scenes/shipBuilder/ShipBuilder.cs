@@ -9,7 +9,7 @@ public partial class ShipBuilder : Node3D {
     private EditorModule rootModule;
 
     // Dragging Support
-    private List<EditorModule> activeModules = new();
+    private NodeList<EditorModule> activeModules = new();
     private List<Tuple<Area3D, Area3D>> activeSnaps = new();
 
     private EditorModule editingModule = null;
@@ -17,7 +17,6 @@ public partial class ShipBuilder : Node3D {
 
     private Vector3 moduleStartPos;
     private Vector3 mouseStartPos;
-    private Vector3 targetPosition;
 
     public override void _Process(double delta) {
         base._Process(delta);
@@ -33,9 +32,11 @@ public partial class ShipBuilder : Node3D {
                 mouseStartPos = currentPos;
 
                 // Create the invisible snapper
-                snapper = (EditorModule)editingModule.Duplicate(~(int)DuplicateFlags.Signals);
-                snapper.Name = editingModule.Name + "_snapper";
+                snapper = (EditorModule)editingModule.Duplicate();
                 AddChild(snapper);
+
+                snapper.Name = editingModule.Name + "_snapper";
+                snapper.GlobalTransform = editingModule.GlobalTransform;
 
                 snapper.FindChildren<MeshInstance3D>().ForEach(mesh => mesh.Visible = false);
                 snapper.SnapEntered += OnSnapEntered;
@@ -58,27 +59,21 @@ public partial class ShipBuilder : Node3D {
             // Reenable the snaps on the current module
             editingModule.FindChildren<Area3D>("Snap?").ForEach(snap => snap.ProcessMode = ProcessModeEnum.Always);
 
-            // Connect all modules to the root if they are not already
-            foreach (var module in this.FindChildren<Module>()) {
-                if (module == rootModule) {
-                    continue;
-                }
-
-                if (!module.HasParent(rootModule)) {
-                    module.Reparent(rootModule);
-                }
-            }
+            // Reparent all nodes to us so we can properly detect collisions between modules
+            this.FindChildren<Module>().ToList().ForEach(module => module.Reparent(this));
 
             // Organise Modules
+            Logger.Debug("End Editing");
             Callable.From(() => {
-                List<Module> unattached = rootModule.OrganiseModules();
+                List<Module> allModules = this.FindChildren<Module>().ToList();
+                List<Module> unattached = rootModule.OrganiseModules(allModules);
 
                 // Any unattached modules are parented by us
                 unattached.ForEach(module => {
                     Logger.Debug($"Unnattached module: {module.Name} being attached to the builder node");
                     module.Reparent(this);
                 });
-            }).CallAfterPhysicsUpdate();
+            }).CallAfterFrame();
 
             // Tidy up
             editingModule = null;
@@ -97,7 +92,7 @@ public partial class ShipBuilder : Node3D {
         }
 
         // If the snapper is causing collisions then move to the snapped position,
-        // otherwise move to the snapper position
+        // otherwise move to the snapper position        
         if (activeSnaps.NotEmpty()) {
             var activeSnap = activeSnaps[0];
             var snapOffset = activeSnap.Item1.GlobalPosition - snapper.GlobalPosition;
@@ -120,10 +115,6 @@ public partial class ShipBuilder : Node3D {
     }
 
     private void OnSnapEntered(Area3D snap, Area3D otherSnap) {
-        if (snapper == null || !snap.HasParent(snapper)) {
-            return;
-        }
-
         var activeSnap = new Tuple<Area3D, Area3D>(snap, otherSnap);
         if (!activeSnaps.Contains(activeSnap)) {
             activeSnaps.Add(activeSnap);

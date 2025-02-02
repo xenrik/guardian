@@ -1,57 +1,11 @@
-[gd_scene load_steps=6 format=4 uid="uid://ylbshbf5gcaw"]
+[gd_scene load_steps=2 format=3 uid="uid://ylbshbf5gcaw"]
 
-[ext_resource type="PackedScene" uid="uid://iydckch5saw6" path="res://assets/modules/simpleTriangle/simpleTriangle.blend" id="1_v2fqw"]
-
-[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_u2hiw"]
-points = PackedVector3Array(0.779423, 0.45, 0.449834, 0.779423, -0.45, 0.449834, 0, 0.45, -0.9, -0.000152588, 0.45, 0.95, -0.000152588, -0.45, 0.95, 0, -0.45, -0.9, -0.779423, 0.45, 0.449834, -0.779423, -0.45, 0.449834)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_iy3uh"]
-
-[sub_resource type="ArrayMesh" id="ArrayMesh_1orfe"]
-_surfaces = [{
-"aabb": AABB(-0.866025, -0.5, -1, 1.73205, 1, 1.5),
-"format": 34896613377,
-"index_count": 36,
-"index_data": PackedByteArray("AAADAAEAAAACAAMABgAFAAcABgAEAAUAAQAHAAUABAABAAUABAAAAAEAAAAGAAIAAgAHAAMAAgAGAAcAAwAHAAEABAAGAAAA"),
-"primitive": 3,
-"uv_scale": Vector4(0, 0, 0, 0),
-"vertex_count": 8,
-"vertex_data": PackedByteArray("/38AAAAAAAD/f///AAAAAP//AAD//wAA////////AAAAAAAA//8AAAAA/////wAA/38AAP//AAD/f/////8AAA==")
-}]
-blend_shape_mode = 0
-
-[sub_resource type="ArrayMesh" id="ArrayMesh_lxv2j"]
-resource_name = "simpleTriangle_Cylinder"
-_surfaces = [{
-"aabb": AABB(-0.866025, -0.5, -1, 1.73205, 1, 1.5),
-"attribute_data": PackedByteArray("/3+Pyf/fCMv//4/J/3//f/+fCMv///9/mfr//1TVj8lU1Y/JVNX/f5m6//9U1f9/qaqPyWTF//+pqo/Jqar/f6mq/39khf///9////+/j8n/v/9//5///w=="),
-"format": 34896613399,
-"index_count": 36,
-"index_data": PackedByteArray("AgALAAUAAgAIAAsAEwAQABQAEwAOABAABAAVABEADAADAA8ADAAAAAMAAQASAAYABwAUAAkABwATABQACgAVAAQADQASAAEA"),
-"material": SubResource("StandardMaterial3D_iy3uh"),
-"primitive": 3,
-"uv_scale": Vector4(2, 1.74, 0, 0),
-"vertex_count": 22,
-"vertex_data": PackedByteArray("/38AAAAAVNX/fwAAAAD/P/9/AAAAAFTV/3///wAAVNX/f///AAD/v/9///8AAFTV//8AAP///z///wAA//8AgP//AAD//1TV////////AID/////////v////////1TVAAAAAP//VNUAAAAA////PwAAAAD//wCAAAD/////VNUAAP////8AgAAA//////+//38AAP///z//fwAA//8AgP9//////wCA/3///////7//f///AAD/f/9/AAD/f///////f/9/AAAAAP9//3////9/AAD/f///////f/9/AAD/f///AAD/f/9/////f////3///////38AAP9//3////9///////9/")
-}]
-blend_shape_mode = 0
-shadow_mesh = SubResource("ArrayMesh_1orfe")
+[ext_resource type="PackedScene" uid="uid://xcvlhl4urgij" path="res://assets/modules/simpleTriangle/simpleTriangle-editor2.tscn" id="1_atgg2"]
 
 [node name="Test" type="Node2D"]
 
-[node name="RigidBody2D" type="RigidBody3D" parent="."]
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
 
-[node name="simpleTriangle" type="Node" parent="RigidBody2D"]
+[node name="SimpleTriangle-editor" parent="StaticBody3D" instance=ExtResource("1_atgg2")]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody2D"]
-transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
-shape = SubResource("ConvexPolygonShape3D_u2hiw")
-
-[node name="Mesh" type="MeshInstance3D" parent="RigidBody2D"]
-transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
-mesh = SubResource("ArrayMesh_lxv2j")
-skeleton = NodePath("")
-
-[node name="simpleTriangle" parent="." instance=ExtResource("1_v2fqw")]
-
-[editable path="simpleTriangle"]
+[editable path="StaticBody3D/SimpleTriangle-editor"]

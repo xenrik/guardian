@@ -1,17 +1,28 @@
 using Godot;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
+
+/// Used when tree walking. Return a Result enum to control what
+/// happens after this node is processed
+namespace TreeWalker {
+    public delegate Result Walker(Node node);
+
+    public enum Result {
+        /** Walk into children of this node */
+        RECURSE,
+
+        /** Skip children of this node */
+        SKIP_CHILDREN,
+
+        /** Immediately stop walking */
+        STOP
+    };
+}
 
 public static class NodeExtensions {
-    /**
-     * Return true if we should recurse
-     */
-    public delegate bool TreeWalker(Node node);
-
-    /**
-     * Walk the tree of nodes from this node. Breadth first.
-     */
-    public static void WalkTree(this Node node, TreeWalker consumer, bool includeInternal = false, bool includeQueuedForDeletion = false) {
+    /// Walk the tree of nodes from this node. Breadth first.
+    public static void WalkTree(this Node node, TreeWalker.Walker consumer, bool includeQueuedForDeletion = false) {
         var nodesToWalk = new Queue<Node>();
         nodesToWalk.Enqueue(node);
 
@@ -21,18 +32,25 @@ public static class NodeExtensions {
                 continue;
             }
 
-            if (currentNode == node || consumer.Invoke(currentNode)) {
-                foreach (var child in currentNode.GetChildren(includeInternal)) {
-                    nodesToWalk.Enqueue(child);
-                }
+            TreeWalker.Result result = (currentNode == node) ? TreeWalker.Result.RECURSE : consumer.Invoke(currentNode);
+            switch (result) {
+                case TreeWalker.Result.STOP:
+                    return;
+
+                case TreeWalker.Result.RECURSE:
+                    foreach (var child in currentNode.GetChildren(false)) {
+                        nodesToWalk.Enqueue(child);
+                    }
+                    break;
+
+                default:
+                    break;
             }
         }
     }
 
-    /**
-     * Iterate the tree of nodes from this node. Breadth first
-     */
-    public static IEnumerable<Node> IterateTree(this Node node, bool includeInternal = false, bool includeQueuedForDeletion = false) {
+    /// Iterate the tree of nodes from this node. Breadth first
+    public static IEnumerable<Node> IterateTree(this Node node, bool includeQueuedForDeletion = false) {
         var nodesToWalk = new Queue<Node>();
         nodesToWalk.Enqueue(node);
 
@@ -45,15 +63,13 @@ public static class NodeExtensions {
                 yield return currentNode;
             }
 
-            foreach (var child in currentNode.GetChildren(includeInternal)) {
+            foreach (var child in currentNode.GetChildren(false)) {
                 nodesToWalk.Enqueue(child);
             }
         }
     }
 
-    /**
-     * Returns true if this node is parented by the given node. 
-     */
+    /// Returns true if this node is parented by the given node. 
     public static bool HasParent(this Node node, Node test) {
         Node parent = node.GetParent();
         while (parent != null) {
@@ -67,9 +83,7 @@ public static class NodeExtensions {
         return false;
     }
 
-    /**
-     * Return the a parent of this node that has the given type searching recursively 
-     */
+    /// Return the closest parent of this node that has the given type searching recursively 
     public static T FindParent<[MustBeVariant] T>(this Node node) where T : Node {
         node = node.GetParent();
         while (node != null) {
@@ -84,58 +98,61 @@ public static class NodeExtensions {
         return null;
     }
 
-    /**
-     * Generic version of FindChild
-     */
-    public static T FindChild<[MustBeVariant] T>(this Node node, string pattern = "", bool recursive = true, bool owned = true, bool includeQueuedForDeletion = false) where T : Node {
-        if (pattern == "") {
-            foreach (Node n in node.IterateTree()) {
-                if (n.IsQueuedForDeletion() && !includeQueuedForDeletion) {
-                    continue;
-                }
-
-                if (n is T) {
-                    return (T)n;
-                }
+    /// Generic version of FindChild. 
+    /// 
+    /// This does no use the built-in FindChild, and instead:
+    /// - Uses a bread-first search
+    /// - Will always find "unowned" children
+    public static T FindChild<[MustBeVariant] T>(this Node node, string pattern = "", bool recursive = true, bool includeQueuedForDeletion = false) where T : Node {
+        var regex = pattern == "" ? null : new Regex(Regex.Escape(pattern).Replace(@"\*", ".*").Replace(@"\?", "."));
+        T matchedNode = null;
+        node.WalkTree(node => {
+            if (node.IsQueuedForDeletion() && !includeQueuedForDeletion) {
+                // Exclude this node and any children
+                return TreeWalker.Result.SKIP_CHILDREN;
             }
 
-            return null;
-        } else {
-            Node childNode = node.FindChild(pattern, recursive, owned);
-            return childNode is T ? (T)childNode : null;
-        }
-    }
-
-    /**
-     * Generic version of FindChildren
-     */
-    public static Godot.Collections.Array<T> FindChildren<[MustBeVariant] T>(this Node node, string pattern = "", bool recursive = true, bool owned = true, bool includeQueuedForDeletion = false) where T : Node {
-        Godot.Collections.Array<T> typedArray = new();
-        if (pattern == "") {
-            node.WalkTree(n => {
-                if (n is T) {
-                    typedArray.Add((T)n);
-                }
-                return true;
-            }, includeQueuedForDeletion: includeQueuedForDeletion);
-        } else {
-            Godot.Collections.Array<Node> rawArray = node.FindChildren(pattern, "", recursive, owned);
-            foreach (Node n in rawArray) {
-                if (n is T) {
-                    typedArray.Add((T)n);
-                }
+            if (node is T && (regex == null || regex.IsMatch(node.Name))) {
+                matchedNode = (T)node;
+                return TreeWalker.Result.STOP;
             }
-        }
 
-        return typedArray;
+            // Search children (if allowed)
+            return recursive ? TreeWalker.Result.RECURSE : TreeWalker.Result.SKIP_CHILDREN;
+        });
+
+        return matchedNode;
     }
 
-    /**
-     * Generic version of GetChildren. Only returns children which the matching type - this is not recursive!
-     */
-    public static Godot.Collections.Array<T> GetChildren<[MustBeVariant] T>(this Node node, bool includeInternal = false) where T : Node {
+    /// Generic version of FindChildren. 
+    /// 
+    /// This does no use the built-in FindChildren, and instead:
+    /// - Uses a bread-first search
+    /// - Will always find "unowned" children
+    public static Godot.Collections.Array<T> FindChildren<[MustBeVariant] T>(this Node node, string pattern = "", bool recursive = true, bool includeQueuedForDeletion = false) where T : Node {
+        var regex = pattern == "" ? null : new Regex(Regex.Escape(pattern).Replace(@"\*", ".*").Replace(@"\?", "."));
+        Godot.Collections.Array<T> matchedNodes = new();
+        node.WalkTree(node => {
+            if (node.IsQueuedForDeletion() && !includeQueuedForDeletion) {
+                // Exclude this node and any children
+                return TreeWalker.Result.SKIP_CHILDREN;
+            }
+
+            if (node is T && (regex == null || regex.IsMatch(node.Name))) {
+                matchedNodes.Add((T)node);
+            }
+
+            // Search children (if allowed)
+            return recursive ? TreeWalker.Result.RECURSE : TreeWalker.Result.SKIP_CHILDREN;
+        });
+
+        return matchedNodes;
+    }
+
+    /// Generic version of GetChildren. Only returns children which the matching type - this is not recursive!
+    public static Godot.Collections.Array<T> GetChildren<[MustBeVariant] T>(this Node node) where T : Node {
         Godot.Collections.Array<T> filteredChildren = new();
-        var children = node.GetChildren(includeInternal);
+        var children = node.GetChildren(false);
         foreach (Node child in children) {
             if (child is T) {
                 filteredChildren.Add((T)child);

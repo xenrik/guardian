@@ -62,7 +62,7 @@ public partial class FloatingOrigin : Node3D {
             this.WalkTree(node => {
                 // If the node wants to handle the origin shift, let it
                 if (node is FloatingOriginHandler) {
-                    return ((FloatingOriginHandler)node).OnFloatingOriginUpdated(oldOrigin, Origin);
+                    return ((FloatingOriginHandler)node).OnFloatingOriginUpdated(oldOrigin, Origin) ? TreeWalker.Result.RECURSE : TreeWalker.Result.SKIP_CHILDREN;
                 }
 
                 // Otherwise, if we can do it ourselves
@@ -71,11 +71,11 @@ public partial class FloatingOrigin : Node3D {
                     node3D.GlobalPosition -= offset;
 
                     // Don't need to recurse further
-                    return false;
+                    return TreeWalker.Result.SKIP_CHILDREN;
                 }
 
                 // Recurse into children
-                return true;
+                return TreeWalker.Result.RECURSE;
             });
 
             // Finally signal anyone else interested (have to downcast to Vector3!)

@@ -27,12 +27,16 @@ public partial class Module : Node3D {
     }
 
     public void OnSnapEnter(Rid areaRid, Area3D area, int areaShapeIndex, int localShapeIndex, string snapName) {
+
         SnapCollision collision = new SnapCollision(this, snapName, area, areaRid);
         if (collision.IsValid()) {
             Logger.Debug($"{Name} - SnapEnter: {snapName} - Other Module: {collision.OtherModule.Name}");
 
             touchingSnaps.Add(collision);
             EmitSignal(SignalName.SnapEntered, collision.Snap, collision.OtherSnap);
+        } else {
+            var child = this.FindChild<Area3D>(snapName);
+            Logger.Debug($"{Name} - Snap?: {child != null}");
         }
     }
 
@@ -109,11 +113,10 @@ public partial class Module : Node3D {
      * Returns a list of any modules which are now not attached. This relies on collision detection
      * and therefore if modules have been moved you should wait for a physics update to get accurate results
      */
-    public List<Module> OrganiseModules() {
+    public List<Module> OrganiseModules(List<Module> allModules) {
         Logger.Debug("Optimising!");
 
         // First collect all nodes and reset their depth
-        Godot.Collections.Array<Module> allModules = this.FindChildren<Module>();
         Dictionary<Module, int> depth = new();
         Dictionary<Module, Module> parent = new();
 
@@ -131,22 +134,32 @@ public partial class Module : Node3D {
             updated = false;
 
             foreach (Module module in allModules) {
+                if (module == this) {
+                    continue;
+                }
+
                 int newDepth = -1;
                 Module newParent = null;
 
                 Logger.Debug($"Checking collisions for module {module.Name}");
-                foreach (SnapCollision collision in module.touchingSnaps) {
-                    Logger.Debug($"   Has a link from snap: {collision.SnapName} to module: {collision.OtherModule.Name}");
+                foreach (Area3D snap in module.FindChildren<Area3D>("Snap?")) {
+                    var overlaps = snap.GetOverlappingAreas();
+                    foreach (Area3D other in overlaps) {
+                        if (other.Name.ToString().StartsWith("Snap")) {
+                            Module otherModule = other.FindParent<Module>();
+                            Logger.Debug($"   Has a link from snap: {snap.Name} to module: {otherModule.Name}");
 
-                    int otherDepth = depth[collision.OtherModule];
-                    if (otherDepth == -1) {
-                        Logger.Debug($"   Other module has no depth yet");
-                        continue;
-                    } else if (newDepth == -1 || otherDepth < newDepth) {
-                        newDepth = otherDepth + 1;
-                        newParent = collision.OtherModule;
+                            int otherDepth = depth[otherModule];
+                            if (otherDepth == -1) {
+                                Logger.Debug($"   Other module has no depth yet");
+                                continue;
+                            } else if (newDepth == -1 || otherDepth < newDepth) {
+                                newDepth = otherDepth + 1;
+                                newParent = otherModule;
 
-                        Logger.Debug($"   Setting depth to: " + newDepth);
+                                Logger.Debug($"   Setting depth to: " + newDepth);
+                            }
+                        }
                     }
                 }
 
@@ -166,6 +179,10 @@ public partial class Module : Node3D {
         // Reparent to the best parents and collect unattached modules
         List<Module> unattachedModules = new();
         foreach (Module module in allModules) {
+            if (module == this) {
+                continue;
+            }
+
             var newParent = parent[module];
             if (newParent != module.GetParent()) {
                 if (newParent != null) {

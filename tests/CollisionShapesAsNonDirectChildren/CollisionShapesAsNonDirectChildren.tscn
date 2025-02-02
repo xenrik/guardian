@@ -1,0 +1,53 @@
+[gd_scene load_steps=6 format=3 uid="uid://ekqeluetlnr1"]
+
+[ext_resource type="Script" path="res://scripts/controllers/SimpleOscillator.cs" id="1_u22ov"]
+[ext_resource type="Script" path="res://scripts/controllers/PidSettings.cs" id="2_qjwbd"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_8bqb8"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_6q63y"]
+
+[sub_resource type="Resource" id="Resource_o7w1b"]
+script = ExtResource("2_qjwbd")
+P = 2.0
+I = 1.0
+D = 0.5
+
+[node name="CollisionShapesAsNonDirectChildren" type="Node"]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+
+[node name="Node3D" type="Node3D" parent="StaticBody3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D/Node3D"]
+mesh = SubResource("BoxMesh_8bqb8")
+skeleton = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+shape = SubResource("BoxShape3D_6q63y")
+
+[node name="RigidBody3D" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.69011, 0, 0)
+gravity_scale = 0.0
+script = ExtResource("1_u22ov")
+Range = Vector3(2, 0, 0)
+PID = SubResource("Resource_o7w1b")
+
+[node name="Node3D" type="Node3D" parent="RigidBody3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D/Node3D"]
+mesh = SubResource("BoxMesh_8bqb8")
+skeleton = NodePath("../../../StaticBody3D")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D"]
+shape = SubResource("BoxShape3D_6q63y")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="RigidBody3D/CollisionShape3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35967, 0, 0)
+shape = SubResource("BoxShape3D_6q63y")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.817215, 0.576333, 0, -0.576333, 0.817215, 0, 2.73219, 4.2394)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.885799, 0.464069, 0, -0.464069, 0.885799, 0, 3.04293, 3.7093)

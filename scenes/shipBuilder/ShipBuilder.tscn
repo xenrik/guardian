@@ -1,13 +1,55 @@
-[gd_scene load_steps=6 format=3 uid="uid://dslpgnc6xiaj"]
+[gd_scene load_steps=15 format=4 uid="uid://dslpgnc6xiaj"]
 
 [ext_resource type="Script" path="res://scenes/shipBuilder/ShipBuilder.cs" id="1_cmeaf"]
-[ext_resource type="PackedScene" uid="uid://bdbiu2lgjvrof" path="res://assets/modules/simpleTriangle/simpleTriangle-editor.tscn" id="1_j5epr"]
+[ext_resource type="Script" path="res://scripts/modules/EditorModule.cs" id="2_r7ott"]
 [ext_resource type="Script" path="res://scripts/modules/ModuleDef.cs" id="3_bhkqr"]
+[ext_resource type="Resource" uid="uid://b48ucyi3wbp01" path="res://assets/modules/simpleTriangle/simpleTriangle.tres" id="4_36xxy"]
+[ext_resource type="Material" uid="uid://bjdrbfywdaxhm" path="res://assets/debug/materials/GreenMaterial.tres" id="5_2lu5p"]
+[ext_resource type="Material" uid="uid://cwfrgdjrdr2ds" path="res://assets/debug/materials/RedMaterial.tres" id="6_m7n6m"]
+[ext_resource type="Material" uid="uid://lsdrjyphveo8" path="res://assets/debug/materials/BlueMaterial.tres" id="7_p3vhh"]
 
 [sub_resource type="Resource" id="Resource_ocacl"]
 script = ExtResource("3_bhkqr")
 ModuleId = "Cockpit"
 IsRootModule = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xgyrq"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_axkl8"]
+_surfaces = [{
+"aabb": AABB(-0.866025, -0.5, -1, 1.73205, 1, 1.5),
+"format": 34896613377,
+"index_count": 36,
+"index_data": PackedByteArray("AAADAAEAAAACAAMABgAFAAcABgAEAAUAAQAHAAUABAABAAUABAAAAAEAAAAGAAIAAgAHAAMAAgAGAAcAAwAHAAEABAAGAAAA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("/38AAAAAAAD/f///AAAAAP//AAD//wAA////////AAAAAAAA//8AAAAA/////wAA/38AAP//AAD/f/////8AAA==")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_swnm5"]
+resource_name = "simpleTriangle_Cylinder"
+_surfaces = [{
+"aabb": AABB(-0.866025, -0.5, -1, 1.73205, 1, 1.5),
+"attribute_data": PackedByteArray("/3+Pyf/fCMv//4/J/3//f/+fCMv///9/mfr//1TVj8lU1Y/JVNX/f5m6//9U1f9/qaqPyWTF//+pqo/Jqar/f6mq/39khf///9////+/j8n/v/9//5///w=="),
+"format": 34896613399,
+"index_count": 36,
+"index_data": PackedByteArray("AgALAAUAAgAIAAsAEwAQABQAEwAOABAABAAVABEADAADAA8ADAAAAAMAAQASAAYABwAUAAkABwATABQACgAVAAQADQASAAEA"),
+"material": SubResource("StandardMaterial3D_xgyrq"),
+"primitive": 3,
+"uv_scale": Vector4(2, 1.74, 0, 0),
+"vertex_count": 22,
+"vertex_data": PackedByteArray("/38AAAAAVNX/fwAAAAD/P/9/AAAAAFTV/3///wAAVNX/f///AAD/v/9///8AAFTV//8AAP///z///wAA//8AgP//AAD//1TV////////AID/////////v////////1TVAAAAAP//VNUAAAAA////PwAAAAD//wCAAAD/////VNUAAP////8AgAAA//////+//38AAP///z//fwAA//8AgP9//////wCA/3///////7//f///AAD/f/9/AAD/f///////f/9/AAAAAP9//3////9/AAD/f///////f/9/AAD/f///AAD/f/9/////f////3///////38AAP9//3////9///////9/")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_axkl8")
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_1diou"]
+points = PackedVector3Array(0, -0.45, -0.9, 0, 0.45, -0.9, 0.779423, -0.45, 0.45, -0.779423, -0.45, 0.45, -0.779423, 0.45, 0.45, 0.779423, 0.45, 0.45)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ysoko"]
+size = Vector3(1, 1, 0.5)
 
 [sub_resource type="BoxMesh" id="BoxMesh_kh2jf"]
 
@@ -15,18 +57,180 @@ IsRootModule = true
 script = ExtResource("1_cmeaf")
 rootModule = NodePath("bridge")
 
-[node name="bridge" parent="." instance=ExtResource("1_j5epr")]
+[node name="bridge" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.38111)
+script = ExtResource("2_r7ott")
 ModuleDef = SubResource("Resource_ocacl")
 
-[node name="tri2" parent="." instance=ExtResource("1_j5epr")]
+[node name="StaticBody3D" type="StaticBody3D" parent="bridge"]
+
+[node name="Mesh" type="MeshInstance3D" parent="bridge/StaticBody3D"]
+transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
+mesh = SubResource("ArrayMesh_swnm5")
+skeleton = NodePath("")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="bridge/StaticBody3D"]
+transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
+shape = SubResource("ConvexPolygonShape3D_1diou")
+
+[node name="Snap1" type="Area3D" parent="bridge/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.5)
+collision_layer = 0
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="bridge/StaticBody3D/Snap1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
+shape = SubResource("BoxShape3D_ysoko")
+
+[node name="Snap2" type="Area3D" parent="bridge/StaticBody3D"]
+transform = Transform3D(-0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, -0.433, 0, 0.25)
+collision_layer = 0
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="bridge/StaticBody3D/Snap2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
+shape = SubResource("BoxShape3D_ysoko")
+
+[node name="Snap3" type="Area3D" parent="bridge/StaticBody3D"]
+transform = Transform3D(-0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, 0.433, 0, 0.25)
+collision_layer = 0
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="bridge/StaticBody3D/Snap3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
+shape = SubResource("BoxShape3D_ysoko")
+
+[node name="green" type="Node3D" parent="."]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, -2.64254)
+script = ExtResource("2_r7ott")
+ModuleDef = ExtResource("4_36xxy")
 
-[node name="tri3" parent="." instance=ExtResource("1_j5epr")]
+[node name="StaticBody3D" type="StaticBody3D" parent="green"]
+
+[node name="Mesh" type="MeshInstance3D" parent="green/StaticBody3D"]
+transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
+material_override = ExtResource("5_2lu5p")
+mesh = SubResource("ArrayMesh_swnm5")
+skeleton = NodePath("")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="green/StaticBody3D"]
+transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
+shape = SubResource("ConvexPolygonShape3D_1diou")
+
+[node name="Snap1" type="Area3D" parent="green/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.5)
+collision_layer = 0
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="green/StaticBody3D/Snap1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
+shape = SubResource("BoxShape3D_ysoko")
+
+[node name="Snap2" type="Area3D" parent="green/StaticBody3D"]
+transform = Transform3D(-0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, -0.433, 0, 0.25)
+collision_layer = 0
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="green/StaticBody3D/Snap2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
+shape = SubResource("BoxShape3D_ysoko")
+
+[node name="Snap3" type="Area3D" parent="green/StaticBody3D"]
+transform = Transform3D(-0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, 0.433, 0, 0.25)
+collision_layer = 0
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="green/StaticBody3D/Snap3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
+shape = SubResource("BoxShape3D_ysoko")
+
+[node name="red" type="Node3D" parent="."]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -4.38377, 0, -2.64254)
+script = ExtResource("2_r7ott")
+ModuleDef = ExtResource("4_36xxy")
 
-[node name="tri4" parent="." instance=ExtResource("1_j5epr")]
+[node name="StaticBody3D" type="StaticBody3D" parent="red"]
+
+[node name="Mesh" type="MeshInstance3D" parent="red/StaticBody3D"]
+transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
+material_override = ExtResource("6_m7n6m")
+mesh = SubResource("ArrayMesh_swnm5")
+skeleton = NodePath("")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="red/StaticBody3D"]
+transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
+shape = SubResource("ConvexPolygonShape3D_1diou")
+
+[node name="Snap1" type="Area3D" parent="red/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.5)
+collision_layer = 0
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="red/StaticBody3D/Snap1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
+shape = SubResource("BoxShape3D_ysoko")
+
+[node name="Snap2" type="Area3D" parent="red/StaticBody3D"]
+transform = Transform3D(-0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, -0.433, 0, 0.25)
+collision_layer = 0
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="red/StaticBody3D/Snap2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
+shape = SubResource("BoxShape3D_ysoko")
+
+[node name="Snap3" type="Area3D" parent="red/StaticBody3D"]
+transform = Transform3D(-0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, 0.433, 0, 0.25)
+collision_layer = 0
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="red/StaticBody3D/Snap3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
+shape = SubResource("BoxShape3D_ysoko")
+
+[node name="blue" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.38377, 0, 2.84195)
+script = ExtResource("2_r7ott")
+ModuleDef = ExtResource("4_36xxy")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="blue"]
+
+[node name="Mesh" type="MeshInstance3D" parent="blue/StaticBody3D"]
+transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
+material_override = ExtResource("7_p3vhh")
+mesh = SubResource("ArrayMesh_swnm5")
+skeleton = NodePath("")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="blue/StaticBody3D"]
+transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
+shape = SubResource("ConvexPolygonShape3D_1diou")
+
+[node name="Snap1" type="Area3D" parent="blue/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.5)
+collision_layer = 0
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="blue/StaticBody3D/Snap1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
+shape = SubResource("BoxShape3D_ysoko")
+
+[node name="Snap2" type="Area3D" parent="blue/StaticBody3D"]
+transform = Transform3D(-0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, -0.433, 0, 0.25)
+collision_layer = 0
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="blue/StaticBody3D/Snap2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
+shape = SubResource("BoxShape3D_ysoko")
+
+[node name="Snap3" type="Area3D" parent="blue/StaticBody3D"]
+transform = Transform3D(-0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, 0.433, 0, 0.25)
+collision_layer = 0
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="blue/StaticBody3D/Snap3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
+shape = SubResource("BoxShape3D_ysoko")
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(-4.37114e-08, 0.996195, -0.0871558, 0, 0.0871558, 0.996195, 1, 4.35451e-08, -3.8097e-09, 0, 10, 1)
@@ -47,23 +251,42 @@ text = "Save"
 
 [connection signal="MouseEntered" from="bridge" to="." method="OnModuleEntered"]
 [connection signal="MouseExited" from="bridge" to="." method="OnModuleExited"]
-[connection signal="SnapEntered" from="bridge" to="." method="OnSnapEntered"]
-[connection signal="SnapExited" from="bridge" to="." method="OnSnapExited"]
-[connection signal="MouseEntered" from="tri2" to="." method="OnModuleEntered"]
-[connection signal="MouseExited" from="tri2" to="." method="OnModuleExited"]
-[connection signal="SnapEntered" from="tri2" to="." method="OnSnapEntered"]
-[connection signal="SnapExited" from="tri2" to="." method="OnSnapExited"]
-[connection signal="MouseEntered" from="tri3" to="." method="OnModuleEntered"]
-[connection signal="MouseExited" from="tri3" to="." method="OnModuleExited"]
-[connection signal="SnapEntered" from="tri3" to="." method="OnSnapEntered"]
-[connection signal="SnapExited" from="tri3" to="." method="OnSnapExited"]
-[connection signal="MouseEntered" from="tri4" to="." method="OnModuleEntered"]
-[connection signal="MouseExited" from="tri4" to="." method="OnModuleExited"]
-[connection signal="SnapEntered" from="tri4" to="." method="OnSnapEntered"]
-[connection signal="SnapExited" from="tri4" to="." method="OnSnapExited"]
+[connection signal="mouse_entered" from="bridge/StaticBody3D" to="bridge" method="OnMouseEnter"]
+[connection signal="mouse_exited" from="bridge/StaticBody3D" to="bridge" method="OnMouseExit"]
+[connection signal="area_shape_entered" from="bridge/StaticBody3D/Snap1" to="bridge" method="OnSnapEnter" binds= ["Snap1"]]
+[connection signal="area_shape_exited" from="bridge/StaticBody3D/Snap1" to="bridge" method="OnSnapExit" binds= ["Snap1"]]
+[connection signal="area_shape_entered" from="bridge/StaticBody3D/Snap2" to="bridge" method="OnSnapEnter" binds= ["Snap2"]]
+[connection signal="area_shape_exited" from="bridge/StaticBody3D/Snap2" to="bridge" method="OnSnapExit" binds= ["Snap2"]]
+[connection signal="area_shape_entered" from="bridge/StaticBody3D/Snap3" to="bridge" method="OnSnapEnter" binds= ["Snap3"]]
+[connection signal="area_shape_exited" from="bridge/StaticBody3D/Snap3" to="bridge" method="OnSnapExit" binds= ["Snap3"]]
+[connection signal="MouseEntered" from="green" to="." method="OnModuleEntered"]
+[connection signal="MouseExited" from="green" to="." method="OnModuleExited"]
+[connection signal="mouse_entered" from="green/StaticBody3D" to="green" method="OnMouseEnter"]
+[connection signal="mouse_exited" from="green/StaticBody3D" to="green" method="OnMouseExit"]
+[connection signal="area_shape_entered" from="green/StaticBody3D/Snap1" to="green" method="OnSnapEnter" binds= ["Snap1"]]
+[connection signal="area_shape_exited" from="green/StaticBody3D/Snap1" to="green" method="OnSnapExit" binds= ["Snap1"]]
+[connection signal="area_shape_entered" from="green/StaticBody3D/Snap2" to="green" method="OnSnapEnter" binds= ["Snap2"]]
+[connection signal="area_shape_exited" from="green/StaticBody3D/Snap2" to="green" method="OnSnapExit" binds= ["Snap2"]]
+[connection signal="area_shape_entered" from="green/StaticBody3D/Snap3" to="green" method="OnSnapEnter" binds= ["Snap3"]]
+[connection signal="area_shape_exited" from="green/StaticBody3D/Snap3" to="green" method="OnSnapExit" binds= ["Snap3"]]
+[connection signal="MouseEntered" from="red" to="." method="OnModuleEntered"]
+[connection signal="MouseExited" from="red" to="." method="OnModuleExited"]
+[connection signal="mouse_entered" from="red/StaticBody3D" to="red" method="OnMouseEnter"]
+[connection signal="mouse_exited" from="red/StaticBody3D" to="red" method="OnMouseExit"]
+[connection signal="area_shape_entered" from="red/StaticBody3D/Snap1" to="red" method="OnSnapEnter" binds= ["Snap1"]]
+[connection signal="area_shape_exited" from="red/StaticBody3D/Snap1" to="red" method="OnSnapExit" binds= ["Snap1"]]
+[connection signal="area_shape_entered" from="red/StaticBody3D/Snap2" to="red" method="OnSnapEnter" binds= ["Snap2"]]
+[connection signal="area_shape_exited" from="red/StaticBody3D/Snap2" to="red" method="OnSnapExit" binds= ["Snap2"]]
+[connection signal="area_shape_entered" from="red/StaticBody3D/Snap3" to="red" method="OnSnapEnter" binds= ["Snap3"]]
+[connection signal="area_shape_exited" from="red/StaticBody3D/Snap3" to="red" method="OnSnapExit" binds= ["Snap3"]]
+[connection signal="MouseEntered" from="blue" to="." method="OnModuleEntered"]
+[connection signal="MouseExited" from="blue" to="." method="OnModuleExited"]
+[connection signal="mouse_entered" from="blue/StaticBody3D" to="blue" method="OnMouseEnter"]
+[connection signal="mouse_exited" from="blue/StaticBody3D" to="blue" method="OnMouseExit"]
+[connection signal="area_shape_entered" from="blue/StaticBody3D/Snap1" to="blue" method="OnSnapEnter" binds= ["Snap1"]]
+[connection signal="area_shape_exited" from="blue/StaticBody3D/Snap1" to="blue" method="OnSnapExit" binds= ["Snap1"]]
+[connection signal="area_shape_entered" from="blue/StaticBody3D/Snap2" to="blue" method="OnSnapEnter" binds= ["Snap2"]]
+[connection signal="area_shape_exited" from="blue/StaticBody3D/Snap2" to="blue" method="OnSnapExit" binds= ["Snap2"]]
+[connection signal="area_shape_entered" from="blue/StaticBody3D/Snap3" to="blue" method="OnSnapEnter" binds= ["Snap3"]]
+[connection signal="area_shape_exited" from="blue/StaticBody3D/Snap3" to="blue" method="OnSnapExit" binds= ["Snap3"]]
 [connection signal="pressed" from="GUI/Button" to="." method="OnSaveButtonPressed"]
-
-[editable path="bridge"]
-[editable path="tri2"]
-[editable path="tri3"]
-[editable path="tri4"]

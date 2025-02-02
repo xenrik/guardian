@@ -1,0 +1,2 @@
+- CollisionShapes must be direct children of StaticBody or RigidBody
+- Can have multiple collision shapes (but must still be direct children)

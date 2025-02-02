@@ -1,9 +1,9 @@
 using Godot;
 using System;
 
-public partial class SimpleOscillator : RigidBody2D {
+public partial class SimpleOscillator : RigidBody3D {
     [Export]
-    public Vector2 Range;
+    public Vector3 Range;
 
     [Export]
     public float Speed = 1;
@@ -11,15 +11,15 @@ public partial class SimpleOscillator : RigidBody2D {
     [Export]
     public PidSettings PID;
 
-    private PidController<Vector2> controller;
+    private PidController<Vector3> controller;
 
-    private Vector2 origin;
+    private Vector3 origin;
     private float offset;
 
     public override void _Ready() {
         base._Ready();
 
-        controller = PidController<Vector2>.Instantiate(Position, PID);
+        controller = PidController<Vector3>.Instantiate(Position, PID);
         origin = Position;
     }
 
@@ -28,13 +28,13 @@ public partial class SimpleOscillator : RigidBody2D {
 
         float s = Mathf.Sin(offset);
 
-        Vector2 target = origin + (Range * s);
+        Vector3 target = origin + (Range * s);
         controller.Target = target;
         controller.Current = Position;
 
         //GD.Print("Origin: " + origin + " - Target: " + controller.Target + " (" + target + " - " + s + ") - Current: " + Position);
 
-        Vector2 impulse = controller.Update((float)delta);
+        Vector3 impulse = controller.Update((float)delta);
         //GD.Print("Impulse: " + impulse);
         ApplyImpulse(impulse);
     }
