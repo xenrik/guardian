@@ -18,12 +18,39 @@ public partial class Module : Node3D {
     [Singleton]
     private ModuleRegistry registry;
 
+    private List<CollisionShape3D> shipBodyCollisions = new();
     private HashSet<SnapCollision> touchingSnaps = new();
 
     public override void _Ready() {
         base._Ready();
 
+        // Prepare the collisions for adding to our parent rigid/static body
+        List<CollisionShape3D> collisions = new();
+        this.WalkTree(node => {
+            if (node.IsInGroup(Groups.Module.Body)) {
+                collisions.AddRange(node.GetChildren<CollisionShape3D>());
+                return TreeWalker.Result.SKIP_CHILDREN;
+            } else if (node is Module) {
+                return TreeWalker.Result.SKIP_CHILDREN;
+            }
+
+            return TreeWalker.Result.RECURSE;
+        });
+        foreach (CollisionShape3D collision in collisions) {
+            shipBodyCollisions.Add((CollisionShape3D)collision.Duplicate(0));
+        }
+
+        UpdateCollisions();
         UpdateSnaps();
+    }
+
+    public override void _Notification(int what) {
+        switch ((long)what) {
+            case Node.NotificationUnparented:
+            case Node.NotificationParented:
+                UpdateCollisions();
+                break;
+        }
     }
 
     public void OnSnapEnter(Rid areaRid, Area3D area, int areaShapeIndex, int localShapeIndex, string snapName) {
@@ -61,6 +88,16 @@ public partial class Module : Node3D {
         EmitSignal(SignalName.BodyCollisionExited, this);
     }
 
+    private void UpdateCollisions() {
+        // Find the nearest body
+        PhysicsBody3D body = this.FindParent<PhysicsBody3D>();
+        shipBodyCollisions.ForEach(node => {
+            Callable.From(() => {
+                node.Reparent(body == null ? this : body);
+            }).CallDeferred();
+        });
+    }
+
     /**
      * Update the collection layers on the snaps, based on their current rotation.
      * Note, we expect snaps to have a rotation that matches one of the three sides of a triangle
@@ -68,7 +105,7 @@ public partial class Module : Node3D {
      * parent
      */
     private void UpdateSnaps() {
-        Godot.Collections.Array<Area3D> snapNodes = this.FindChildren<Area3D>("Snap?");
+        Godot.Collections.Array<Area3D> snapNodes = this.FindChildren(Groups.Module.Snap.Filter<Area3D>());
         // Logger.Debug($"{Name} has {snapNodes.Count} snaps");
 
         Vector3 modulePos = GlobalPosition;
@@ -82,23 +119,23 @@ public partial class Module : Node3D {
             dx = Mathf.Abs(dx) > Mathf.Epsilon ? Mathf.Sign(dx) : 0;
 
             if (dz > 0 && dx > 0) {
-                node.CollisionLayer = LayerConstants.Snap_NE.Mask;
-                node.CollisionMask = LayerConstants.Snap_SW.Mask;
+                node.CollisionLayer = Layers.Module.Snap.NE;
+                node.CollisionMask = Layers.Module.Snap.SW;
             } else if (dz < 0 && dx > 0) {
-                node.CollisionLayer = LayerConstants.Snap_NW.Mask;
-                node.CollisionMask = LayerConstants.Snap_SE.Mask;
+                node.CollisionLayer = Layers.Module.Snap.NW;
+                node.CollisionMask = Layers.Module.Snap.SE;
             } else if (dz > 0 && dx < 0) {
-                node.CollisionLayer = LayerConstants.Snap_SE.Mask;
-                node.CollisionMask = LayerConstants.Snap_NW.Mask;
+                node.CollisionLayer = Layers.Module.Snap.SE;
+                node.CollisionMask = Layers.Module.Snap.NW;
             } else if (dz < 0 && dx < 0) {
-                node.CollisionLayer = LayerConstants.Snap_SW.Mask;
-                node.CollisionMask = LayerConstants.Snap_NE.Mask;
+                node.CollisionLayer = Layers.Module.Snap.SW;
+                node.CollisionMask = Layers.Module.Snap.NE;
             } else if (dz > 0 && dx == 0) {
-                node.CollisionLayer = LayerConstants.Snap_E.Mask;
-                node.CollisionMask = LayerConstants.Snap_W.Mask;
+                node.CollisionLayer = Layers.Module.Snap.E;
+                node.CollisionMask = Layers.Module.Snap.W;
             } else if (dz < 0 && dx == 0) {
-                node.CollisionLayer = LayerConstants.Snap_W.Mask;
-                node.CollisionMask = LayerConstants.Snap_E.Mask;
+                node.CollisionLayer = Layers.Module.Snap.W;
+                node.CollisionMask = Layers.Module.Snap.E;
             } else {
                 Logger.Error($"{Name} has a snap {node.Name} which doesn't seem to have a valid rotation! (dz: {dz} - dx: {dx})");
                 continue;
@@ -114,7 +151,7 @@ public partial class Module : Node3D {
      * and therefore if modules have been moved you should wait for a physics update to get accurate results
      */
     public List<Module> OrganiseModules(List<Module> allModules) {
-        Logger.Debug("Optimising!");
+        Logger.Debug("Organising Modules!");
 
         // First collect all nodes and reset their depth
         Dictionary<Module, int> depth = new();
@@ -142,7 +179,7 @@ public partial class Module : Node3D {
                 Module newParent = null;
 
                 Logger.Debug($"Checking collisions for module {module.Name}");
-                foreach (Area3D snap in module.FindChildren<Area3D>("Snap?")) {
+                foreach (Area3D snap in module.FindChildren(Groups.Module.Snap.Filter<Area3D>())) {
                     var overlaps = snap.GetOverlappingAreas();
                     foreach (Area3D other in overlaps) {
                         if (other.Name.ToString().StartsWith("Snap")) {
@@ -189,7 +226,7 @@ public partial class Module : Node3D {
                     Logger.Debug($"module: {module.Name} is now parented by: {newParent.Name}");
                     module.Reparent(newParent);
                 } else {
-                    Logger.Debug($"module: {module.Name} is unnattached");
+                    Logger.Debug($"module: {module.Name} is unattached");
                     unattachedModules.Add(module);
                 }
             } else {

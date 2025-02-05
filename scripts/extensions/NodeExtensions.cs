@@ -1,4 +1,5 @@
 using Godot;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -9,13 +10,13 @@ namespace TreeWalker {
     public delegate Result Walker(Node node);
 
     public enum Result {
-        /** Walk into children of this node */
+        /// Walk into children of this node
         RECURSE,
 
-        /** Skip children of this node */
+        /// Skip children of this node
         SKIP_CHILDREN,
 
-        /** Immediately stop walking */
+        /// Immediately stop walking
         STOP
     };
 }
@@ -124,13 +125,28 @@ public static class NodeExtensions {
         return matchedNode;
     }
 
-    /// Generic version of FindChildren. 
+    /// <summary>
+    /// An advanced find children method. This does not use the built-in 
+    /// FindChildren, and instead:
     /// 
-    /// This does no use the built-in FindChildren, and instead:
     /// - Uses a bread-first search
     /// - Will always find "unowned" children
-    public static Godot.Collections.Array<T> FindChildren<[MustBeVariant] T>(this Node node, string pattern = "", bool recursive = true, bool includeQueuedForDeletion = false) where T : Node {
-        var regex = pattern == "" ? null : new Regex(Regex.Escape(pattern).Replace(@"\*", ".*").Replace(@"\?", "."));
+    /// 
+    /// Recommend you use named parameters...
+    /// </summary>
+    /// <typeparam name="T">The type children must have to be included</typeparam>
+    /// <param name="node">The node to find children of</param>
+    /// <param name="filter">An additional filter to apply when deciding which children to return. You can use the prebuilt PatternFilter and GroupFilter methods if you want</param>
+    /// <param name="recurseUnmatched">If a node is not included, do we recurse into children?</param>
+    /// <param name="recurseMatched">If a node is included, do we recurse into children?</param>
+    /// <param name="includeQueuedForDeletion">Should nodes which are queued for deletion be included?</param>
+    /// <returns></returns>
+    public static Godot.Collections.Array<T> FindChildren<[MustBeVariant] T>(this Node node,
+            Predicate<T> filter = null,
+            bool recurseUnmatched = true,
+            bool recurseMatched = true,
+            bool includeQueuedForDeletion = false) where T : Node {
+        //
         Godot.Collections.Array<T> matchedNodes = new();
         node.WalkTree(node => {
             if (node.IsQueuedForDeletion() && !includeQueuedForDeletion) {
@@ -138,15 +154,22 @@ public static class NodeExtensions {
                 return TreeWalker.Result.SKIP_CHILDREN;
             }
 
-            if (node is T && (regex == null || regex.IsMatch(node.Name))) {
+            if (node is T && (filter == null || filter((T)node))) {
                 matchedNodes.Add((T)node);
+                return recurseMatched ? TreeWalker.Result.RECURSE : TreeWalker.Result.SKIP_CHILDREN;
             }
 
             // Search children (if allowed)
-            return recursive ? TreeWalker.Result.RECURSE : TreeWalker.Result.SKIP_CHILDREN;
+            return recurseUnmatched ? TreeWalker.Result.RECURSE : TreeWalker.Result.SKIP_CHILDREN;
         });
 
         return matchedNodes;
+    }
+
+    /// Creates a filter that matches on a pattern
+    public static Predicate<T> PatternFilter<T>(string pattern) where T : Node {
+        var regex = pattern == "" ? null : new Regex(Regex.Escape(pattern).Replace(@"\*", ".*").Replace(@"\?", "."));
+        return (node) => regex.IsMatch(node.Name);
     }
 
     /// Generic version of GetChildren. Only returns children which the matching type - this is not recursive!
@@ -161,4 +184,5 @@ public static class NodeExtensions {
 
         return filteredChildren;
     }
+
 }

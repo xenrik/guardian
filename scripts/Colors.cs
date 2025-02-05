@@ -1,7 +1,7 @@
 
 using Godot;
 
-public static class ColorConstants {
+public static class Colors {
     public static readonly Color BLACK = new Color(0, 0, 0);
     public static readonly Color DARK_GREY = new Color(0.25f, 0.25f, 0.25f);
     public static readonly Color GREY = new Color(0.5f, 0.5f, 0.5f);

@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=4 uid="uid://nw3g7nsc5l6"]
+[gd_scene load_steps=8 format=4 uid="uid://nw3g7nsc5l6"]
 
 [ext_resource type="Script" path="res://scripts/modules/Module.cs" id="1_w3e0i"]
 [ext_resource type="Resource" uid="uid://b48ucyi3wbp01" path="res://assets/modules/simpleTriangle/simpleTriangle.tres" id="2_a3vts"]
@@ -38,7 +38,10 @@ shadow_mesh = SubResource("ArrayMesh_qxf2l")
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_uerai"]
 points = PackedVector3Array(0, -0.45, -0.9, 0, 0.45, -0.9, 0.779423, -0.45, 0.45, -0.779423, -0.45, 0.45, -0.779423, 0.45, 0.45, 0.779423, 0.45, 0.45)
 
-[node name="simpleTriangle" type="RigidBody3D"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_1bf8d"]
+size = Vector3(1, 1, 0.5)
+
+[node name="simpleTriangle" type="Node3D"]
 script = ExtResource("1_w3e0i")
 ModuleDef = ExtResource("2_a3vts")
 
@@ -47,6 +50,35 @@ transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 
 mesh = SubResource("ArrayMesh_nov4w")
 skeleton = NodePath("")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+[node name="Body" type="Area3D" parent="." groups=["Module.Body"]]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Body"]
 transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
 shape = SubResource("ConvexPolygonShape3D_uerai")
+
+[node name="Snap1" type="Area3D" parent="." groups=["Module.Snap"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.5)
+collision_layer = 0
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="Snap1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
+shape = SubResource("BoxShape3D_1bf8d")
+
+[node name="Snap2" type="Area3D" parent="." groups=["Module.Snap"]]
+transform = Transform3D(-0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, -0.433, 0, 0.25)
+collision_layer = 0
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="Snap2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
+shape = SubResource("BoxShape3D_1bf8d")
+
+[node name="Snap3" type="Area3D" parent="." groups=["Module.Snap"]]
+transform = Transform3D(-0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, 0.433, 0, 0.25)
+collision_layer = 0
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="Snap3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
+shape = SubResource("BoxShape3D_1bf8d")

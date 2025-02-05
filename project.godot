@@ -33,6 +33,11 @@ script/templates_search_path="res://editor/templates"
 
 enabled=PackedStringArray("res://addons/anthonyec.camera_preview/plugin.cfg")
 
+[global_group]
+
+Module.Body=""
+Module.Snap=""
+
 [gui]
 
 theme/custom="res://assets/fonts/defaultTheme.tres"
@@ -58,14 +63,14 @@ Editor.SelectModule={
 
 [layer_names]
 
-3d_physics/layer_2="Module-Body"
-3d_physics/layer_10="Snap"
-3d_physics/layer_11="Snap-NE"
-3d_physics/layer_12="Snap-NW"
-3d_physics/layer_13="Snap-E"
-3d_physics/layer_14="Snap-W"
-3d_physics/layer_15="Snap-SE"
-3d_physics/layer_16="Snap-SW"
+3d_physics/layer_2="Module.Body"
+3d_physics/layer_10="Module.Snap"
+3d_physics/layer_11="Module.Snap.NE"
+3d_physics/layer_12="Module.Snap.NW"
+3d_physics/layer_13="Module.Snap.E"
+3d_physics/layer_14="Module.Snap.W"
+3d_physics/layer_15="Module.Snap.SE"
+3d_physics/layer_16="Module.Snap.SW"
 
 [physics]
 

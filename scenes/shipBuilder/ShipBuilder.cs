@@ -43,7 +43,7 @@ public partial class ShipBuilder : Node3D {
                 snapper.SnapExited += OnSnapExited;
 
                 // Disable the snaps on the current module
-                editingModule.FindChildren<Area3D>("Snap?").ForEach(snap => snap.ProcessMode = ProcessModeEnum.Disabled);
+                editingModule.FindChildren(Groups.Module.Snap.Filter<Area3D>()).ForEach(snap => snap.ProcessMode = ProcessModeEnum.Disabled);
             } else if (editingModule != null) {
                 // Drag
                 var mouseDelta = currentPos - mouseStartPos;
@@ -57,7 +57,7 @@ public partial class ShipBuilder : Node3D {
             // End Editing
 
             // Reenable the snaps on the current module
-            editingModule.FindChildren<Area3D>("Snap?").ForEach(snap => snap.ProcessMode = ProcessModeEnum.Always);
+            editingModule.FindChildren(Groups.Module.Snap.Filter<Area3D>()).ForEach(snap => snap.ProcessMode = ProcessModeEnum.Always);
 
             // Reparent all nodes to us so we can properly detect collisions between modules
             this.FindChildren<Module>().ToList().ForEach(module => module.Reparent(this));

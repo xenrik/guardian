@@ -74,7 +74,7 @@ public partial class PhysicsNoodles : Node2D {
 
         for (float y = 0; y < Size.Y; y += Frequency.Y) {
             for (float x = 0; x < Size.X; x += Frequency.X) {
-                DrawCircle(new Vector2(x + offsetX, y + offsetY), NoodleSize, ColorConstants.RED);
+                DrawCircle(new Vector2(x + offsetX, y + offsetY), NoodleSize, Colors.RED);
             }
         }
     }
@@ -115,7 +115,7 @@ public partial class PhysicsNoodles : Node2D {
         }
 
         public override void _Draw() {
-            DrawCircle(Vector2.Zero, NoodleSize, ColorConstants.WHITE);
+            DrawCircle(Vector2.Zero, NoodleSize, Colors.WHITE);
         }
     }
 }
