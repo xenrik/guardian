@@ -51,6 +51,8 @@ mesh = SubResource("ArrayMesh_nov4w")
 skeleton = NodePath("")
 
 [node name="Body" type="Area3D" parent="." groups=["Module.Body"]]
+collision_layer = 2
+collision_mask = 2
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Body"]
 transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
@@ -82,3 +84,10 @@ collision_mask = 0
 [node name="Shape" type="CollisionShape3D" parent="Snap3"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
 shape = SubResource("BoxShape3D_1bf8d")
+
+[connection signal="area_shape_entered" from="Snap1" to="." method="OnSnapEnter" binds= ["Snap1"]]
+[connection signal="area_shape_exited" from="Snap1" to="." method="OnSnapExit" binds= ["Snap1"]]
+[connection signal="area_shape_entered" from="Snap2" to="." method="OnSnapEnter" binds= ["Snap2"]]
+[connection signal="area_shape_exited" from="Snap2" to="." method="OnSnapExit" binds= ["Snap2"]]
+[connection signal="area_shape_entered" from="Snap3" to="." method="OnSnapEnter" binds= ["Snap3"]]
+[connection signal="area_shape_exited" from="Snap3" to="." method="OnSnapExit" binds= ["Snap3"]]

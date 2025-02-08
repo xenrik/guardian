@@ -63,6 +63,7 @@ Editor.SelectModule={
 
 [layer_names]
 
+3d_physics/layer_1="Ship"
 3d_physics/layer_2="Module.Body"
 3d_physics/layer_10="Module.Snap"
 3d_physics/layer_11="Module.Snap.NE"

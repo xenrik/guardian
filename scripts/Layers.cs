@@ -4,6 +4,9 @@ using System.Collections.ObjectModel;
 using Godot;
 
 public class Layers {
+    private static readonly Layers[] layers = new Layers[32];
+
+    public static readonly Layers Ship = new(1, "Ship");
     public static class Module {
         public static readonly Layers Body = new(2, "Module.Body");
         public static class Snap {
@@ -17,8 +20,6 @@ public class Layers {
             public static readonly Layers SW = new(16, "Module.Snap.SW");
         }
     }
-
-    private static readonly Layers[] layers = new Layers[32];
 
     private readonly int index;
     private readonly uint mask;

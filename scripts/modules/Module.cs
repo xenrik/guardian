@@ -1,5 +1,5 @@
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
 
 public partial class Module : Node3D {
@@ -18,17 +18,16 @@ public partial class Module : Node3D {
     [Singleton]
     private ModuleRegistry registry;
 
-    private List<CollisionShape3D> shipBodyCollisions = new();
+    private List<BodyCollision> shipBodyCollisions = new();
     private HashSet<SnapCollision> touchingSnaps = new();
 
     public override void _Ready() {
         base._Ready();
 
         // Prepare the collisions for adding to our parent rigid/static body
-        List<CollisionShape3D> collisions = new();
         this.WalkTree(node => {
             if (node.IsInGroup(Groups.Module.Body)) {
-                collisions.AddRange(node.GetChildren<CollisionShape3D>());
+                node.GetChildren<CollisionShape3D>().ForEach(collision => shipBodyCollisions.Add(new BodyCollision(collision)));
                 return TreeWalker.Result.SKIP_CHILDREN;
             } else if (node is Module) {
                 return TreeWalker.Result.SKIP_CHILDREN;
@@ -36,9 +35,6 @@ public partial class Module : Node3D {
 
             return TreeWalker.Result.RECURSE;
         });
-        foreach (CollisionShape3D collision in collisions) {
-            shipBodyCollisions.Add((CollisionShape3D)collision.Duplicate(0));
-        }
 
         UpdateCollisions();
         UpdateSnaps();
@@ -57,13 +53,13 @@ public partial class Module : Node3D {
 
         SnapCollision collision = new SnapCollision(this, snapName, area, areaRid);
         if (collision.IsValid()) {
-            Logger.Debug($"{Name} - SnapEnter: {snapName} - Other Module: {collision.OtherModule.Name}");
+            //Logger.Debug($"{Name} - SnapEnter: {snapName} - Other Module: {collision.OtherModule.Name}");
 
             touchingSnaps.Add(collision);
             EmitSignal(SignalName.SnapEntered, collision.Snap, collision.OtherSnap);
-        } else {
-            var child = this.FindChild<Area3D>(snapName);
-            Logger.Debug($"{Name} - Snap?: {child != null}");
+            // } else {
+            //     var child = this.FindChild<Area3D>(snapName);
+            //     Logger.Debug($"{Name} - Snap?: {child != null}");
         }
     }
 
@@ -74,7 +70,7 @@ public partial class Module : Node3D {
         touchingSnaps.Remove(collision);
 
         if (collision.IsValid()) {
-            Logger.Debug($"{Name} - SnapExit: {snapName} - Other Module: {collision.OtherModule.Name}");
+            // Logger.Debug($"{Name} - SnapExit: {snapName} - Other Module: {collision.OtherModule.Name}");
 
             EmitSignal(SignalName.SnapExited, collision.Snap, collision.OtherSnap);
         }
@@ -91,9 +87,9 @@ public partial class Module : Node3D {
     private void UpdateCollisions() {
         // Find the nearest body
         PhysicsBody3D body = this.FindParent<PhysicsBody3D>();
-        shipBodyCollisions.ForEach(node => {
+        shipBodyCollisions.ForEach(collision => {
             Callable.From(() => {
-                node.Reparent(body == null ? this : body);
+                collision.Reparent(body);
             }).CallDeferred();
         });
     }
@@ -236,5 +232,30 @@ public partial class Module : Node3D {
 
         Logger.Debug("Finished Optimising!");
         return unattachedModules;
+    }
+
+    private class BodyCollision {
+        public CollisionShape3D original;
+        public CollisionShape3D bodyCollision;
+
+        public BodyCollision(CollisionShape3D original) {
+            this.original = original;
+            this.bodyCollision = (CollisionShape3D)original.Duplicate(0);
+        }
+
+        public void Reparent(PhysicsBody3D parent) {
+            if (parent == bodyCollision.GetParent()) {
+                return;
+            }
+
+            if (bodyCollision.GetParent() != null) {
+                bodyCollision.GetParent().RemoveChild(bodyCollision);
+            }
+
+            if (parent != null) {
+                parent.AddChild(bodyCollision);
+                bodyCollision.GlobalTransform = original.GlobalTransform;
+            }
+        }
     }
 }

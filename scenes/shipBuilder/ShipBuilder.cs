@@ -1,19 +1,18 @@
-using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Godot;
 
 public partial class ShipBuilder : Node3D {
     // Current "root" module
     [Export]
-    private EditorModule rootModule;
+    private Module rootModule;
 
     // Dragging Support
-    private NodeList<EditorModule> activeModules = new();
     private List<Tuple<Area3D, Area3D>> activeSnaps = new();
 
-    private EditorModule editingModule = null;
-    private EditorModule snapper = null;
+    private Module editingModule = null;
+    private Module snapper = null;
 
     private Vector3 moduleStartPos;
     private Vector3 mouseStartPos;
@@ -23,27 +22,39 @@ public partial class ShipBuilder : Node3D {
 
         if (Input.IsActionPressed(InputKeys.Editor.SelectModule)) {
             var camera = GetViewport().GetCamera3D();
-            var currentPos = camera.ProjectPosition(GetViewport().GetMousePosition(), camera.GlobalPosition.Y);
+            var mousePos = GetViewport().GetMousePosition();
 
-            if (editingModule == null && activeModules.Count > 0) {
-                // Start Editing
-                editingModule = activeModules[0];
-                moduleStartPos = editingModule.GlobalPosition;
-                mouseStartPos = currentPos;
+            // Have to use a ray rather than MouseEntered/Exited as that doesn't work for
+            // overlapping Area3Ds...
+            //var space = 
+            var currentPos = camera.ProjectPosition(mousePos, camera.GlobalPosition.Y);
+            if (editingModule == null) {
+                var query = new PhysicsRayQueryParameters3D();
+                query.From = camera.ProjectRayOrigin(mousePos);
+                query.To = query.From + camera.ProjectRayNormal(mousePos) * 100;
+                query.CollideWithAreas = true;
+                query.CollisionMask = Layers.Module.Body;
 
-                // Create the invisible snapper
-                snapper = (EditorModule)editingModule.Duplicate();
-                AddChild(snapper);
+                var result = GetWorld3D().DirectSpaceState.ProjectRay(query);
+                if (result != null) {
+                    editingModule = result.Collider.GetParent<Module>();
+                    moduleStartPos = editingModule.GlobalPosition;
+                    mouseStartPos = currentPos;
 
-                snapper.Name = editingModule.Name + "_snapper";
-                snapper.GlobalTransform = editingModule.GlobalTransform;
+                    // Create the invisible snapper
+                    snapper = (Module)editingModule.Duplicate();
+                    AddChild(snapper);
 
-                snapper.FindChildren<MeshInstance3D>().ForEach(mesh => mesh.Visible = false);
-                snapper.SnapEntered += OnSnapEntered;
-                snapper.SnapExited += OnSnapExited;
+                    snapper.Name = editingModule.Name + "_snapper";
+                    snapper.GlobalTransform = editingModule.GlobalTransform;
 
-                // Disable the snaps on the current module
-                editingModule.FindChildren(Groups.Module.Snap.Filter<Area3D>()).ForEach(snap => snap.ProcessMode = ProcessModeEnum.Disabled);
+                    snapper.FindChildren<MeshInstance3D>().ForEach(mesh => mesh.Visible = false);
+                    snapper.SnapEntered += OnSnapEntered;
+                    snapper.SnapExited += OnSnapExited;
+
+                    // Disable the snaps on the current module
+                    editingModule.FindChildren(Groups.Module.Snap.Filter<Area3D>()).ForEach(snap => snap.ProcessMode = ProcessModeEnum.Disabled);
+                }
             } else if (editingModule != null) {
                 // Drag
                 var mouseDelta = currentPos - mouseStartPos;
@@ -102,16 +113,6 @@ public partial class ShipBuilder : Node3D {
         } else {
             editingModule.GlobalPosition = snapper.GlobalPosition;
         }
-    }
-
-    private void OnModuleEntered(EditorModule module) {
-        if (!activeModules.Contains(module)) {
-            activeModules.Add(module);
-        }
-    }
-
-    private void OnModuleExited(EditorModule module) {
-        activeModules.Remove(module);
     }
 
     private void OnSnapEntered(Area3D snap, Area3D otherSnap) {

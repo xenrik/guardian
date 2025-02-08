@@ -1,49 +1,10 @@
-[gd_scene load_steps=13 format=4 uid="uid://dslpgnc6xiaj"]
+[gd_scene load_steps=7 format=3 uid="uid://dslpgnc6xiaj"]
 
 [ext_resource type="Script" path="res://scenes/shipBuilder/ShipBuilder.cs" id="1_cmeaf"]
-[ext_resource type="Script" path="res://scripts/modules/Module.cs" id="2_th7cr"]
+[ext_resource type="PackedScene" uid="uid://nw3g7nsc5l6" path="res://assets/modules/simpleTriangle/simpleTriangle.tscn" id="2_it1to"]
 [ext_resource type="Material" uid="uid://bjdrbfywdaxhm" path="res://assets/debug/materials/GreenMaterial.tres" id="4_3it4a"]
-[ext_resource type="Resource" uid="uid://b48ucyi3wbp01" path="res://assets/modules/simpleTriangle/simpleTriangle.tres" id="4_36xxy"]
 [ext_resource type="Material" uid="uid://cwfrgdjrdr2ds" path="res://assets/debug/materials/RedMaterial.tres" id="5_fwr66"]
 [ext_resource type="Material" uid="uid://lsdrjyphveo8" path="res://assets/debug/materials/BlueMaterial.tres" id="6_cwuul"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6eyvh"]
-
-[sub_resource type="ArrayMesh" id="ArrayMesh_qxf2l"]
-_surfaces = [{
-"aabb": AABB(-0.866025, -0.5, -1, 1.73205, 1, 1.5),
-"format": 34896613377,
-"index_count": 36,
-"index_data": PackedByteArray("AAADAAEAAAACAAMABgAFAAcABgAEAAUAAQAHAAUABAABAAUABAAAAAEAAAAGAAIAAgAHAAMAAgAGAAcAAwAHAAEABAAGAAAA"),
-"primitive": 3,
-"uv_scale": Vector4(0, 0, 0, 0),
-"vertex_count": 8,
-"vertex_data": PackedByteArray("/38AAAAAAAD/f///AAAAAP//AAD//wAA////////AAAAAAAA//8AAAAA/////wAA/38AAP//AAD/f/////8AAA==")
-}]
-blend_shape_mode = 0
-
-[sub_resource type="ArrayMesh" id="ArrayMesh_nov4w"]
-resource_name = "simpleTriangle_Cylinder"
-_surfaces = [{
-"aabb": AABB(-0.866025, -0.5, -1, 1.73205, 1, 1.5),
-"attribute_data": PackedByteArray("/3+Pyf/fCMv//4/J/3//f/+fCMv///9/mfr//1TVj8lU1Y/JVNX/f5m6//9U1f9/qaqPyWTF//+pqo/Jqar/f6mq/39khf///9////+/j8n/v/9//5///w=="),
-"format": 34896613399,
-"index_count": 36,
-"index_data": PackedByteArray("AgALAAUAAgAIAAsAEwAQABQAEwAOABAABAAVABEADAADAA8ADAAAAAMAAQASAAYABwAUAAkABwATABQACgAVAAQADQASAAEA"),
-"material": SubResource("StandardMaterial3D_6eyvh"),
-"primitive": 3,
-"uv_scale": Vector4(2, 1.74, 0, 0),
-"vertex_count": 22,
-"vertex_data": PackedByteArray("/38AAAAAVNX/fwAAAAD/P/9/AAAAAFTV/3///wAAVNX/f///AAD/v/9///8AAFTV//8AAP///z///wAA//8AgP//AAD//1TV////////AID/////////v////////1TVAAAAAP//VNUAAAAA////PwAAAAD//wCAAAD/////VNUAAP////8AgAAA//////+//38AAP///z//fwAA//8AgP9//////wCA/3///////7//f///AAD/f/9/AAD/f///////f/9/AAAAAP9//3////9/AAD/f///////f/9/AAD/f///AAD/f/9/////f////3///////38AAP9//3////9///////9/")
-}]
-blend_shape_mode = 0
-shadow_mesh = SubResource("ArrayMesh_qxf2l")
-
-[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_uerai"]
-points = PackedVector3Array(0, -0.45, -0.9, 0, 0.45, -0.9, 0.779423, -0.45, 0.45, -0.779423, -0.45, 0.45, -0.779423, 0.45, 0.45, 0.779423, 0.45, 0.45)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_1bf8d"]
-size = Vector3(1, 1, 0.5)
 
 [sub_resource type="BoxMesh" id="BoxMesh_kh2jf"]
 
@@ -53,177 +14,31 @@ script = ExtResource("1_cmeaf")
 [node name="bridge-body" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.38111)
 
-[node name="simpleTriangle" type="Node3D" parent="bridge-body"]
-script = ExtResource("2_th7cr")
-ModuleDef = ExtResource("4_36xxy")
-
-[node name="Mesh" type="MeshInstance3D" parent="bridge-body/simpleTriangle"]
-transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
-mesh = SubResource("ArrayMesh_nov4w")
-skeleton = NodePath("")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="bridge-body/simpleTriangle"]
-transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
-shape = SubResource("ConvexPolygonShape3D_uerai")
-
-[node name="Snap1" type="Area3D" parent="bridge-body/simpleTriangle"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.5)
-collision_layer = 0
-collision_mask = 0
-
-[node name="Shape" type="CollisionShape3D" parent="bridge-body/simpleTriangle/Snap1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
-shape = SubResource("BoxShape3D_1bf8d")
-
-[node name="Snap2" type="Area3D" parent="bridge-body/simpleTriangle"]
-transform = Transform3D(-0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, -0.433, 0, 0.25)
-collision_layer = 0
-collision_mask = 0
-
-[node name="Shape" type="CollisionShape3D" parent="bridge-body/simpleTriangle/Snap2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
-shape = SubResource("BoxShape3D_1bf8d")
-
-[node name="Snap3" type="Area3D" parent="bridge-body/simpleTriangle"]
-transform = Transform3D(-0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, 0.433, 0, 0.25)
-collision_layer = 0
-collision_mask = 0
-
-[node name="Shape" type="CollisionShape3D" parent="bridge-body/simpleTriangle/Snap3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
-shape = SubResource("BoxShape3D_1bf8d")
+[node name="simpleTriangle" parent="bridge-body" instance=ExtResource("2_it1to")]
 
 [node name="green-body" type="StaticBody3D" parent="."]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, -2.64254)
 
-[node name="simpleTriangle" type="Node3D" parent="green-body"]
-script = ExtResource("2_th7cr")
-ModuleDef = ExtResource("4_36xxy")
+[node name="simpleTriangle" parent="green-body" instance=ExtResource("2_it1to")]
 
-[node name="Mesh" type="MeshInstance3D" parent="green-body/simpleTriangle"]
-transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
+[node name="Mesh" parent="green-body/simpleTriangle" index="0"]
 material_override = ExtResource("4_3it4a")
-mesh = SubResource("ArrayMesh_nov4w")
-skeleton = NodePath("")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="green-body/simpleTriangle"]
-transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
-shape = SubResource("ConvexPolygonShape3D_uerai")
-
-[node name="Snap1" type="Area3D" parent="green-body/simpleTriangle"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.5)
-collision_layer = 0
-collision_mask = 0
-
-[node name="Shape" type="CollisionShape3D" parent="green-body/simpleTriangle/Snap1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
-shape = SubResource("BoxShape3D_1bf8d")
-
-[node name="Snap2" type="Area3D" parent="green-body/simpleTriangle"]
-transform = Transform3D(-0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, -0.433, 0, 0.25)
-collision_layer = 0
-collision_mask = 0
-
-[node name="Shape" type="CollisionShape3D" parent="green-body/simpleTriangle/Snap2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
-shape = SubResource("BoxShape3D_1bf8d")
-
-[node name="Snap3" type="Area3D" parent="green-body/simpleTriangle"]
-transform = Transform3D(-0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, 0.433, 0, 0.25)
-collision_layer = 0
-collision_mask = 0
-
-[node name="Shape" type="CollisionShape3D" parent="green-body/simpleTriangle/Snap3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
-shape = SubResource("BoxShape3D_1bf8d")
 
 [node name="red-body" type="StaticBody3D" parent="."]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -4.38377, 0, -2.64254)
 
-[node name="simpleTriangle" type="Node3D" parent="red-body"]
-script = ExtResource("2_th7cr")
-ModuleDef = ExtResource("4_36xxy")
+[node name="simpleTriangle" parent="red-body" instance=ExtResource("2_it1to")]
 
-[node name="Mesh" type="MeshInstance3D" parent="red-body/simpleTriangle"]
-transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
+[node name="Mesh" parent="red-body/simpleTriangle" index="0"]
 material_override = ExtResource("5_fwr66")
-mesh = SubResource("ArrayMesh_nov4w")
-skeleton = NodePath("")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="red-body/simpleTriangle"]
-transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
-shape = SubResource("ConvexPolygonShape3D_uerai")
-
-[node name="Snap1" type="Area3D" parent="red-body/simpleTriangle"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.5)
-collision_layer = 0
-collision_mask = 0
-
-[node name="Shape" type="CollisionShape3D" parent="red-body/simpleTriangle/Snap1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
-shape = SubResource("BoxShape3D_1bf8d")
-
-[node name="Snap2" type="Area3D" parent="red-body/simpleTriangle"]
-transform = Transform3D(-0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, -0.433, 0, 0.25)
-collision_layer = 0
-collision_mask = 0
-
-[node name="Shape" type="CollisionShape3D" parent="red-body/simpleTriangle/Snap2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
-shape = SubResource("BoxShape3D_1bf8d")
-
-[node name="Snap3" type="Area3D" parent="red-body/simpleTriangle"]
-transform = Transform3D(-0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, 0.433, 0, 0.25)
-collision_layer = 0
-collision_mask = 0
-
-[node name="Shape" type="CollisionShape3D" parent="red-body/simpleTriangle/Snap3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
-shape = SubResource("BoxShape3D_1bf8d")
 
 [node name="blue-body" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.38377, 0, 2.84195)
 
-[node name="simpleTriangle" type="Node3D" parent="blue-body"]
-script = ExtResource("2_th7cr")
-ModuleDef = ExtResource("4_36xxy")
+[node name="simpleTriangle" parent="blue-body" instance=ExtResource("2_it1to")]
 
-[node name="Mesh" type="MeshInstance3D" parent="blue-body/simpleTriangle"]
-transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
+[node name="Mesh" parent="blue-body/simpleTriangle" index="0"]
 material_override = ExtResource("6_cwuul")
-mesh = SubResource("ArrayMesh_nov4w")
-skeleton = NodePath("")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="blue-body/simpleTriangle"]
-transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
-shape = SubResource("ConvexPolygonShape3D_uerai")
-
-[node name="Snap1" type="Area3D" parent="blue-body/simpleTriangle"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.5)
-collision_layer = 0
-collision_mask = 0
-
-[node name="Shape" type="CollisionShape3D" parent="blue-body/simpleTriangle/Snap1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
-shape = SubResource("BoxShape3D_1bf8d")
-
-[node name="Snap2" type="Area3D" parent="blue-body/simpleTriangle"]
-transform = Transform3D(-0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, -0.433, 0, 0.25)
-collision_layer = 0
-collision_mask = 0
-
-[node name="Shape" type="CollisionShape3D" parent="blue-body/simpleTriangle/Snap2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
-shape = SubResource("BoxShape3D_1bf8d")
-
-[node name="Snap3" type="Area3D" parent="blue-body/simpleTriangle"]
-transform = Transform3D(-0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, 0.433, 0, 0.25)
-collision_layer = 0
-collision_mask = 0
-
-[node name="Shape" type="CollisionShape3D" parent="blue-body/simpleTriangle/Snap3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
-shape = SubResource("BoxShape3D_1bf8d")
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(-4.37114e-08, 0.996195, -0.0871558, 0, 0.0871558, 0.996195, 1, 4.35451e-08, -3.8097e-09, 0, 10, 1)
@@ -243,3 +58,7 @@ offset_bottom = 8.0
 text = "Save"
 
 [connection signal="pressed" from="GUI/Button" to="." method="OnSaveButtonPressed"]
+
+[editable path="green-body/simpleTriangle"]
+[editable path="red-body/simpleTriangle"]
+[editable path="blue-body/simpleTriangle"]

@@ -8,7 +8,6 @@ public static class CallableExtensions {
 
         Callable wrapper = default;
         Action action = () => {
-            Logger.Debug($"Counter: {counter}");
             if (counter-- == 0) {
                 callable.Call(args);
             } else {

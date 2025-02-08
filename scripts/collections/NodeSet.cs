@@ -5,27 +5,28 @@ using System.Linq;
 using Godot;
 
 /// <summary>
-/// NodeList is a simple list of nodes. It has extra logic to ensure you cannot add disposed nodes,
-/// and if you ask for a list it will silently skip disposed nodes.
+/// NodeSet is a simple set of nodes. It has extra logic to ensure you cannot add disposed nodes,
+/// and if you ask for its content it will silently skip disposed nodes.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public class NodeList<T> : IEnumerable<T> where T : Node {
-    private List<T> innerList = new();
-    public IReadOnlyList<T> Nodes {
+public class NodeSet<T> : IEnumerable<T> where T : Node {
+    private HashSet<T> innerSet = new();
+    public IReadOnlySet<T> Nodes {
         get {
             CleanUp();
-            return innerList.AsReadOnly();
+            return innerSet.AsReadOnly();
         }
     }
 
     public int Count {
         get {
             CleanUp();
-            return innerList.Count();
+            return innerSet.Count();
         }
     }
 
     private ulong lastCheckedFrame = 0;
+    private List<T> removeList = new();
 
     public void Add(T node) {
         if (!GodotObject.IsInstanceValid(node)) {
@@ -33,11 +34,11 @@ public class NodeList<T> : IEnumerable<T> where T : Node {
             throw new ObjectDisposedException(node.Name);
         }
 
-        innerList.Add(node);
+        innerSet.Add(node);
     }
 
     public void Remove(T node) {
-        innerList.Remove(node);
+        innerSet.Remove(node);
     }
 
     public IEnumerator GetEnumerator() {
@@ -48,16 +49,9 @@ public class NodeList<T> : IEnumerable<T> where T : Node {
         return DoGetEnumerator();
     }
 
-    public T this[int i] {
-        get {
-            CleanUp();
-            return innerList[i];
-        }
-    }
-
     private IEnumerator<T> DoGetEnumerator() {
         CleanUp();
-        return innerList.GetEnumerator();
+        return innerSet.GetEnumerator();
     }
 
     private void CleanUp() {
@@ -66,10 +60,6 @@ public class NodeList<T> : IEnumerable<T> where T : Node {
         }
 
         lastCheckedFrame = Engine.GetProcessFrames();
-        for (int i = innerList.Count - 1; i >= 0; --i) {
-            if (!GodotObject.IsInstanceValid(innerList.ElementAt(i))) {
-                innerList.RemoveAt(i);
-            }
-        }
+        innerSet.RemoveWhere(node => !GodotObject.IsInstanceValid(node));
     }
 }
