@@ -27,9 +27,9 @@ public static class CallableExtensions {
         CallAfterCount(SceneTree.SignalName.PhysicsFrame, frameCount, callable, args);
     }
 
-    public static void CallAfterDelay(this Callable callable, double delay, params Variant[] args) {
+    public static void CallAfterDelay(this Callable callable, double delayS, params Variant[] args) {
         SceneTree sceneTree = (SceneTree)Engine.GetMainLoop();
-        var timer = sceneTree.CreateTimer(delay);
+        var timer = sceneTree.CreateTimer(delayS);
         timer.Timeout += () => {
             callable.Call(args);
         };

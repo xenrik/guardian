@@ -3,15 +3,6 @@ using System.Linq;
 using Godot;
 
 public partial class Module : Node3D {
-    [Signal]
-    public delegate void SnapEnteredEventHandler(Area3D snap, Area3D otherSnap);
-    [Signal]
-    public delegate void SnapExitedEventHandler(Area3D snap, Area3D otherSnap);
-    [Signal]
-    public delegate void BodyCollisionEnteredEventHandler();
-    [Signal]
-    public delegate void BodyCollisionExitedEventHandler();
-
     [Export]
     public ModuleDef ModuleDef;
 
@@ -36,7 +27,7 @@ public partial class Module : Node3D {
             return TreeWalker.Result.RECURSE;
         });
 
-        UpdateCollisions();
+        UpdateBody();
         UpdateSnaps();
     }
 
@@ -44,47 +35,12 @@ public partial class Module : Node3D {
         switch ((long)what) {
             case Node.NotificationUnparented:
             case Node.NotificationParented:
-                UpdateCollisions();
+                UpdateBody();
                 break;
         }
     }
 
-    public void OnSnapEnter(Rid areaRid, Area3D area, int areaShapeIndex, int localShapeIndex, string snapName) {
-
-        SnapCollision collision = new SnapCollision(this, snapName, area, areaRid);
-        if (collision.IsValid()) {
-            //Logger.Debug($"{Name} - SnapEnter: {snapName} - Other Module: {collision.OtherModule.Name}");
-
-            touchingSnaps.Add(collision);
-            EmitSignal(SignalName.SnapEntered, collision.Snap, collision.OtherSnap);
-            // } else {
-            //     var child = this.FindChild<Area3D>(snapName);
-            //     Logger.Debug($"{Name} - Snap?: {child != null}");
-        }
-    }
-
-    public void OnSnapExit(Rid areaRid, Area3D area, int areaShapeIndex, int localShapeIndex, string snapName) {
-        SnapCollision collision = new SnapCollision(this, snapName, area, areaRid);
-
-        // Remove even if it's not valid!
-        touchingSnaps.Remove(collision);
-
-        if (collision.IsValid()) {
-            // Logger.Debug($"{Name} - SnapExit: {snapName} - Other Module: {collision.OtherModule.Name}");
-
-            EmitSignal(SignalName.SnapExited, collision.Snap, collision.OtherSnap);
-        }
-    }
-
-    public void OnBodyCollisionEnter() {
-        EmitSignal(SignalName.BodyCollisionEntered, this);
-    }
-
-    public void OnBodyCollisionExit() {
-        EmitSignal(SignalName.BodyCollisionExited, this);
-    }
-
-    private void UpdateCollisions() {
+    private void UpdateBody() {
         // Find the nearest body
         PhysicsBody3D body = this.FindParent<PhysicsBody3D>();
         shipBodyCollisions.ForEach(collision => {
@@ -164,6 +120,8 @@ public partial class Module : Node3D {
         var updated = true;
         var loops = 0;
         while (updated) {
+            Logger.Debug("Loop Starting");
+
             updated = false;
 
             foreach (Module module in allModules) {
@@ -178,7 +136,7 @@ public partial class Module : Node3D {
                 foreach (Area3D snap in module.FindChildren(Groups.Module.Snap.Filter<Area3D>())) {
                     var overlaps = snap.GetOverlappingAreas();
                     foreach (Area3D other in overlaps) {
-                        if (other.Name.ToString().StartsWith("Snap")) {
+                        if (other.IsInGroup(Groups.Module.Snap)) {
                             Module otherModule = other.FindParent<Module>();
                             Logger.Debug($"   Has a link from snap: {snap.Name} to module: {otherModule.Name}");
 

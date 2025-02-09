@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=4 uid="uid://nw3g7nsc5l6"]
+[gd_scene load_steps=9 format=4 uid="uid://nw3g7nsc5l6"]
 
 [ext_resource type="Script" path="res://scripts/modules/Module.cs" id="1_w3e0i"]
 [ext_resource type="Resource" uid="uid://b48ucyi3wbp01" path="res://assets/modules/simpleTriangle/simpleTriangle.tres" id="2_a3vts"]
@@ -35,11 +35,14 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_qxf2l")
 
-[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_uerai"]
-points = PackedVector3Array(0, -0.45, -0.9, 0, 0.45, -0.9, 0.779423, -0.45, 0.45, -0.779423, -0.45, 0.45, -0.779423, 0.45, 0.45, 0.779423, 0.45, 0.45)
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_qe7hs"]
+points = PackedVector3Array(-0.000169575, -0.5, -1, -0.000169575, 0.5, -1, 0.866025, -0.5, 0.5, -0.866025, -0.5, 0.5, -0.866025, 0.5, 0.5, 0.866025, 0.5, 0.5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_1bf8d"]
 size = Vector3(1, 1, 0.5)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_uerai"]
+points = PackedVector3Array(0, -0.45, -0.9, 0, 0.45, -0.9, 0.779423, -0.45, 0.45, -0.779423, -0.45, 0.45, -0.779423, 0.45, 0.45, 0.779423, 0.45, 0.45)
 
 [node name="simpleTriangle" type="Node3D"]
 script = ExtResource("1_w3e0i")
@@ -54,9 +57,9 @@ skeleton = NodePath("")
 collision_layer = 2
 collision_mask = 2
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Body"]
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="Body"]
 transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
-shape = SubResource("ConvexPolygonShape3D_uerai")
+shape = SubResource("ConvexPolygonShape3D_qe7hs")
 
 [node name="Snap1" type="Area3D" parent="." groups=["Module.Snap"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.5)
@@ -85,9 +88,9 @@ collision_mask = 0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
 shape = SubResource("BoxShape3D_1bf8d")
 
-[connection signal="area_shape_entered" from="Snap1" to="." method="OnSnapEnter" binds= ["Snap1"]]
-[connection signal="area_shape_exited" from="Snap1" to="." method="OnSnapExit" binds= ["Snap1"]]
-[connection signal="area_shape_entered" from="Snap2" to="." method="OnSnapEnter" binds= ["Snap2"]]
-[connection signal="area_shape_exited" from="Snap2" to="." method="OnSnapExit" binds= ["Snap2"]]
-[connection signal="area_shape_entered" from="Snap3" to="." method="OnSnapEnter" binds= ["Snap3"]]
-[connection signal="area_shape_exited" from="Snap3" to="." method="OnSnapExit" binds= ["Snap3"]]
+[node name="Node" type="Node" parent="."]
+process_mode = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Node"]
+transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
+shape = SubResource("ConvexPolygonShape3D_uerai")

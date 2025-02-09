@@ -8,37 +8,9 @@
 
 [sub_resource type="BoxMesh" id="BoxMesh_kh2jf"]
 
-[node name="ShipBuilder" type="Node3D"]
+[node name="ShipBuilder" type="Node3D" node_paths=PackedStringArray("rootModule")]
 script = ExtResource("1_cmeaf")
-
-[node name="bridge-body" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.38111)
-
-[node name="simpleTriangle" parent="bridge-body" instance=ExtResource("2_it1to")]
-
-[node name="green-body" type="StaticBody3D" parent="."]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, -2.64254)
-
-[node name="simpleTriangle" parent="green-body" instance=ExtResource("2_it1to")]
-
-[node name="Mesh" parent="green-body/simpleTriangle" index="0"]
-material_override = ExtResource("4_3it4a")
-
-[node name="red-body" type="StaticBody3D" parent="."]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -4.38377, 0, -2.64254)
-
-[node name="simpleTriangle" parent="red-body" instance=ExtResource("2_it1to")]
-
-[node name="Mesh" parent="red-body/simpleTriangle" index="0"]
-material_override = ExtResource("5_fwr66")
-
-[node name="blue-body" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.38377, 0, 2.84195)
-
-[node name="simpleTriangle" parent="blue-body" instance=ExtResource("2_it1to")]
-
-[node name="Mesh" parent="blue-body/simpleTriangle" index="0"]
-material_override = ExtResource("6_cwuul")
+rootModule = NodePath("bridge")
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(-4.37114e-08, 0.996195, -0.0871558, 0, 0.0871558, 0.996195, 1, 4.35451e-08, -3.8097e-09, 0, 10, 1)
@@ -57,8 +29,37 @@ offset_right = 8.0
 offset_bottom = 8.0
 text = "Save"
 
-[connection signal="pressed" from="GUI/Button" to="." method="OnSaveButtonPressed"]
+[node name="Organise" type="Button" parent="GUI"]
+offset_left = -1.0
+offset_top = 38.0
+offset_right = 52.0
+offset_bottom = 67.0
+text = "Organise"
 
-[editable path="green-body/simpleTriangle"]
-[editable path="red-body/simpleTriangle"]
-[editable path="blue-body/simpleTriangle"]
+[node name="bridge" parent="." instance=ExtResource("2_it1to")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.38111)
+
+[node name="green" parent="." instance=ExtResource("2_it1to")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, -2.64254)
+
+[node name="Mesh" parent="green" index="0"]
+material_override = ExtResource("4_3it4a")
+
+[node name="red" parent="." instance=ExtResource("2_it1to")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -4.38377, 0, -2.64254)
+
+[node name="Mesh" parent="red" index="0"]
+material_override = ExtResource("5_fwr66")
+
+[node name="blue" parent="." instance=ExtResource("2_it1to")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.38377, 0, 2.84195)
+
+[node name="Mesh" parent="blue" index="0"]
+material_override = ExtResource("6_cwuul")
+
+[connection signal="pressed" from="GUI/Button" to="." method="OnSaveButtonPressed"]
+[connection signal="pressed" from="GUI/Organise" to="." method="OnOrganisePressed"]
+
+[editable path="green"]
+[editable path="red"]
+[editable path="blue"]
