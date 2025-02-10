@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Godot;
 
 public static class CollectionExtensions {
     public static bool IsEmpty(this ICollection collection) {
@@ -21,5 +22,9 @@ public static class CollectionExtensions {
         foreach (T element in collection) {
             action(element);
         }
+    }
+
+    public static Godot.Collections.Array<T> ToGodotArray<[MustBeVariant] T>(this ICollection<T> collection) {
+        return new Godot.Collections.Array<T>(collection);
     }
 }

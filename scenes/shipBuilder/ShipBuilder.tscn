@@ -1,12 +1,19 @@
-[gd_scene load_steps=7 format=3 uid="uid://dslpgnc6xiaj"]
+[gd_scene load_steps=10 format=3 uid="uid://dslpgnc6xiaj"]
 
 [ext_resource type="Script" path="res://scenes/shipBuilder/ShipBuilder.cs" id="1_cmeaf"]
 [ext_resource type="PackedScene" uid="uid://nw3g7nsc5l6" path="res://assets/modules/simpleTriangle/simpleTriangle.tscn" id="2_it1to"]
+[ext_resource type="Script" path="res://scripts/ui/DynamicLabel.cs" id="2_ooy1i"]
+[ext_resource type="Script" path="res://scripts/ui/Variable.cs" id="3_h2eo1"]
 [ext_resource type="Material" uid="uid://bjdrbfywdaxhm" path="res://assets/debug/materials/GreenMaterial.tres" id="4_3it4a"]
 [ext_resource type="Material" uid="uid://cwfrgdjrdr2ds" path="res://assets/debug/materials/RedMaterial.tres" id="5_fwr66"]
 [ext_resource type="Material" uid="uid://lsdrjyphveo8" path="res://assets/debug/materials/BlueMaterial.tres" id="6_cwuul"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_kh2jf"]
+
+[sub_resource type="Resource" id="Resource_rq506"]
+script = ExtResource("3_h2eo1")
+Name = "expr"
+Expression = "1 + 1"
 
 [node name="ShipBuilder" type="Node3D" node_paths=PackedStringArray("rootModule")]
 script = ExtResource("1_cmeaf")
@@ -35,6 +42,15 @@ offset_top = 38.0
 offset_right = 52.0
 offset_bottom = 67.0
 text = "Organise"
+
+[node name="Label" type="Label" parent="GUI"]
+offset_left = 958.0
+offset_top = 11.0
+offset_right = 1136.0
+offset_bottom = 32.0
+text = "Before {expr} {#bridge.Name} After"
+script = ExtResource("2_ooy1i")
+Variables = Array[Object]([SubResource("Resource_rq506")])
 
 [node name="bridge" parent="." instance=ExtResource("2_it1to")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.38111)
