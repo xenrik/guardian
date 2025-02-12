@@ -4,5 +4,6 @@
     },
     "cSpell.words": [
         "Reparent"
-    ]
+    ],
+    "godotTools.editorPath.godot4": "/usr/bin/godot-mono"
 }
