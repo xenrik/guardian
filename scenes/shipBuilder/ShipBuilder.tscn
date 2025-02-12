@@ -48,7 +48,7 @@ offset_left = 958.0
 offset_top = 11.0
 offset_right = 1136.0
 offset_bottom = 32.0
-text = "Before {expr} {#bridge.Name} After"
+text = "Before {expr} {#//bridge.Name} After"
 script = ExtResource("2_ooy1i")
 Variables = Array[Object]([SubResource("Resource_rq506")])
 
