@@ -8,6 +8,9 @@ public partial class ShipBuilder : Node3D {
     [Export]
     private Module rootModule;
 
+    [Node]
+    private Label DebugInfo;
+
     // Dragging Support
     private List<Tuple<Area3D, Area3D>> activeSnaps = new();
     private List<Tuple<Area3D, Area3D>> bodyCollisions = new();
@@ -18,6 +21,8 @@ public partial class ShipBuilder : Node3D {
     private Vector3 moduleStartPos;
     private Vector3 mouseStartPos;
     private Vector3 lastKnowGoodPos;
+
+    private double debugUpdate = 0;
 
     public override void _Process(double delta) {
         base._Process(delta);
@@ -93,7 +98,6 @@ public partial class ShipBuilder : Node3D {
                 snapper.GlobalPosition = newPos;
             }
         } else if (editingModule != null) {
-            Logger.Debug("End Editing");
             // End Editing
 
             // Reenable the snaps on the current module
@@ -101,7 +105,7 @@ public partial class ShipBuilder : Node3D {
             editingModule.FindChildren(Groups.Module.Body.Filter<Area3D>()).ForEach(snap => snap.ProcessMode = ProcessModeEnum.Always);
 
             // Make sure all the modules are linked to us
-            this.GetChildren<Module>().ForEach(module => module.Reparent(this));
+            this.FindChildren<Module>().ForEach(module => module.Reparent(this));
 
             // Organise Modules
             Callable.From(() => {
@@ -110,17 +114,9 @@ public partial class ShipBuilder : Node3D {
 
                 // Any unattached modules are parented by us
                 unattached.ForEach(module => {
-                    Logger.Debug($"Unnattached module: {module.Name} being attached to the builder node");
                     module.Reparent(this);
                 });
-            }).CallAfterFrame(1);
-
-            /*
-            // Reparent all nodes to us so we can properly detect collisions between modules
-            this.FindChildren<Module>().ToList().ForEach(module => module.Reparent(this));
-
-           
-            */
+            }).CallAfterFrame();
 
             // Tidy up
             editingModule = null;
@@ -128,6 +124,37 @@ public partial class ShipBuilder : Node3D {
             snapper.QueueFree();
             snapper = null;
             activeSnaps.Clear();
+        }
+
+        debugUpdate -= delta;
+        if (debugUpdate < 0) {
+            debugUpdate = 0.1;
+
+            var debug = "";
+            foreach (var childName in new string[]{ "red", "green", "blue" }) {
+                var child = FindChild(childName);
+                debug += $"{childName} Parent: {child.GetParent().Name}\n";
+
+                List<Area3D> snaps = new();
+                child.WalkTree(node => {
+                    if (node.IsInGroup(Groups.Module.Snap)) {
+                        snaps.Add((Area3D)node);
+                        return TreeWalker.Result.SKIP_CHILDREN;
+                    } else if (node is Module) {
+                        return TreeWalker.Result.SKIP_CHILDREN;
+                    } else {
+                        return TreeWalker.Result.RECURSE;
+                    }
+                });
+                foreach (var snap in snaps) {
+                    foreach (var overlap in snap.GetOverlappingAreas()) {
+                        var module = overlap.FindParent<Module>();
+                        debug += $"   {snap.Name} - Overlaps: {module?.Name}\n";
+                    }
+                }
+            }
+
+            DebugInfo.Text = debug;
         }
     }
 

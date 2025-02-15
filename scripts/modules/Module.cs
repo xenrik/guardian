@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
@@ -103,25 +104,41 @@ public partial class Module : Node3D {
      * and therefore if modules have been moved you should wait for a physics update to get accurate results
      */
     public List<Module> OrganiseModules(List<Module> allModules) {
-        Logger.Debug("Organising Modules!");
+        // Collect the overlaps for each node
+        Dictionary<Module,List<Module>> overlaps = new();
+        foreach (Module module in allModules) {
+            module.WalkTree(node => {
+                if (node.IsInGroup(Groups.Module.Snap)) {
+                    var overlappingAreas = ((Area3D)node).GetOverlappingAreas();
+                    var overlappingModules = overlappingAreas.Where(area => area.IsInGroup(Groups.Module.Snap)).Select(area => area.FindParent<Module>()).ToList();
+                    if (overlaps.ContainsKey(module)) {
+                        overlaps[module].AddRange(overlappingModules);
+                    } else {
+                        overlaps[module] = overlappingModules;
+                    }
 
-        // First collect all nodes and reset their depth
+                    return TreeWalker.Result.SKIP_CHILDREN;
+                } else if (node is Module) {
+                    return TreeWalker.Result.SKIP_CHILDREN;
+                } else {
+                    return TreeWalker.Result.RECURSE;
+                }
+            });
+        }
+
+        // Now build the depth and parent tree
         Dictionary<Module, int> depth = new();
         Dictionary<Module, Module> parent = new();
-
         foreach (Module module in allModules) {
-            depth[module] = -1;
+            depth[module] = int.MaxValue;
             parent[module] = null;
         }
 
         depth[this] = 0;
 
-        // Calculate the best depth and best parent
         var updated = true;
         var loops = 0;
         while (updated) {
-            Logger.Debug("Loop Starting");
-
             updated = false;
 
             foreach (Module module in allModules) {
@@ -129,34 +146,19 @@ public partial class Module : Node3D {
                     continue;
                 }
 
-                int newDepth = -1;
+                int parentDepth = int.MaxValue;
                 Module newParent = null;
 
-                Logger.Debug($"Checking collisions for module {module.Name}");
-                foreach (Area3D snap in module.FindChildren(Groups.Module.Snap.Filter<Area3D>())) {
-                    var overlaps = snap.GetOverlappingAreas();
-                    foreach (Area3D other in overlaps) {
-                        if (other.IsInGroup(Groups.Module.Snap)) {
-                            Module otherModule = other.FindParent<Module>();
-                            Logger.Debug($"   Has a link from snap: {snap.Name} to module: {otherModule.Name}");
-
-                            int otherDepth = depth[otherModule];
-                            if (otherDepth == -1) {
-                                Logger.Debug($"   Other module has no depth yet");
-                                continue;
-                            } else if (newDepth == -1 || otherDepth < newDepth) {
-                                newDepth = otherDepth + 1;
-                                newParent = otherModule;
-
-                                Logger.Debug($"   Setting depth to: " + newDepth);
-                            }
-                        }
+                foreach (var overlap in overlaps[module]) {
+                    if (depth[overlap] < parentDepth) {
+                        parentDepth = depth[overlap];
+                        newParent = overlap;
                     }
                 }
 
-                if (newDepth != depth[module]) {
-                    depth[module] = newDepth;
+                if (newParent != parent[module]) {
                     parent[module] = newParent;
+                    depth[module] = parentDepth + 1;
                     updated = true;
                 }
             }
@@ -177,18 +179,13 @@ public partial class Module : Node3D {
             var newParent = parent[module];
             if (newParent != module.GetParent()) {
                 if (newParent != null) {
-                    Logger.Debug($"module: {module.Name} is now parented by: {newParent.Name}");
                     module.Reparent(newParent);
                 } else {
-                    Logger.Debug($"module: {module.Name} is unattached");
                     unattachedModules.Add(module);
                 }
-            } else {
-                Logger.Debug($"module: {module.Name} is unmodified (newParent: {newParent.Name} - currentParent: {module.GetParent().Name})");
             }
         }
 
-        Logger.Debug("Finished Optimising!");
         return unattachedModules;
     }
 
