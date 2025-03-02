@@ -15,10 +15,10 @@ public partial class ModuleRegistry : Node {
             foreach (ModuleRegistryElement elem in Elements) {
                 var id = elem.Definition.ModuleId;
 
-                Node gameNode = elem.GameScene.Instantiate();
-                Assert.IsType<Module>(gameNode, $"The game scene for module {id} does not have the 'Module' script!")
+                Node gameNode = elem.Scene.Instantiate();
+                Assert.IsType<Module>(gameNode, $"The scene for module {id} does not have the 'Module' script!")
                     .WhenTrue((node) => {
-                        valid = valid & Assert.AreEqual(id, node.ModuleDef.ModuleId, $"The game scene for module {id} does not have a matching module id");
+                        valid = valid & Assert.AreEqual(id, node.ModuleDef.ModuleId, $"The scene for module {id} does not have a matching module id");
                     })
                     .WhenFalse((node) => valid = false);
 

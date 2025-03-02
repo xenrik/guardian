@@ -1,0 +1,25 @@
+[gd_scene load_steps=4 format=3 uid="uid://cvxyw7w0vy3b8"]
+
+[ext_resource type="Script" path="res://scenes/shipBuilder/ModuleSelector.cs" id="1_ns2u6"]
+[ext_resource type="PackedScene" uid="uid://b6l4y7s2b3t8q" path="res://assets/modules/simpleTriangle/simpleTriangle-left.tscn" id="2_4emr4"]
+[ext_resource type="PackedScene" uid="uid://nw3g7nsc5l6" path="res://assets/modules/simpleTriangle/simpleTriangle-right.tscn" id="3_q4txx"]
+
+[node name="ModuleSelector" type="Node3D" node_paths=PackedStringArray("Origin1", "Origin2")]
+script = ExtResource("1_ns2u6")
+Origin1 = NodePath("Origin 1")
+Origin2 = NodePath("Origin 2")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(-4.37114e-08, 1, 4.37114e-08, 0, -4.37114e-08, 1, 1, 4.37114e-08, 1.91069e-15, 0, 10, 0)
+
+[node name="Origin 1" type="Node3D" parent="."]
+
+[node name="simpleTriangle-left" parent="Origin 1" instance=ExtResource("2_4emr4")]
+
+[node name="Origin 2" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 0)
+
+[node name="simpleTriangle-right" parent="Origin 2" instance=ExtResource("3_q4txx")]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.537682, 0.843148, 0, -0.843148, 0.537682, 0, 4.29036, 0)

@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=4 uid="uid://nw3g7nsc5l6"]
 
-[ext_resource type="Script" path="res://scripts/modules/Module.cs" id="1_w3e0i"]
-[ext_resource type="Resource" uid="uid://b48ucyi3wbp01" path="res://assets/modules/simpleTriangle/simpleTriangle.tres" id="2_a3vts"]
+[ext_resource type="Script" path="res://scripts/modules/Module.cs" id="1_qv6wy"]
+[ext_resource type="Resource" uid="uid://1x0alnlt1f1m" path="res://assets/modules/simpleTriangle/simpleTriangle-right.tres" id="2_qfiqa"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6eyvh"]
 
@@ -18,7 +18,7 @@ _surfaces = [{
 }]
 blend_shape_mode = 0
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_nov4w"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_erhs4"]
 resource_name = "simpleTriangle_Cylinder"
 _surfaces = [{
 "aabb": AABB(-0.866025, -0.5, -1, 1.73205, 1, 1.5),
@@ -44,13 +44,13 @@ size = Vector3(1, 1, 0.75)
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_uerai"]
 points = PackedVector3Array(0, -0.45, -0.9, 0, 0.45, -0.9, 0.779423, -0.45, 0.45, -0.779423, -0.45, 0.45, -0.779423, 0.45, 0.45, 0.779423, 0.45, 0.45)
 
-[node name="simpleTriangle" type="Node3D"]
-script = ExtResource("1_w3e0i")
-ModuleDef = ExtResource("2_a3vts")
+[node name="simpleTriangle-right" type="Node3D"]
+script = ExtResource("1_qv6wy")
+ModuleDef = ExtResource("2_qfiqa")
 
 [node name="Mesh" type="MeshInstance3D" parent="."]
 transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
-mesh = SubResource("ArrayMesh_nov4w")
+mesh = SubResource("ArrayMesh_erhs4")
 skeleton = NodePath("")
 
 [node name="Body" type="Area3D" parent="." groups=["Module.Body"]]
