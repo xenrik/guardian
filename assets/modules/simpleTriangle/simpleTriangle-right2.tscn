@@ -1,11 +1,11 @@
-[gd_scene load_steps=8 format=4 uid="uid://b6l4y7s2b3t8q"]
+[gd_scene load_steps=9 format=4 uid="uid://qxgquktmnr3l"]
 
-[ext_resource type="Script" path="res://scripts/modules/Module.cs" id="1_p4tts"]
-[ext_resource type="Resource" uid="uid://b48ucyi3wbp01" path="res://assets/modules/simpleTriangle/simpleTriangle-left.tres" id="2_414v0"]
+[ext_resource type="Script" path="res://scripts/modules/Module.cs" id="1_y8mpw"]
+[ext_resource type="Resource" uid="uid://blys0708r5gly" path="res://assets/modules/simpleTriangle/simpleTriangle-right2.tres" id="2_w60pb"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6eyvh"]
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_gvhr2"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_qxf2l"]
 _surfaces = [{
 "aabb": AABB(-0.866025, -0.5, -1, 1.73205, 1, 1.5),
 "format": 34896613377,
@@ -18,7 +18,7 @@ _surfaces = [{
 }]
 blend_shape_mode = 0
 
-[sub_resource type="ArrayMesh" id="ArrayMesh_nov4w"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_erhs4"]
 resource_name = "simpleTriangle_Cylinder"
 _surfaces = [{
 "aabb": AABB(-0.866025, -0.5, -1, 1.73205, 1, 1.5),
@@ -33,7 +33,7 @@ _surfaces = [{
 "vertex_data": PackedByteArray("/38AAAAAVNX/fwAAAAD/P/9/AAAAAFTV/3///wAAVNX/f///AAD/v/9///8AAFTV//8AAP///z///wAA//8AgP//AAD//1TV////////AID/////////v////////1TVAAAAAP//VNUAAAAA////PwAAAAD//wCAAAD/////VNUAAP////8AgAAA//////+//38AAP///z//fwAA//8AgP9//////wCA/3///////7//f///AAD/f/9/AAD/f///////f/9/AAAAAP9//3////9/AAD/f///////f/9/AAD/f///AAD/f/9/////f////3///////38AAP9//3////9///////9/")
 }]
 blend_shape_mode = 0
-shadow_mesh = SubResource("ArrayMesh_gvhr2")
+shadow_mesh = SubResource("ArrayMesh_qxf2l")
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_qe7hs"]
 points = PackedVector3Array(-0.000169575, -0.5, -1, -0.000169575, 0.5, -1, 0.866025, -0.5, 0.5, -0.866025, -0.5, 0.5, -0.866025, 0.5, 0.5, 0.866025, 0.5, 0.5)
@@ -41,14 +41,16 @@ points = PackedVector3Array(-0.000169575, -0.5, -1, -0.000169575, 0.5, -1, 0.866
 [sub_resource type="BoxShape3D" id="BoxShape3D_1bf8d"]
 size = Vector3(1, 1, 0.75)
 
-[node name="simpleTriangle-left" type="Node3D"]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
-script = ExtResource("1_p4tts")
-ModuleDef = ExtResource("2_414v0")
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_uerai"]
+points = PackedVector3Array(0, -0.45, -0.9, 0, 0.45, -0.9, 0.779423, -0.45, 0.45, -0.779423, -0.45, 0.45, -0.779423, 0.45, 0.45, 0.779423, 0.45, 0.45)
+
+[node name="simpleTriangle-right2" type="Node3D"]
+script = ExtResource("1_y8mpw")
+ModuleDef = ExtResource("2_w60pb")
 
 [node name="Mesh" type="MeshInstance3D" parent="."]
 transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
-mesh = SubResource("ArrayMesh_nov4w")
+mesh = SubResource("ArrayMesh_erhs4")
 skeleton = NodePath("")
 
 [node name="Body" type="Area3D" parent="." groups=["Module.Body"]]
@@ -85,3 +87,10 @@ collision_mask = 0
 [node name="Shape" type="CollisionShape3D" parent="Snap3"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
 shape = SubResource("BoxShape3D_1bf8d")
+
+[node name="Node" type="Node" parent="."]
+process_mode = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Node"]
+transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)
+shape = SubResource("ConvexPolygonShape3D_uerai")

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="ModuleDef" load_steps=2 format=3 uid="uid://blys0708r5gly"]
+
+[ext_resource type="Script" path="res://scripts/modules/ModuleDef.cs" id="1_gjgus"]
+
+[resource]
+script = ExtResource("1_gjgus")
+ModuleId = "SimpleTriangle-right2"
+IsRootModule = false
+SelectorPivot = Vector3(0, 0, -0.25)
+SelectorAdditionalOffset = Vector3(0, 0, 0)

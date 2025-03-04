@@ -1,8 +1,8 @@
-using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Godot;
 
 /// Used when tree walking. Return a Result enum to control what
 /// happens after this node is processed
@@ -102,10 +102,12 @@ public static class NodeExtensions {
     /// Generic version of FindChild. 
     /// 
     /// This does no use the built-in FindChild, and instead:
-    /// - Uses a bread-first search
+    /// - Uses a breadth-first search
     /// - Will always find "unowned" children
-    public static T FindChild<[MustBeVariant] T>(this Node node, string pattern = "", bool recursive = true, bool includeQueuedForDeletion = false) where T : Node {
-        var regex = pattern == "" ? null : new Regex(Regex.Escape(pattern).Replace(@"\*", ".*").Replace(@"\?", "."));
+    public static T FindChild<[MustBeVariant] T>(this Node node, string filter = null, bool recursive = true, bool includeQueuedForDeletion = false) where T : Node {
+        return node.FindChild(PatternFilter<T>(filter), recursive, includeQueuedForDeletion);
+    }
+    public static T FindChild<[MustBeVariant] T>(this Node node, Predicate<T> filter = null, bool recursive = true, bool includeQueuedForDeletion = false) where T : Node {
         T matchedNode = null;
         node.WalkTree(node => {
             if (node.IsQueuedForDeletion() && !includeQueuedForDeletion) {
@@ -113,7 +115,7 @@ public static class NodeExtensions {
                 return TreeWalker.Result.SKIP_CHILDREN;
             }
 
-            if (node is T && (regex == null || regex.IsMatch(node.Name))) {
+            if (node is T && (filter == null || filter((T)node))) {
                 matchedNode = (T)node;
                 return TreeWalker.Result.STOP;
             }

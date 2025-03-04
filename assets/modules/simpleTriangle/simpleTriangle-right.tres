@@ -6,3 +6,5 @@
 script = ExtResource("1_rubrj")
 ModuleId = "SimpleTriangle-right"
 IsRootModule = false
+SelectorPivot = Vector3(0, 0, -0.25)
+SelectorAdditionalOffset = Vector3(0, 0, 0)

@@ -1,7 +1,7 @@
-[gd_scene load_steps=8 format=4 uid="uid://b6l4y7s2b3t8q"]
+[gd_scene load_steps=8 format=4 uid="uid://sx5uoh3qh1l3"]
 
-[ext_resource type="Script" path="res://scripts/modules/Module.cs" id="1_p4tts"]
-[ext_resource type="Resource" uid="uid://b48ucyi3wbp01" path="res://assets/modules/simpleTriangle/simpleTriangle-left.tres" id="2_414v0"]
+[ext_resource type="Script" path="res://scripts/modules/Module.cs" id="1_cnvpu"]
+[ext_resource type="Resource" uid="uid://c7jy0kbm3adck" path="res://assets/modules/simpleTriangle/simpleTriangle-left2.tres" id="2_kbq1g"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6eyvh"]
 
@@ -41,10 +41,10 @@ points = PackedVector3Array(-0.000169575, -0.5, -1, -0.000169575, 0.5, -1, 0.866
 [sub_resource type="BoxShape3D" id="BoxShape3D_1bf8d"]
 size = Vector3(1, 1, 0.75)
 
-[node name="simpleTriangle-left" type="Node3D"]
+[node name="simpleTriangle-left2" type="Node3D"]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
-script = ExtResource("1_p4tts")
-ModuleDef = ExtResource("2_414v0")
+script = ExtResource("1_cnvpu")
+ModuleDef = ExtResource("2_kbq1g")
 
 [node name="Mesh" type="MeshInstance3D" parent="."]
 transform = Transform3D(-1, 0, -3.25841e-07, 0, 1, 0, 3.25841e-07, 0, -1, 0, 0, 0)

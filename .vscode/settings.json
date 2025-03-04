@@ -3,6 +3,7 @@
         "**/editor/templates/*.cs": "ignore"
     },
     "cSpell.words": [
+        "Lerp",
         "Reparent"
     ],
     "godotTools.editorPath.godot4": "/usr/bin/godot-mono"

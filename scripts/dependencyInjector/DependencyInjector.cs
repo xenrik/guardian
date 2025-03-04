@@ -1,8 +1,8 @@
 using System;
-using System.Reflection;
 using System.Collections.Generic;
-using Godot;
 using System.Linq;
+using System.Reflection;
+using Godot;
 
 /**
  * This node manages dependency injection of the Node and Singleton annotated 
@@ -182,7 +182,6 @@ public partial class DependencyInjector : Node {
 
                 // Then by type
                 filters.Add((node) => {
-                    GD.Print("Finding by type!");
                     return type.IsAssignableFrom(node.GetType()) ? node : null;
                 });
             }

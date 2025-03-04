@@ -131,7 +131,7 @@ public partial class ShipBuilder : Node3D {
             debugUpdate = 0.1;
 
             var debug = "";
-            foreach (var childName in new string[]{ "red", "green", "blue" }) {
+            foreach (var childName in new string[] { "red", "green", "blue" }) {
                 var child = FindChild(childName);
                 debug += $"{childName} Parent: {child.GetParent().Name}\n";
 
@@ -227,7 +227,7 @@ public partial class ShipBuilder : Node3D {
 
             // Any unattached modules are parented by us
             unattached.ForEach(module => {
-                Logger.Debug($"Unnattached module: {module.Name} being attached to the builder node");
+                Logger.Debug($"Unattached module: {module.Name} being attached to the builder node");
                 module.Reparent(this);
             });
         }).CallAfterFrame();

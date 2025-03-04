@@ -7,4 +7,10 @@ public partial class ModuleDef : Resource {
 
     [Export]
     public bool IsRootModule;
+
+    [Export]
+    public Vector3 SelectorPivot;
+
+    [Export]
+    public Vector3 SelectorAdditionalOffset;
 }
