@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://ekqeluetlnr1"]
 
-[ext_resource type="Script" path="res://scripts/controllers/SimpleOscillator.cs" id="1_u22ov"]
-[ext_resource type="Script" path="res://scripts/controllers/PidSettings.cs" id="2_qjwbd"]
+[ext_resource type="Script" uid="uid://b03gqtldhrrkc" path="res://scripts/controllers/SimpleOscillator.cs" id="1_u22ov"]
+[ext_resource type="Script" uid="uid://cmrxk5ouc7fp4" path="res://scripts/controllers/PidSettings.cs" id="2_qjwbd"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_8bqb8"]
 

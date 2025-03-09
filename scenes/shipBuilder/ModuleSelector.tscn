@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cvxyw7w0vy3b8"]
 
-[ext_resource type="Script" path="res://scenes/shipBuilder/ModuleSelector.cs" id="1_ns2u6"]
+[ext_resource type="Script" uid="uid://1u1e1flrqfcq" path="res://scenes/shipBuilder/ModuleSelector.cs" id="1_ns2u6"]
 
 [node name="ModuleSelector" type="Node3D" node_paths=PackedStringArray("Origin1", "Origin2")]
 script = ExtResource("1_ns2u6")

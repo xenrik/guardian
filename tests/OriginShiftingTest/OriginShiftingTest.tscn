@@ -1,9 +1,9 @@
 [gd_scene load_steps=5 format=3 uid="uid://djwtbconlerdo"]
 
-[ext_resource type="Script" path="res://tests/OriginShiftingTest/OriginShiftingTest.cs" id="1_unvet"]
-[ext_resource type="Script" path="res://scripts/origin/FloatingOrigin.cs" id="2_pshgs"]
+[ext_resource type="Script" uid="uid://d168gm3tikf6q" path="res://tests/OriginShiftingTest/OriginShiftingTest.cs" id="1_unvet"]
+[ext_resource type="Script" uid="uid://cs5knpo4owp4u" path="res://scripts/origin/FloatingOrigin.cs" id="2_pshgs"]
 [ext_resource type="PackedScene" uid="uid://codsiavhu14il" path="res://assets/debug/primitives/RigidCube.tscn" id="3_5ko48"]
-[ext_resource type="Script" path="res://scripts/controllers/SimpleController.cs" id="4_pek21"]
+[ext_resource type="Script" uid="uid://w4t1iabq2uhn" path="res://scripts/controllers/SimpleController.cs" id="4_pek21"]
 
 [node name="OriginShiftingTest" type="Node3D" node_paths=PackedStringArray("originLabel", "boxGlobalLabel", "boxUniversalLabel", "box")]
 script = ExtResource("1_unvet")

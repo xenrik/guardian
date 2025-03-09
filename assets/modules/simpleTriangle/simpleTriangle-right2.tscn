@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=4 uid="uid://qxgquktmnr3l"]
 
-[ext_resource type="Script" path="res://scripts/modules/Module.cs" id="1_y8mpw"]
+[ext_resource type="Script" uid="uid://hhgeledj3e1u" path="res://scripts/modules/Module.cs" id="1_y8mpw"]
 [ext_resource type="Resource" uid="uid://blys0708r5gly" path="res://assets/modules/simpleTriangle/simpleTriangle-right2.tres" id="2_w60pb"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6eyvh"]

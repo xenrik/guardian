@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="ModuleDef" load_steps=2 format=3 uid="uid://c7jy0kbm3adck"]
 
-[ext_resource type="Script" path="res://scripts/modules/ModuleDef.cs" id="1_sgqn7"]
+[ext_resource type="Script" uid="uid://rbbnjcwp8k3w" path="res://scripts/modules/ModuleDef.cs" id="1_sgqn7"]
 
 [resource]
 script = ExtResource("1_sgqn7")

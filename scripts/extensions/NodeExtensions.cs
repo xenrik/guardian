@@ -23,7 +23,9 @@ namespace TreeWalker {
 
 public static class NodeExtensions {
     /// Walk the tree of nodes from this node. Breadth first.
-    public static void WalkTree(this Node node, TreeWalker.Walker consumer, bool includeQueuedForDeletion = false) {
+    /// By default the current node is not passed to the tree walker, but you can ask for that to happen
+    /// by setting the includeCurrentNode flag
+    public static void WalkTree(this Node node, TreeWalker.Walker consumer, bool includeQueuedForDeletion = false, bool includeCurrentNode = false) {
         var nodesToWalk = new Queue<Node>();
         nodesToWalk.Enqueue(node);
 
@@ -33,7 +35,7 @@ public static class NodeExtensions {
                 continue;
             }
 
-            TreeWalker.Result result = (currentNode == node) ? TreeWalker.Result.RECURSE : consumer.Invoke(currentNode);
+            TreeWalker.Result result = (!includeCurrentNode && currentNode == node) ? TreeWalker.Result.RECURSE : consumer.Invoke(currentNode);
             switch (result) {
                 case TreeWalker.Result.STOP:
                     return;
@@ -185,6 +187,17 @@ public static class NodeExtensions {
         }
 
         return filteredChildren;
+    }
+
+    /// <summary>
+    /// Remove the node from all groups it is currently in
+    /// </summary>
+    /// <param name="node"></param>
+    public static void ClearGroups(this Node node) {
+        var groups = node.GetGroups();
+        foreach (var group in groups) {
+            node.RemoveFromGroup(group);
+        }
     }
 
 }

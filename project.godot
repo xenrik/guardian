@@ -12,7 +12,7 @@ config_version=5
 
 config/name="Guardian"
 run/main_scene="res://scenes/shipBuilder/ShipBuilder.tscn"
-config/features=PackedStringArray("4.3", "C#", "Forward Plus")
+config/features=PackedStringArray("4.4", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
@@ -20,6 +20,10 @@ config/icon="res://icon.svg"
 DependencyInjector="*res://scripts/dependencyInjector/DependencyInjector.cs"
 DebugKeys="*res://scripts/debug/DebugKeys.cs"
 ModuleRegistry="*res://assets/modules/DefaultModuleRegistry.tscn"
+
+[display]
+
+window/size/mode=2
 
 [dotnet]
 

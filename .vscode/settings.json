@@ -2,9 +2,17 @@
     "files.associations": {
         "**/editor/templates/*.cs": "ignore"
     },
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "**/*.tscn": true,
+        "**/*.uid": true
+    },
     "cSpell.words": [
         "Lerp",
         "Reparent"
-    ],
-    "godotTools.editorPath.godot4": "/usr/bin/godot-mono"
+    ]
 }

@@ -1,16 +1,22 @@
-[gd_scene load_steps=7 format=3 uid="uid://dslpgnc6xiaj"]
+[gd_scene load_steps=10 format=3 uid="uid://dslpgnc6xiaj"]
 
-[ext_resource type="Script" path="res://scenes/shipBuilder/ShipBuilder.cs" id="1_cmeaf"]
+[ext_resource type="Script" uid="uid://b50tf41e1kfh3" path="res://scenes/shipBuilder/ShipBuilder.cs" id="1_cmeaf"]
 [ext_resource type="PackedScene" uid="uid://nw3g7nsc5l6" path="res://assets/modules/simpleTriangle/simpleTriangle-right.tscn" id="2_it1to"]
 [ext_resource type="Material" uid="uid://bjdrbfywdaxhm" path="res://assets/debug/materials/GreenMaterial.tres" id="4_3it4a"]
 [ext_resource type="Material" uid="uid://cwfrgdjrdr2ds" path="res://assets/debug/materials/RedMaterial.tres" id="5_fwr66"]
 [ext_resource type="Material" uid="uid://lsdrjyphveo8" path="res://assets/debug/materials/BlueMaterial.tres" id="6_cwuul"]
+[ext_resource type="PackedScene" uid="uid://cvxyw7w0vy3b8" path="res://scenes/shipBuilder/ModuleSelector.tscn" id="6_drcga"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_kh2jf"]
 
+[sub_resource type="Environment" id="Environment_drcga"]
+
+[sub_resource type="World3D" id="World3D_ot24r"]
+environment = SubResource("Environment_drcga")
+
 [node name="ShipBuilder" type="Node3D" node_paths=PackedStringArray("rootModule")]
 script = ExtResource("1_cmeaf")
-rootModule = NodePath("bridge")
+rootModule = NodePath("ModulesRoot/bridge")
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(-4.37114e-08, 0.996195, -0.0871558, 0, 0.0871558, 0.996195, 1, 4.35451e-08, -3.8097e-09, 0, 10, 1)
@@ -23,6 +29,31 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.61233, 0.0140228, 0.073422)
 mesh = SubResource("BoxMesh_kh2jf")
 
 [node name="GUI" type="CanvasLayer" parent="."]
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GUI"]
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 250.0
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="GUI/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="GUI/HBoxContainer/SubViewportContainer"]
+own_world_3d = true
+world_3d = SubResource("World3D_ot24r")
+handle_input_locally = false
+size = Vector2i(245, 648)
+render_target_update_mode = 4
+
+[node name="ModuleSelector" parent="GUI/HBoxContainer/SubViewportContainer/SubViewport" instance=ExtResource("6_drcga")]
+
+[node name="ColorRect" type="ColorRect" parent="GUI/HBoxContainer"]
+custom_minimum_size = Vector2(5, 0)
+layout_mode = 2
 
 [node name="Button" type="Button" parent="GUI"]
 offset_right = 8.0
@@ -37,36 +68,47 @@ offset_bottom = 67.0
 text = "Organise"
 
 [node name="DebugInfo" type="Label" parent="GUI"]
-offset_left = 815.0
-offset_top = 11.0
-offset_right = 1136.0
-offset_bottom = 126.0
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -321.0
+offset_bottom = 115.0
+grow_horizontal = 0
 text = "Debug Info"
 
-[node name="bridge" parent="." instance=ExtResource("2_it1to")]
+[node name="ModulesRoot" type="Node3D" parent="."]
+
+[node name="bridge" parent="ModulesRoot" instance=ExtResource("2_it1to")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.38111)
 
-[node name="green" parent="." instance=ExtResource("2_it1to")]
+[node name="green" parent="ModulesRoot" instance=ExtResource("2_it1to")]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, -2.64254)
 
-[node name="Mesh" parent="green" index="0"]
+[node name="Mesh" parent="ModulesRoot/green" index="0"]
 material_override = ExtResource("4_3it4a")
 
-[node name="red" parent="." instance=ExtResource("2_it1to")]
+[node name="green2" parent="ModulesRoot" instance=ExtResource("2_it1to")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, -11.0598)
+
+[node name="Mesh" parent="ModulesRoot/green2" index="0"]
+material_override = ExtResource("4_3it4a")
+
+[node name="red" parent="ModulesRoot" instance=ExtResource("2_it1to")]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -4.38377, 0, -2.64254)
 
-[node name="Mesh" parent="red" index="0"]
+[node name="Mesh" parent="ModulesRoot/red" index="0"]
 material_override = ExtResource("5_fwr66")
 
-[node name="blue" parent="." instance=ExtResource("2_it1to")]
+[node name="blue" parent="ModulesRoot" instance=ExtResource("2_it1to")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.38377, 0, 2.84195)
 
-[node name="Mesh" parent="blue" index="0"]
+[node name="Mesh" parent="ModulesRoot/blue" index="0"]
 material_override = ExtResource("6_cwuul")
 
 [connection signal="pressed" from="GUI/Button" to="." method="OnSaveButtonPressed"]
 [connection signal="pressed" from="GUI/Organise" to="." method="OnOrganisePressed"]
 
-[editable path="green"]
-[editable path="red"]
-[editable path="blue"]
+[editable path="ModulesRoot/green"]
+[editable path="ModulesRoot/green2"]
+[editable path="ModulesRoot/red"]
+[editable path="ModulesRoot/blue"]

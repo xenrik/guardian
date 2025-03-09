@@ -11,6 +11,9 @@ public partial class ShipBuilder : Node3D {
     [Node]
     private Label DebugInfo;
 
+    [Node]
+    private Node3D ModulesRoot;
+
     // Dragging Support
     private List<Tuple<Area3D, Area3D>> activeSnaps = new();
     private List<Tuple<Area3D, Area3D>> bodyCollisions = new();
@@ -23,6 +26,7 @@ public partial class ShipBuilder : Node3D {
     private Vector3 lastKnowGoodPos;
 
     private double debugUpdate = 0;
+    private uint lastDebugHash = 0;
 
     public override void _Process(double delta) {
         base._Process(delta);
@@ -104,19 +108,19 @@ public partial class ShipBuilder : Node3D {
             editingModule.FindChildren(Groups.Module.Snap.Filter<Area3D>()).ForEach(snap => snap.ProcessMode = ProcessModeEnum.Always);
             editingModule.FindChildren(Groups.Module.Body.Filter<Area3D>()).ForEach(snap => snap.ProcessMode = ProcessModeEnum.Always);
 
-            // Make sure all the modules are linked to us
-            this.FindChildren<Module>().ForEach(module => module.Reparent(this));
+            // Make sure all the modules are linked to the root
+            ModulesRoot.FindChildren<Module>().ForEach(module => module.Reparent(ModulesRoot));
 
             // Organise Modules
             Callable.From(() => {
-                List<Module> allModules = this.FindChildren<Module>().ToList();
+                List<Module> allModules = ModulesRoot.FindChildren<Module>().ToList();
                 List<Module> unattached = rootModule.OrganiseModules(allModules);
 
-                // Any unattached modules are parented by us
+                // Any unattached modules are parented by the root
                 unattached.ForEach(module => {
-                    module.Reparent(this);
+                    module.Reparent(ModulesRoot);
                 });
-            }).CallAfterFrame();
+            }).CallAfterPhysicsFrame();
 
             // Tidy up
             editingModule = null;
@@ -129,33 +133,56 @@ public partial class ShipBuilder : Node3D {
         debugUpdate -= delta;
         if (debugUpdate < 0) {
             debugUpdate = 0.1;
+            UpdateDebug();
+        }
+    }
 
-            var debug = "";
-            foreach (var childName in new string[] { "red", "green", "blue" }) {
-                var child = FindChild(childName);
-                debug += $"{childName} Parent: {child.GetParent().Name}\n";
+    private void OnOrganisePressed() {
+        Callable.From(() => {
+            List<Module> allModules = ModulesRoot.FindChildren<Module>().ToList();
+            List<Module> unattached = rootModule.OrganiseModules(allModules);
 
-                List<Area3D> snaps = new();
-                child.WalkTree(node => {
-                    if (node.IsInGroup(Groups.Module.Snap)) {
-                        snaps.Add((Area3D)node);
-                        return TreeWalker.Result.SKIP_CHILDREN;
-                    } else if (node is Module) {
-                        return TreeWalker.Result.SKIP_CHILDREN;
-                    } else {
-                        return TreeWalker.Result.RECURSE;
-                    }
-                });
-                foreach (var snap in snaps) {
-                    foreach (var overlap in snap.GetOverlappingAreas()) {
-                        var module = overlap.FindParent<Module>();
-                        debug += $"   {snap.Name} - Overlaps: {module?.Name}\n";
-                    }
+            // Any unattached modules are parented by us
+            unattached.ForEach(module => {
+                Logger.Debug($"Unattached module: {module.Name} being attached to the builder node");
+                module.Reparent(ModulesRoot);
+            });
+        }).CallAfterFrame();
+    }
+
+    private void UpdateDebug() {
+        var debug = "";
+        foreach (var childName in new string[] { "red", "green", "blue" }) {
+            var child = ModulesRoot.FindChild(childName);
+            debug += $"{childName} Parent: {child.GetParent().Name}\n";
+
+            List<Area3D> snaps = new();
+            child.WalkTree(node => {
+                if (node.IsInGroup(Groups.Module.Snap)) {
+                    snaps.Add((Area3D)node);
+                    return TreeWalker.Result.SKIP_CHILDREN;
+                } else if (node is Module) {
+                    return TreeWalker.Result.SKIP_CHILDREN;
+                } else {
+                    return TreeWalker.Result.RECURSE;
+                }
+            });
+            foreach (var snap in snaps) {
+                foreach (var overlap in snap.GetOverlappingAreas()) {
+                    var module = overlap.FindParent<Module>();
+                    debug += $"   {snap.Name} - Overlaps: {module?.Name}\n";
                 }
             }
-
-            DebugInfo.Text = debug;
         }
+
+        /*
+        if (debug.Hash() != lastDebugHash) {
+            Logger.Debug(debug);
+            lastDebugHash = debug.Hash();
+        }
+        */
+
+        DebugInfo.Text = debug;
     }
 
     public override void _PhysicsProcess(double delta) {
@@ -219,18 +246,4 @@ public partial class ShipBuilder : Node3D {
         ModuleTree tree = ModuleTree.ToModuleTree(rootModule);
         tree.Save("user://ShipDesigns/test.json");
     }
-
-    private void OnOrganisePressed() {
-        Callable.From(() => {
-            List<Module> allModules = this.FindChildren<Module>().ToList();
-            List<Module> unattached = rootModule.OrganiseModules(allModules);
-
-            // Any unattached modules are parented by us
-            unattached.ForEach(module => {
-                Logger.Debug($"Unattached module: {module.Name} being attached to the builder node");
-                module.Reparent(this);
-            });
-        }).CallAfterFrame();
-    }
-
 }
