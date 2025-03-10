@@ -106,6 +106,9 @@ public static class NodeExtensions {
     /// This does no use the built-in FindChild, and instead:
     /// - Uses a breadth-first search
     /// - Will always find "unowned" children
+    public static T FindChild<[MustBeVariant] T>(this Node node) where T : Node {
+        return node.FindChild((Predicate<T>)null, true, false);
+    }
     public static T FindChild<[MustBeVariant] T>(this Node node, string filter = null, bool recursive = true, bool includeQueuedForDeletion = false) where T : Node {
         return node.FindChild(PatternFilter<T>(filter), recursive, includeQueuedForDeletion);
     }

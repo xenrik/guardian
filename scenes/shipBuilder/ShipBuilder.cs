@@ -6,7 +6,16 @@ using Godot;
 public partial class ShipBuilder : Node3D {
     // Current "root" module
     [Export]
-    private Module rootModule;
+    private Module RootModule;
+
+    [Export]
+    private SubViewport SelectorViewport;
+
+    [Export]
+    private SubViewport DragViewport;
+
+    [Export]
+    private Camera3D MainCamera;
 
     [Node]
     private Label DebugInfo;
@@ -15,6 +24,8 @@ public partial class ShipBuilder : Node3D {
     private Node3D ModulesRoot;
 
     // Dragging Support
+    private Camera3D dragCamera;
+
     private List<Tuple<Area3D, Area3D>> activeSnaps = new();
     private List<Tuple<Area3D, Area3D>> bodyCollisions = new();
 
@@ -28,8 +39,20 @@ public partial class ShipBuilder : Node3D {
     private double debugUpdate = 0;
     private uint lastDebugHash = 0;
 
+    public override void _Ready() {
+        base._Ready();
+
+        dragCamera = DragViewport.FindChild<Camera3D>();
+        dragCamera.GlobalTransform = MainCamera.GlobalTransform;
+    }
+
     public override void _Process(double delta) {
         base._Process(delta);
+
+        // Keep the drag and main camera in sync
+        if (dragCamera.GlobalTransform != MainCamera.GlobalTransform) {
+            dragCamera.GlobalTransform = MainCamera.GlobalTransform;
+        }
 
         if (Input.IsActionPressed(InputKeys.Editor.SelectModule)) {
             var camera = GetViewport().GetCamera3D();
@@ -110,11 +133,12 @@ public partial class ShipBuilder : Node3D {
 
             // Make sure all the modules are linked to the root
             ModulesRoot.FindChildren<Module>().ForEach(module => module.Reparent(ModulesRoot));
+            editingModule.Reparent(ModulesRoot);
 
             // Organise Modules
             Callable.From(() => {
                 List<Module> allModules = ModulesRoot.FindChildren<Module>().ToList();
-                List<Module> unattached = rootModule.OrganiseModules(allModules);
+                List<Module> unattached = RootModule.OrganiseModules(allModules);
 
                 // Any unattached modules are parented by the root
                 unattached.ForEach(module => {
@@ -140,7 +164,7 @@ public partial class ShipBuilder : Node3D {
     private void OnOrganisePressed() {
         Callable.From(() => {
             List<Module> allModules = ModulesRoot.FindChildren<Module>().ToList();
-            List<Module> unattached = rootModule.OrganiseModules(allModules);
+            List<Module> unattached = RootModule.OrganiseModules(allModules);
 
             // Any unattached modules are parented by us
             unattached.ForEach(module => {
@@ -153,7 +177,7 @@ public partial class ShipBuilder : Node3D {
     private void UpdateDebug() {
         var debug = "";
         foreach (var childName in new string[] { "red", "green", "blue" }) {
-            var child = ModulesRoot.FindChild(childName);
+            var child = GetTree().CurrentScene.FindChild(childName);
             debug += $"{childName} Parent: {child.GetParent().Name}\n";
 
             List<Area3D> snaps = new();
@@ -192,22 +216,41 @@ public partial class ShipBuilder : Node3D {
             return;
         }
 
+        // If the mouse is over the selector, ignore everything, and just move it (but don't update the "good" position)
+        if (SelectorViewport.GetVisibleRect().HasPoint(GetViewport().GetMousePosition())) {
+            if (editingModule.GetParent() != DragViewport) {
+                editingModule.Reparent(DragViewport);
+            }
+            editingModule.GlobalPosition = snapper.GlobalPosition;
+            return;
+        }
+
+        // Move back to the main viewport if needed
+        if (editingModule.GetParent() != ModulesRoot) {
+            editingModule.Reparent(ModulesRoot);
+        }
+
+        // If the body is colliding, move to the last know good pos        
+        if (bodyCollisions.NotEmpty()) {
+            editingModule.GlobalPosition = lastKnowGoodPos;
+        }
+
         // If the snapper is causing collisions then move to the snapped position,
         // otherwise move to the snapper position        
-        if (bodyCollisions.NotEmpty()) {
-            // If the body is colliding, move to the last know good pos
-            editingModule.GlobalPosition = lastKnowGoodPos;
-        } else if (activeSnaps.NotEmpty()) {
+        else if (activeSnaps.NotEmpty()) {
             var activeSnap = activeSnaps[0];
             var snapOffset = activeSnap.Item1.GlobalPosition - snapper.GlobalPosition;
             var targetSnapPos = activeSnap.Item2.GlobalPosition;
 
             editingModule.GlobalPosition = targetSnapPos - snapOffset;
-        } else {
-            editingModule.GlobalPosition = snapper.GlobalPosition;
+            lastKnowGoodPos = editingModule.GlobalPosition;
         }
 
-        lastKnowGoodPos = editingModule.GlobalPosition;
+        // otherwise move to the snapper position
+        else {
+            editingModule.GlobalPosition = snapper.GlobalPosition;
+            lastKnowGoodPos = editingModule.GlobalPosition;
+        }
     }
 
     private void OnSnapEntered(Area3D snap, Area3D otherSnap) {
@@ -243,7 +286,7 @@ public partial class ShipBuilder : Node3D {
     }
 
     private void OnSaveButtonPressed() {
-        ModuleTree tree = ModuleTree.ToModuleTree(rootModule);
+        ModuleTree tree = ModuleTree.ToModuleTree(RootModule);
         tree.Save("user://ShipDesigns/test.json");
     }
 }
