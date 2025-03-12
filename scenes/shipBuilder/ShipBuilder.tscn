@@ -123,6 +123,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.38377, 0, 2.84195)
 [node name="Mesh" parent="ModulesRoot/blue" index="0"]
 material_override = ExtResource("6_cwuul")
 
+[connection signal="ModuleDeselected" from="GUI/HBoxContainer/SelectorContainer/SubViewport/ModuleSelector" to="." method="OnModuleSelectorModuleDeselected"]
+[connection signal="ModuleSelected" from="GUI/HBoxContainer/SelectorContainer/SubViewport/ModuleSelector" to="." method="OnModuleSelectorModuleSelected"]
 [connection signal="pressed" from="GUI/Button" to="." method="OnSaveButtonPressed"]
 [connection signal="pressed" from="GUI/Organise" to="." method="OnOrganisePressed"]
 

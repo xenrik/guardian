@@ -55,17 +55,16 @@ public partial class ShipBuilder : Node3D {
         }
 
         if (Input.IsActionPressed(InputKeys.Editor.SelectModule)) {
-            var camera = GetViewport().GetCamera3D();
             var mousePos = GetViewport().GetMousePosition();
 
             // Have to use a ray rather than MouseEntered/Exited as that doesn't work for
             // overlapping Area3Ds...
             //var space = 
-            var currentPos = camera.ProjectPosition(mousePos, camera.GlobalPosition.Y);
+            var currentPos = MainCamera.ProjectPosition(mousePos, MainCamera.GlobalPosition.Y);
             if (editingModule == null) {
                 var query = new PhysicsRayQueryParameters3D();
-                query.From = camera.ProjectRayOrigin(mousePos);
-                query.To = query.From + camera.ProjectRayNormal(mousePos) * 100;
+                query.From = MainCamera.ProjectRayOrigin(mousePos);
+                query.To = query.From + MainCamera.ProjectRayNormal(mousePos) * 100;
                 query.CollideWithAreas = true;
                 query.CollisionMask = Layers.Module.Body;
 
@@ -288,5 +287,13 @@ public partial class ShipBuilder : Node3D {
     private void OnSaveButtonPressed() {
         ModuleTree tree = ModuleTree.ToModuleTree(RootModule);
         tree.Save("user://ShipDesigns/test.json");
+    }
+
+    private void OnModuleSelectorModuleSelected(Module module) {
+        Logger.Debug("Module Selector Selected: " + module);
+    }
+
+    private void OnModuleSelectorModuleDeselected(Module module) {
+        Logger.Debug("Module Selector Deselected: " + module);
     }
 }
