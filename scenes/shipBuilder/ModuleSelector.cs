@@ -3,9 +3,7 @@ using Godot;
 
 public partial class ModuleSelector : Node3D {
     [Signal]
-    public delegate void ModuleSelectedEventHandler();
-    [Signal]
-    public delegate void ModuleDeselectedEventHandler();
+    public delegate void ModuleSelectedEventHandler(Module module);
 
     [Export]
     private Node3D Origin1;
@@ -27,8 +25,6 @@ public partial class ModuleSelector : Node3D {
     private Vector3 cameraMin;
     private Vector3 cameraMax;
     private Vector3 cameraTarget;
-
-    private Module currentModule;
 
     public override void _Ready() {
         base._Ready();
@@ -66,8 +62,7 @@ public partial class ModuleSelector : Node3D {
         cameraTarget = cameraTarget.Clamp(cameraMin, cameraMax);
         SelectorCamera.Position = SelectorCamera.Position.Damp(cameraTarget, ScrollDamp, delta);
 
-        Module selectedModule = null;
-        if (Input.IsActionPressed(InputKeys.Editor.SelectModule)) {
+        if (Input.IsActionJustPressed(InputKeys.Editor.SelectModule)) {
             var mousePos = GetViewport().GetMousePosition();
 
             // Have to use a ray rather than MouseEntered/Exited as that doesn't work for
@@ -84,18 +79,10 @@ public partial class ModuleSelector : Node3D {
 
             var result = GetWorld3D().DirectSpaceState.ProjectRay(query);
             if (result != null) {
-                selectedModule = result.Collider.GetParent<Module>();
-            } 
-        }
-
-        if (selectedModule != currentModule) {
-            if (currentModule != null) {
-                EmitSignal(SignalName.ModuleDeselected, currentModule);
-            }
-
-            currentModule = selectedModule;
-            if (currentModule != null) {
-                EmitSignal(SignalName.ModuleSelected, currentModule);
+                var module = result.Collider.GetParent<Module>();
+                if (module != null) {
+                    EmitSignal(SignalName.ModuleSelected, module);
+                }
             }
         }
     }

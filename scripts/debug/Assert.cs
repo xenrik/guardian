@@ -11,7 +11,7 @@ public static class Assert {
                 msg = $"Object does not implement {typeof(T)}";
             }
 
-            Logger.Log(LogLevel.ERROR, msg, caller, filePath, lineNumber);
+            Logger.Log(LogLevel.ERROR, msg, caller, filePath, lineNumber, false);
             return new AssertedType<T>(default(T));
         }
     }
@@ -30,7 +30,7 @@ public static class Assert {
 
             msg = $"Expected {expectedStr},  but found {actualStr}";
         }
-        Logger.Log(LogLevel.ERROR, msg, caller, filePath, lineNumber);
+        Logger.Log(LogLevel.ERROR, msg, caller, filePath, lineNumber, false);
         return false;
     }
 

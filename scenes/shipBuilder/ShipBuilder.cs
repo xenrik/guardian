@@ -29,6 +29,7 @@ public partial class ShipBuilder : Node3D {
     private List<Tuple<Area3D, Area3D>> activeSnaps = new();
     private List<Tuple<Area3D, Area3D>> bodyCollisions = new();
 
+    private Module selectorModule = null;
     private Module editingModule = null;
     private Node3D snapper = null;
 
@@ -54,14 +55,29 @@ public partial class ShipBuilder : Node3D {
             dragCamera.GlobalTransform = MainCamera.GlobalTransform;
         }
 
+        HandleModuleDragging();
+        HandleModuleSelector();
+
+        debugUpdate -= delta;
+        if (debugUpdate < 0) {
+            debugUpdate = 0.1;
+            UpdateDebug();
+        }
+    }
+
+    private void HandleModuleDragging() {
         if (Input.IsActionPressed(InputKeys.Editor.SelectModule)) {
             var mousePos = GetViewport().GetMousePosition();
 
             // Have to use a ray rather than MouseEntered/Exited as that doesn't work for
             // overlapping Area3Ds...
-            //var space = 
             var currentPos = MainCamera.ProjectPosition(mousePos, MainCamera.GlobalPosition.Y);
-            if (editingModule == null) {
+            if (Input.IsActionJustPressed(InputKeys.Editor.SelectModule) && editingModule == null) {
+                // Ignore if we're in the selector viewport
+                if (SelectorViewport.GetVisibleRect().HasPoint(SelectorViewport.GetMousePosition())) {
+                    return;
+                }
+
                 var query = new PhysicsRayQueryParameters3D();
                 query.From = MainCamera.ProjectRayOrigin(mousePos);
                 query.To = query.From + MainCamera.ProjectRayNormal(mousePos) * 100;
@@ -152,12 +168,65 @@ public partial class ShipBuilder : Node3D {
             snapper = null;
             activeSnaps.Clear();
         }
+    }
 
-        debugUpdate -= delta;
-        if (debugUpdate < 0) {
-            debugUpdate = 0.1;
-            UpdateDebug();
+    private void HandleModuleSelector() {
+        // Don't do anything if we're currently editing a module, or we don't have a selector module
+        if (editingModule != null || selectorModule == null) {
+            Logger.Debug("Am editing, or not selecting!");
+            return;
         }
+
+        var mousePos = GetViewport().GetMousePosition();
+        var currentPos = MainCamera.ProjectPosition(mousePos, MainCamera.GlobalPosition.Y);
+
+        editingModule = (Module)selectorModule.Duplicate();
+        ModulesRoot.AddChild(editingModule);
+
+        moduleStartPos = editingModule.GlobalPosition;
+        mouseStartPos = currentPos;
+        lastKnowGoodPos = moduleStartPos;
+
+        // Create the snapper
+        snapper = new Node3D();
+        AddChild(snapper);
+        snapper.GlobalTransform = editingModule.GlobalTransform;
+
+        activeSnaps.Clear();
+        bodyCollisions.Clear();
+
+        editingModule.FindChildren(Groups.Module.Snap.Filter<Area3D>()).ForEach(node => {
+            var snapperArea = (Area3D)node.Duplicate(0);
+            snapper.AddChild(snapperArea);
+            snapperArea.GlobalTransform = node.GlobalTransform;
+
+            snapperArea.Connect(Area3D.SignalName.AreaShapeEntered, Callable.From<Rid, Area3D, int, int>((_, area, _, _) => {
+                OnSnapEntered(snapperArea, area);
+            }));
+            snapperArea.Connect(Area3D.SignalName.AreaShapeExited, Callable.From<Rid, Area3D, int, int>((_, area, _, _) => {
+                OnSnapExited(snapperArea, area);
+            }));
+        });
+        editingModule.FindChildren(Groups.Module.Body.Filter<Area3D>()).ForEach(node => {
+            var snapperArea = (Area3D)node.Duplicate(0);
+            snapper.AddChild(snapperArea);
+            snapperArea.GlobalTransform = node.GlobalTransform;
+
+            snapperArea.Connect(Area3D.SignalName.AreaShapeEntered, Callable.From<Rid, Area3D, int, int>((_, area, _, _) => {
+                OnBodyEntered(snapperArea, area);
+            }));
+            snapperArea.Connect(Area3D.SignalName.AreaShapeExited, Callable.From<Rid, Area3D, int, int>((_, area, _, _) => {
+                OnBodyExited(snapperArea, area);
+            }));
+        });
+
+        snapper.Name = editingModule.Name + "_snapper";
+
+        // Disable the snaps and body on the current module
+        editingModule.FindChildren(Groups.Module.Snap.Filter<Area3D>()).ForEach(snap => snap.ProcessMode = ProcessModeEnum.Disabled);
+        editingModule.FindChildren(Groups.Module.Body.Filter<Area3D>()).ForEach(snap => snap.ProcessMode = ProcessModeEnum.Disabled);
+
+        selectorModule = null;
     }
 
     private void OnOrganisePressed() {
@@ -290,10 +359,8 @@ public partial class ShipBuilder : Node3D {
     }
 
     private void OnModuleSelectorModuleSelected(Module module) {
-        Logger.Debug("Module Selector Selected: " + module);
-    }
+        Logger.Debug("Selected!");
 
-    private void OnModuleSelectorModuleDeselected(Module module) {
-        Logger.Debug("Module Selector Deselected: " + module);
+        selectorModule = module;
     }
 }
