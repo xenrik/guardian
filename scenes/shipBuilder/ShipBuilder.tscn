@@ -14,10 +14,19 @@ script = ExtResource("1_cmeaf")
 RootModule = NodePath("ModulesRoot/bridge")
 SelectorViewport = NodePath("GUI/HBoxContainer/SelectorContainer/SubViewport")
 DragViewport = NodePath("GUI/DragContainer/SubViewport")
-MainCamera = NodePath("MainCamera")
+MainCamera = NodePath("CameraPosA/MainCamera")
 
-[node name="MainCamera" type="Camera3D" parent="."]
-transform = Transform3D(-4.37114e-08, 0.996195, -0.0871558, 0, 0.0871558, 0.996195, 1, 4.35451e-08, -3.8097e-09, 0, 10, 1)
+[node name="CameraPosA" type="Node3D" parent="." groups=["Debug.CameraPos"]]
+transform = Transform3D(-4.37114e-08, 0.996195, -0.0871549, 0, 0.0871549, 0.996195, 1, 4.35451e-08, -3.80966e-09, 0, 10, 1)
+
+[node name="MainCamera" type="Camera3D" parent="CameraPosA"]
+transform = Transform3D(1, 1.06581e-14, -4.44089e-16, -1.06581e-14, 1, -9.16421e-07, 8.88178e-16, 9.16421e-07, 1, 0, 0, 0)
+
+[node name="CameraPosB" type="Node3D" parent="." groups=["Debug.CameraPos"]]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -20, 0, 0)
+
+[node name="CameraPosC" type="Node3D" parent="." groups=["Debug.CameraPos"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 20)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.757508, 0.652826, 0, -0.652826, 0.757508, 0, 5.46289, 0)

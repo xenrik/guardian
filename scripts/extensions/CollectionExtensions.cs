@@ -25,6 +25,6 @@ public static class CollectionExtensions {
     }
 
     public static Godot.Collections.Array<T> ToGodotArray<[MustBeVariant] T>(this ICollection<T> collection) {
-        return new Godot.Collections.Array<T>(collection);
+        return new(collection);
     }
 }

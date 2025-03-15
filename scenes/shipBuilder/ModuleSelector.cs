@@ -52,10 +52,12 @@ public partial class ModuleSelector : Node3D {
         base._Process(delta);
 
         int axis = 0;
-        if (Input.IsActionJustReleased(InputKeys.Editor.Selector.ScrollDown)) {
-            axis = -1;
-        } else if (Input.IsActionJustReleased(InputKeys.Editor.Selector.ScrollUp)) {
-            axis = 1;
+        if (GetViewport().GetVisibleRect().HasPoint(GetViewport().GetMousePosition())) {
+            if (Input.IsActionJustReleased(InputKeys.Editor.Selector.ScrollDown)) {
+                axis = -1;
+            } else if (Input.IsActionJustReleased(InputKeys.Editor.Selector.ScrollUp)) {
+                axis = 1;
+            }
         }
 
         cameraTarget.X += ScrollSpeed * axis;
@@ -69,7 +71,6 @@ public partial class ModuleSelector : Node3D {
             // overlapping Area3Ds...
             //var space = 
             var camera = GetViewport().GetCamera3D();
-            var currentPos = camera.ProjectPosition(mousePos, camera.GlobalPosition.Y);
 
             var query = new PhysicsRayQueryParameters3D();
             query.From = camera.ProjectRayOrigin(mousePos);

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ModuleDef" load_steps=2 format=3 uid="uid://dtsxc1pg83kwi"]
+
+[ext_resource type="Script" uid="uid://rbbnjcwp8k3w" path="res://scripts/modules/ModuleDef.cs" id="1_f1gcg"]
+
+[resource]
+script = ExtResource("1_f1gcg")
+ModuleId = "SmallCockpit"
+IsRootModule = false
+SelectorPivot = Vector3(0, 0, 0)
+SelectorAdditionalOffset = Vector3(0, 0, 0)
+metadata/_custom_type_script = "uid://rbbnjcwp8k3w"

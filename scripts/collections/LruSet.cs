@@ -8,7 +8,7 @@ public class LruSet<V> {
     }
 
     public void Add(V val) {
-        innerMap.Add(val, true);
+        innerMap.Set(val, true);
     }
 
     public void Contains(V val) {

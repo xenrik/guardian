@@ -17,6 +17,12 @@ public partial class ShipBuilder : Node3D {
     [Export]
     private Camera3D MainCamera;
 
+    [Export]
+    private float ScrollSpeed = 1;
+
+    [Export]
+    private float ScrollDamp = 0.75f;
+
     [Node]
     private Label DebugInfo;
 
@@ -40,9 +46,14 @@ public partial class ShipBuilder : Node3D {
     private double debugUpdate = 0;
     private uint lastDebugHash = 0;
 
+    private Vector3 cameraTarget;
+    private Vector3 cameraMin = new(0, 0, -10);
+    private Vector3 cameraMax = new(0, 0, 10);
+
     public override void _Ready() {
         base._Ready();
 
+        cameraTarget = MainCamera.Position;
         dragCamera = DragViewport.FindChild<Camera3D>();
         dragCamera.GlobalTransform = MainCamera.GlobalTransform;
     }
@@ -57,12 +68,30 @@ public partial class ShipBuilder : Node3D {
 
         HandleModuleDragging();
         HandleModuleSelector();
+        HandleCamera(delta);
 
         debugUpdate -= delta;
         if (debugUpdate < 0) {
             debugUpdate = 0.1;
             UpdateDebug();
         }
+    }
+
+    private void HandleCamera(double delta) {
+        int axis = 0;
+
+        // Don't zoom if we're over the selector
+        if (!SelectorViewport.GetVisibleRect().HasPoint(SelectorViewport.GetMousePosition())) {
+            if (Input.IsActionJustReleased(InputKeys.Editor.Selector.ScrollDown)) {
+                axis = -1;
+            } else if (Input.IsActionJustReleased(InputKeys.Editor.Selector.ScrollUp)) {
+                axis = 1;
+            }
+        }
+
+        cameraTarget.Z -= ScrollSpeed * axis;
+        cameraTarget = cameraTarget.Clamp(cameraMin, cameraMax);
+        MainCamera.Position = MainCamera.Position.Damp(cameraTarget, ScrollDamp, delta);
     }
 
     private void HandleModuleDragging() {
@@ -161,6 +190,11 @@ public partial class ShipBuilder : Node3D {
                 });
             }).CallAfterPhysicsFrame();
 
+            // If the editing module is over the selector delete it
+            if (SelectorViewport.GetVisibleRect().HasPoint(SelectorViewport.GetMousePosition())) {
+                editingModule.QueueFree();
+            }
+
             // Tidy up
             editingModule = null;
 
@@ -173,15 +207,20 @@ public partial class ShipBuilder : Node3D {
     private void HandleModuleSelector() {
         // Don't do anything if we're currently editing a module, or we don't have a selector module
         if (editingModule != null || selectorModule == null) {
-            Logger.Debug("Am editing, or not selecting!");
             return;
         }
 
         var mousePos = GetViewport().GetMousePosition();
         var currentPos = MainCamera.ProjectPosition(mousePos, MainCamera.GlobalPosition.Y);
 
+        var selectorCamera = SelectorViewport.GetCamera3D();
+        var selectorPos = selectorCamera.ProjectPosition(mousePos, selectorCamera.GlobalPosition.Y);
+
         editingModule = (Module)selectorModule.Duplicate();
         ModulesRoot.AddChild(editingModule);
+
+        // Offset so it has the right position on the main camera
+        editingModule.GlobalPosition -= selectorPos - currentPos;
 
         moduleStartPos = editingModule.GlobalPosition;
         mouseStartPos = currentPos;
@@ -279,7 +318,6 @@ public partial class ShipBuilder : Node3D {
 
     public override void _PhysicsProcess(double delta) {
         base._PhysicsProcess(delta);
-
         if (editingModule == null) {
             return;
         }
@@ -359,8 +397,6 @@ public partial class ShipBuilder : Node3D {
     }
 
     private void OnModuleSelectorModuleSelected(Module module) {
-        Logger.Debug("Selected!");
-
         selectorModule = module;
     }
 }

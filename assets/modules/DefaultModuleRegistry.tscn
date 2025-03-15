@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://b2m832r7bqvt4"]
+[gd_scene load_steps=18 format=3 uid="uid://b2m832r7bqvt4"]
 
 [ext_resource type="Script" uid="uid://gdt3nhjpxwmq" path="res://scripts/modules/ModuleRegistry.cs" id="1_1aleh"]
 [ext_resource type="Resource" uid="uid://b48ucyi3wbp01" path="res://assets/modules/simpleTriangle/simpleTriangle-left.tres" id="2_o5atk"]
@@ -10,6 +10,8 @@
 [ext_resource type="PackedScene" uid="uid://sx5uoh3qh1l3" path="res://assets/modules/simpleTriangle/simpleTriangle-left2.tscn" id="8_i1xql"]
 [ext_resource type="Resource" uid="uid://blys0708r5gly" path="res://assets/modules/simpleTriangle/simpleTriangle-right2.tres" id="9_cdshj"]
 [ext_resource type="PackedScene" uid="uid://qxgquktmnr3l" path="res://assets/modules/simpleTriangle/simpleTriangle-right2.tscn" id="10_fbujp"]
+[ext_resource type="Resource" uid="uid://dtsxc1pg83kwi" path="res://assets/modules/smallCockpit/simpleCockpit.tres" id="11_vn4st"]
+[ext_resource type="PackedScene" uid="uid://c37oqse8pnvmc" path="res://assets/modules/smallCockpit/smallCockpit.tscn" id="12_86oyh"]
 
 [sub_resource type="Resource" id="Resource_inios"]
 script = ExtResource("4_difdv")
@@ -31,6 +33,12 @@ script = ExtResource("4_difdv")
 Definition = ExtResource("9_cdshj")
 Scene = ExtResource("10_fbujp")
 
+[sub_resource type="Resource" id="Resource_ik1j1"]
+script = ExtResource("4_difdv")
+Definition = ExtResource("11_vn4st")
+Scene = ExtResource("12_86oyh")
+metadata/_custom_type_script = "uid://bctdqtexariw4"
+
 [node name="DefaultModuleRegistry" type="Node"]
 script = ExtResource("1_1aleh")
-Elements = Array[Object]([SubResource("Resource_inios"), SubResource("Resource_wcmyt"), SubResource("Resource_43mcy"), SubResource("Resource_ar8u7")])
+Elements = Array[Object]([SubResource("Resource_inios"), SubResource("Resource_wcmyt"), SubResource("Resource_43mcy"), SubResource("Resource_ar8u7"), SubResource("Resource_ik1j1")])

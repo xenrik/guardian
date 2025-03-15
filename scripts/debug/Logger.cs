@@ -63,7 +63,7 @@ public static class Logger {
                 return;
             }
 
-            recentMessages.Add(msg, nowMS);
+            recentMessages.Set(msg, nowMS);
         }
 
         string date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");

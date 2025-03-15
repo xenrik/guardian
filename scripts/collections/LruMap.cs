@@ -24,7 +24,7 @@ public class LruMap<K, V> {
         return default(V);
     }
 
-    public void Add(K key, V val) {
+    public void Set(K key, V val) {
         if (cacheMap.TryGetValue(key, out var existingNode)) {
             lruList.Remove(existingNode);
         } else if (cacheMap.Count >= capacity) {

@@ -1,3 +1,10 @@
+# How to import a module
+- Create a scene
+- Add a "body" collision
+- Add "snap" collisions
+
+// OLD
+
 # Game Scene
 - Create a scene "<module name>"
 - Import the blender object
