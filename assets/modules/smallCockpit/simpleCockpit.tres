@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1_f1gcg")
 ModuleId = "SmallCockpit"
-IsRootModule = false
+Type = 1
 SelectorPivot = Vector3(0, 0, 0)
 SelectorAdditionalOffset = Vector3(0, 0, 0)
 metadata/_custom_type_script = "uid://rbbnjcwp8k3w"
