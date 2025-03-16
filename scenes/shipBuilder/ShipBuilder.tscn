@@ -52,7 +52,7 @@ stretch = true
 [node name="SubViewport" type="SubViewport" parent="GUI/HBoxContainer/SelectorContainer"]
 own_world_3d = true
 handle_input_locally = false
-size = Vector2i(245, 648)
+size = Vector2i(2, 2)
 render_target_update_mode = 4
 
 [node name="ModuleSelector" parent="GUI/HBoxContainer/SelectorContainer/SubViewport" instance=ExtResource("6_drcga")]

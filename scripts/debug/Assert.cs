@@ -16,6 +16,19 @@ public static class Assert {
         }
     }
 
+    public static bool NotNull(object value, string msg = "", [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0) {
+        if (value != null) {
+            return true;
+        } else {
+            if (msg == "") {
+                msg = $"Unexpected null object";
+            }
+
+            Logger.Log(LogLevel.ERROR, msg, caller, filePath, lineNumber, false);
+            return false;
+        }
+    }
+
     public static bool AreEqual<T>(T expected, T actual, string msg = "", [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0) {
         if (EqualityComparer<T>.Default.Equals(expected, actual)) {
             return true;

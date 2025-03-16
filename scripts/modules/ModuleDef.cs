@@ -2,7 +2,8 @@ using Godot;
 
 public enum ModuleType {
     Bulkhead,
-    Cockpit
+    Cockpit,
+    Engine
 }
 
 [GlobalClass]

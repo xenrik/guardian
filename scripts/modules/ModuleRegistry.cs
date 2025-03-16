@@ -18,6 +18,7 @@ public partial class ModuleRegistry : Node {
                 Node gameNode = elem.Scene.Instantiate();
                 Assert.IsType<Module>(gameNode, $"The scene for module {id} does not have the 'Module' script!")
                     .WhenTrue((node) => {
+                        valid = valid & Assert.NotNull(node.ModuleDef, $"The scene for module {id} does not have a module def");
                         valid = valid & Assert.AreEqual(id, node.ModuleDef.ModuleId, $"The scene for module {id} does not have a matching module id");
                     })
                     .WhenFalse((node) => valid = false);
