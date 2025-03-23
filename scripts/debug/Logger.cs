@@ -20,27 +20,27 @@ public static class Logger {
         messageFrequencyMs = ms;
     }
 
-    public static void Error(string msg, bool limitDuplicates = true, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0) {
+    public static void Error<T>(T msg, bool limitDuplicates = true, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0) {
         Log(LogLevel.ERROR, msg, caller, filePath, lineNumber, limitDuplicates);
     }
 
-    public static void Warn(string msg, bool limitDuplicates = true, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0) {
+    public static void Warn<T>(T msg, bool limitDuplicates = true, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0) {
         Log(LogLevel.WARN, msg, caller, filePath, lineNumber, limitDuplicates);
     }
 
-    public static void Info(string msg, bool limitDuplicates = true, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0) {
+    public static void Info<T>(T msg, bool limitDuplicates = true, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0) {
         Log(LogLevel.INFO, msg, caller, filePath, lineNumber, limitDuplicates);
     }
 
-    public static void Debug(string msg, bool limitDuplicates = true, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0) {
+    public static void Debug<T>(T msg, bool limitDuplicates = true, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0) {
         Log(LogLevel.DEBUG, msg, caller, filePath, lineNumber, limitDuplicates);
     }
 
-    public static void Trace(string msg, bool limitDuplicates = true, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0) {
+    public static void Trace<T>(T msg, bool limitDuplicates = true, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0) {
         Log(LogLevel.TRACE, msg, caller, filePath, lineNumber, limitDuplicates);
     }
 
-    public static void Log(LogLevel level, string msg, string caller, string filePath, int lineNumber, bool limitDuplicates) {
+    public static void Log<T>(LogLevel level, T msg, string caller, string filePath, int lineNumber, bool limitDuplicates) {
         string name = caller + "@" + lineNumber;
 
         int offset = filePath.Length - (50 - name.Length - 5);
@@ -53,30 +53,30 @@ public static class Logger {
         }
 
         name = filePath + ";" + name;
-        msg = $"{level,-5} [{name,50}] - {msg}";
+        string msgString = $"{level,-5} [{name,50}] - {msg}";
 
         if (limitDuplicates) {
             var nowMS = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            var last = recentMessages.Get(msg);
+            var last = recentMessages.Get(msgString);
             if (nowMS - last < messageFrequencyMs) {
                 // Logged recently
                 return;
             }
 
-            recentMessages.Set(msg, nowMS);
+            recentMessages.Set(msgString, nowMS);
         }
 
         string date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
-        msg = $"[{date}] {msg}";
+        msgString = $"[{date}] {msgString}";
 
         switch (level) {
             case LogLevel.ERROR:
             case LogLevel.WARN:
-                GD.PrintErr(msg);
+                GD.PrintErr(msgString);
                 break;
 
             default:
-                GD.Print(msg);
+                GD.Print(msgString);
                 break;
         }
     }

@@ -1,13 +1,9 @@
-[gd_scene load_steps=21 format=3 uid="uid://b2m832r7bqvt4"]
+[gd_scene load_steps=15 format=3 uid="uid://b2m832r7bqvt4"]
 
 [ext_resource type="Script" uid="uid://gdt3nhjpxwmq" path="res://scripts/modules/ModuleRegistry.cs" id="1_1aleh"]
 [ext_resource type="Resource" uid="uid://b48ucyi3wbp01" path="res://assets/modules/simpleTriangle/simpleTriangle-left.tres" id="2_o5atk"]
 [ext_resource type="PackedScene" uid="uid://b6l4y7s2b3t8q" path="res://assets/modules/simpleTriangle/simpleTriangle-left.tscn" id="3_fsmw7"]
-[ext_resource type="PackedScene" uid="uid://nw3g7nsc5l6" path="res://assets/modules/simpleTriangle/simpleTriangle-right.tscn" id="3_xwj77"]
 [ext_resource type="Script" uid="uid://bctdqtexariw4" path="res://scripts/modules/ModuleRegistryElement.cs" id="4_difdv"]
-[ext_resource type="Resource" uid="uid://1x0alnlt1f1m" path="res://assets/modules/simpleTriangle/simpleTriangle-right.tres" id="5_q8d8q"]
-[ext_resource type="Resource" uid="uid://c7jy0kbm3adck" path="res://assets/modules/simpleTriangle/simpleTriangle-left2.tres" id="7_lralk"]
-[ext_resource type="PackedScene" uid="uid://sx5uoh3qh1l3" path="res://assets/modules/simpleTriangle/simpleTriangle-left2.tscn" id="8_i1xql"]
 [ext_resource type="Resource" uid="uid://blys0708r5gly" path="res://assets/modules/simpleTriangle/simpleTriangle-right2.tres" id="9_cdshj"]
 [ext_resource type="PackedScene" uid="uid://qxgquktmnr3l" path="res://assets/modules/simpleTriangle/simpleTriangle-right2.tscn" id="10_fbujp"]
 [ext_resource type="Resource" uid="uid://dtsxc1pg83kwi" path="res://assets/modules/smallCockpit/simpleCockpit.tres" id="11_vn4st"]
@@ -19,16 +15,6 @@
 script = ExtResource("4_difdv")
 Definition = ExtResource("2_o5atk")
 Scene = ExtResource("3_fsmw7")
-
-[sub_resource type="Resource" id="Resource_wcmyt"]
-script = ExtResource("4_difdv")
-Definition = ExtResource("5_q8d8q")
-Scene = ExtResource("3_xwj77")
-
-[sub_resource type="Resource" id="Resource_43mcy"]
-script = ExtResource("4_difdv")
-Definition = ExtResource("7_lralk")
-Scene = ExtResource("8_i1xql")
 
 [sub_resource type="Resource" id="Resource_ar8u7"]
 script = ExtResource("4_difdv")
@@ -49,4 +35,4 @@ metadata/_custom_type_script = "uid://bctdqtexariw4"
 
 [node name="DefaultModuleRegistry" type="Node"]
 script = ExtResource("1_1aleh")
-Elements = Array[Object]([SubResource("Resource_inios"), SubResource("Resource_wcmyt"), SubResource("Resource_43mcy"), SubResource("Resource_ar8u7"), SubResource("Resource_ik1j1"), SubResource("Resource_g6uso")])
+Elements = Array[Object]([SubResource("Resource_inios"), SubResource("Resource_ar8u7"), SubResource("Resource_ik1j1"), SubResource("Resource_g6uso")])

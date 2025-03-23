@@ -21,15 +21,17 @@ public partial class ShipBuilder : Node3D {
     private float ScrollSpeed = 1;
 
     [Export]
-    private float ScrollDamp = 0.75f;
+    private float MoveSpeed = 0.1f;
 
-    [Node]
-    private Label DebugInfo;
+    [Export]
+    private float RotateSpeed = 1f;
+
+    [Export]
+    private float CameraDamp = 0.75f;
 
     [Node]
     private Node3D ModulesRoot;
 
-    // Dragging Support
     private Camera3D dragCamera;
 
     private List<Tuple<Area3D, Area3D>> activeSnaps = new();
@@ -40,15 +42,17 @@ public partial class ShipBuilder : Node3D {
     private Node3D snapper = null;
 
     private Vector3 moduleStartPos;
-    private Vector3 mouseStartPos;
+    private Vector3 mouseDragStartPos;
     private Vector3 lastKnowGoodPos;
 
-    private double debugUpdate = 0;
-    private uint lastDebugHash = 0;
+    private bool cameraRotating = false;
+    private Vector2 mouseRotateStartPos;
+    private Vector3 cameraRotMin = new(-90, -90, 0);
+    private Vector3 cameraRotMax = new(90, 90, 0);
 
     private Vector3 cameraTarget;
-    private Vector3 cameraMin = new(0, 0, -10);
-    private Vector3 cameraMax = new(0, 0, 10);
+    private Vector3 cameraMin = new(-10, -10, -10);
+    private Vector3 cameraMax = new(10, 10, 10);
 
     public override void _Ready() {
         base._Ready();
@@ -68,30 +72,50 @@ public partial class ShipBuilder : Node3D {
 
         HandleModuleDragging();
         HandleModuleSelector();
-        HandleCamera(delta);
-
-        debugUpdate -= delta;
-        if (debugUpdate < 0) {
-            debugUpdate = 0.1;
-            UpdateDebug();
-        }
+        HandleCamera((float)delta);
     }
 
-    private void HandleCamera(double delta) {
-        int axis = 0;
+    private void HandleCamera(float delta) {
+        Vector3 cameraDelta = Vector3.Zero;
 
-        // Don't zoom if we're over the selector
+        // Don't move the camera if we're over the selector
         if (!SelectorViewport.GetVisibleRect().HasPoint(SelectorViewport.GetMousePosition())) {
-            if (Input.IsActionJustReleased(InputKeys.Editor.Selector.ScrollDown)) {
-                axis = -1;
-            } else if (Input.IsActionJustReleased(InputKeys.Editor.Selector.ScrollUp)) {
-                axis = 1;
+            if (Input.IsActionJustPressed(InputKeys.Editor.MoveCamera.In)) {
+                cameraDelta.Z = -1 * ScrollSpeed;
+            } else if (Input.IsActionJustPressed(InputKeys.Editor.MoveCamera.Out)) {
+                cameraDelta.Z = 1 * ScrollSpeed;
+            }
+            if (Input.IsActionPressed(InputKeys.Editor.MoveCamera.Left)) {
+                cameraDelta.X = 1 * MoveSpeed;
+            } else if (Input.IsActionPressed(InputKeys.Editor.MoveCamera.Right)) {
+                cameraDelta.X = -1 * MoveSpeed;
+            }
+            if (Input.IsActionPressed(InputKeys.Editor.MoveCamera.Forward)) {
+                cameraDelta.Y = -1 * MoveSpeed;
+            } else if (Input.IsActionPressed(InputKeys.Editor.MoveCamera.Back)) {
+                cameraDelta.Y = 1 * MoveSpeed;
+            }
+
+            if (Input.IsActionPressed(InputKeys.Editor.MoveCamera.Rotate)) {
+                var mousePos = GetViewport().GetMousePosition();
+                if (cameraRotating) {
+                    MainCamera.RotateY((mousePos.X - mouseRotateStartPos.X) * RotateSpeed); // Yaw
+                    MainCamera.RotateX((mousePos.Y - mouseRotateStartPos.Y) * RotateSpeed); // Pitch
+
+                    var rot = MainCamera.RotationDegrees.Clamp(cameraRotMin, cameraRotMax);
+                    MainCamera.RotationDegrees = rot;
+                } else {
+                    cameraRotating = true;
+                }
+                mouseRotateStartPos = mousePos;
+            } else {
+                cameraRotating = false;
             }
         }
 
-        cameraTarget.Z -= ScrollSpeed * axis;
+        cameraTarget -= cameraDelta;
         cameraTarget = cameraTarget.Clamp(cameraMin, cameraMax);
-        MainCamera.Position = MainCamera.Position.Damp(cameraTarget, ScrollDamp, delta);
+        MainCamera.Position = MainCamera.Position.Damp(cameraTarget, CameraDamp, delta);
     }
 
     private void HandleModuleDragging() {
@@ -117,7 +141,7 @@ public partial class ShipBuilder : Node3D {
                 if (result != null) {
                     editingModule = result.Collider.GetParent<Module>();
                     moduleStartPos = editingModule.GlobalPosition;
-                    mouseStartPos = currentPos;
+                    mouseDragStartPos = currentPos;
                     lastKnowGoodPos = moduleStartPos;
 
                     // Create the snapper
@@ -161,7 +185,7 @@ public partial class ShipBuilder : Node3D {
                 }
             } else if (editingModule != null) {
                 // Drag
-                var mouseDelta = currentPos - mouseStartPos;
+                var mouseDelta = currentPos - mouseDragStartPos;
                 var newPos = moduleStartPos + mouseDelta;
                 newPos.Y = moduleStartPos.Y;
 
@@ -223,7 +247,7 @@ public partial class ShipBuilder : Node3D {
         editingModule.GlobalPosition -= selectorPos - currentPos;
 
         moduleStartPos = editingModule.GlobalPosition;
-        mouseStartPos = currentPos;
+        mouseDragStartPos = currentPos;
         lastKnowGoodPos = moduleStartPos;
 
         // Create the snapper
@@ -266,54 +290,6 @@ public partial class ShipBuilder : Node3D {
         editingModule.FindChildren(Groups.Module.Body.Filter<Area3D>()).ForEach(snap => snap.ProcessMode = ProcessModeEnum.Disabled);
 
         selectorModule = null;
-    }
-
-    private void OnOrganisePressed() {
-        Callable.From(() => {
-            List<Module> allModules = ModulesRoot.FindChildren<Module>().ToList();
-            List<Module> unattached = RootModule.OrganiseModules(allModules);
-
-            // Any unattached modules are parented by us
-            unattached.ForEach(module => {
-                Logger.Debug($"Unattached module: {module.Name} being attached to the builder node");
-                module.Reparent(ModulesRoot);
-            });
-        }).CallAfterFrame();
-    }
-
-    private void UpdateDebug() {
-        var debug = "";
-        foreach (var childName in new string[] { "red", "green", "blue" }) {
-            var child = GetTree().CurrentScene.FindChild(childName);
-            debug += $"{childName} Parent: {child.GetParent().Name}\n";
-
-            List<Area3D> snaps = new();
-            child.WalkTree(node => {
-                if (node.IsInGroup(Groups.Module.Snap)) {
-                    snaps.Add((Area3D)node);
-                    return TreeWalker.Result.SKIP_CHILDREN;
-                } else if (node is Module) {
-                    return TreeWalker.Result.SKIP_CHILDREN;
-                } else {
-                    return TreeWalker.Result.RECURSE;
-                }
-            });
-            foreach (var snap in snaps) {
-                foreach (var overlap in snap.GetOverlappingAreas()) {
-                    var module = overlap.FindParent<Module>();
-                    debug += $"   {snap.Name} - Overlaps: {module?.Name}\n";
-                }
-            }
-        }
-
-        /*
-        if (debug.Hash() != lastDebugHash) {
-            Logger.Debug(debug);
-            lastDebugHash = debug.Hash();
-        }
-        */
-
-        DebugInfo.Text = debug;
     }
 
     public override void _PhysicsProcess(double delta) {
@@ -391,12 +367,32 @@ public partial class ShipBuilder : Node3D {
         bodyCollisions.Remove(collision);
     }
 
+    private void OnModuleSelectorModuleSelected(Module module) {
+        selectorModule = module;
+    }
+
     private void OnSaveButtonPressed() {
         ModuleTree tree = ModuleTree.ToModuleTree(RootModule);
         tree.Save("user://ShipDesigns/test.json");
     }
 
-    private void OnModuleSelectorModuleSelected(Module module) {
-        selectorModule = module;
+    private void OnOrganisePressed() {
+        Callable.From(() => {
+            List<Module> allModules = ModulesRoot.FindChildren<Module>().ToList();
+            List<Module> unattached = RootModule.OrganiseModules(allModules);
+
+            // Any unattached modules are parented by us
+            unattached.ForEach(module => {
+                Logger.Debug($"Unattached module: {module.Name} being attached to the builder node");
+                module.Reparent(ModulesRoot);
+            });
+        }).CallAfterFrame();
+    }
+
+    private void OnResetCameraButtonPressed() {
+        MainCamera.Position = Vector3.Zero;
+        cameraTarget = Vector3.Zero;
+
+        MainCamera.Rotation = Vector3.Zero;
     }
 }

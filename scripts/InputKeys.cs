@@ -14,8 +14,16 @@ public static class InputKeys {
 
     public static class Editor {
         public const string SelectModule = "Editor.SelectModule";
-        public const string ZoomIn = "Editor.ZoomIn";
-        public const string ZoomOut = "Editor.ZoomOut";
+
+        public static class MoveCamera {
+            public const string Forward = "Editor.MoveCamera.Forward";
+            public const string Back = "Editor.MoveCamera.Back";
+            public const string Left = "Editor.MoveCamera.Left";
+            public const string Right = "Editor.MoveCamera.Right";
+            public const string In = "Editor.MoveCamera.In";
+            public const string Out = "Editor.MoveCamera.Out";
+            public const string Rotate = "Editor.MoveCamera.Rotate";
+        }
 
         public static class Selector {
             public const string ScrollUp = "Editor.Selector.ScrollUp";
