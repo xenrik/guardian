@@ -5,6 +5,16 @@ using Godot.Collections;
 public class ModuleTree {
     private ModuleTreeNode rootNode;
 
+    public static ModuleTree ToModuleTree(Module module) {
+        ModuleTreeNode node = ToNode(module, true);
+
+        return new(node);
+    }
+
+    public static ModuleTree Load(string _) {
+        return null;
+    }
+
     private ModuleTree(ModuleTreeNode rootNode) {
         this.rootNode = rootNode;
     }
@@ -25,24 +35,16 @@ public class ModuleTree {
 
         return true;
     }
-
-    public static ModuleTree ToModuleTree(Module module) {
-        ModuleTreeNode node = ToNode(module);
-
-        return new(node);
-    }
-
-    public static ModuleTree Load(string filename) {
-        return null;
-    }
-
-    private static ModuleTreeNode ToNode(Module module) {
+    private static ModuleTreeNode ToNode(Module module, bool isRoot) {
         ModuleTreeNode node = new();
         node.ModuleId = module.ModuleDef.ModuleId;
+        if (!isRoot) {
+            node.Transform = module.Transform;
+        }
 
         List<ModuleTreeNode> childNodes = new();
         foreach (Module childModule in module.GetChildren<Module>()) {
-            childNodes.Add(ToNode(childModule));
+            childNodes.Add(ToNode(childModule, false));
         }
         if (childNodes.Count > 0) {
             node.ChildNodes = childNodes.ToArray();
@@ -53,11 +55,17 @@ public class ModuleTree {
 
     private class ModuleTreeNode {
         public string ModuleId;
+        public Transform3D Transform = Transform3D.Identity;
+
         public ModuleTreeNode[] ChildNodes;
 
         public Dictionary ToDataMap() {
             Dictionary data = new Dictionary();
             data["ModuleId"] = ModuleId;
+            if (Transform != Transform3D.Identity) {
+                data["Transform"] = Transform;
+            }
+
             if (ChildNodes != null && ChildNodes.Length > 0) {
                 var childData = new Array();
                 foreach (var node in ChildNodes) {

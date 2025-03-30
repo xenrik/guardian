@@ -29,6 +29,9 @@ public partial class ShipBuilder : Node3D {
     [Export]
     private float CameraDamp = 0.75f;
 
+    [Export]
+    private bool invertMouse = true;
+
     [Node]
     private Node3D ModulesRoot;
 
@@ -100,7 +103,7 @@ public partial class ShipBuilder : Node3D {
                 var mousePos = GetViewport().GetMousePosition();
                 if (cameraRotating) {
                     MainCamera.RotateY((mousePos.X - mouseRotateStartPos.X) * RotateSpeed); // Yaw
-                    MainCamera.RotateX((mousePos.Y - mouseRotateStartPos.Y) * RotateSpeed); // Pitch
+                    MainCamera.RotateX((mousePos.Y - mouseRotateStartPos.Y) * (RotateSpeed * (invertMouse ? -1 : 1))); // Pitch
 
                     var rot = MainCamera.RotationDegrees.Clamp(cameraRotMin, cameraRotMax);
                     MainCamera.RotationDegrees = rot;

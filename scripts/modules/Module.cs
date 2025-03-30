@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
@@ -11,7 +10,6 @@ public partial class Module : Node3D {
     private ModuleRegistry registry;
 
     private List<BodyCollision> shipBodyCollisions = new();
-    private HashSet<SnapCollision> touchingSnaps = new();
 
     public override void _Ready() {
         base._Ready();
@@ -34,8 +32,8 @@ public partial class Module : Node3D {
 
     public override void _Notification(int what) {
         switch ((long)what) {
-            case Node.NotificationUnparented:
-            case Node.NotificationParented:
+            case NotificationUnparented:
+            case NotificationParented:
                 UpdateBody();
                 break;
         }
@@ -105,7 +103,7 @@ public partial class Module : Node3D {
      */
     public List<Module> OrganiseModules(List<Module> allModules) {
         // Collect the overlaps for each node
-        Dictionary<Module,List<Module>> overlaps = new();
+        Dictionary<Module, List<Module>> overlaps = new();
         foreach (Module module in allModules) {
             module.WalkTree(node => {
                 if (node.IsInGroup(Groups.Module.Snap)) {
