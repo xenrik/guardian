@@ -19,7 +19,7 @@ CameraDamp = 6.0
 TestAreaScene = ExtResource("2_ylfkl")
 
 [node name="CameraPosA" type="Node3D" parent="." groups=["Debug.CameraPos"]]
-transform = Transform3D(-4.37114e-08, 0.996195, -0.0871549, 0, 0.0871549, 0.996195, 1, 4.35451e-08, -3.80966e-09, 0, 10, 1)
+transform = Transform3D(-4.37114e-08, 0.996195, -0.0871549, 0, 0.0871549, 0.996195, 1, 4.35451e-08, -3.80966e-09, 0, 10, 0)
 
 [node name="MainCamera" type="Camera3D" parent="CameraPosA"]
 transform = Transform3D(1, 1.06581e-14, -4.44089e-16, -1.06581e-14, 1, -9.16421e-07, 8.88178e-16, 9.16421e-07, 1, 0, 0, 0)

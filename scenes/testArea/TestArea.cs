@@ -6,6 +6,9 @@ public partial class TestArea : Node3D {
     [Singleton]
     private GlobalData GlobalData;
 
+    [Singleton]
+    private ModuleRegistry ModuleRegistry;
+
     public override void _Ready() {
         base._Ready();
 
@@ -20,6 +23,9 @@ public partial class TestArea : Node3D {
             Logger.Error("Failed to load test ship");
             return;
         }
+
+        Module rootNode = tree.Instantiate(ModuleRegistry);
+        AddChild(rootNode);
     }
 
 }

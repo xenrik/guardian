@@ -20,23 +20,23 @@ public static class Logger {
         messageFrequencyMs = ms;
     }
 
-    public static void Error<T>(T msg, bool limitDuplicates = true, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0) {
+    public static void Error<T>(T msg, bool limitDuplicates = false, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0) {
         Log(LogLevel.ERROR, msg, caller, filePath, lineNumber, limitDuplicates);
     }
 
-    public static void Warn<T>(T msg, bool limitDuplicates = true, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0) {
+    public static void Warn<T>(T msg, bool limitDuplicates = false, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0) {
         Log(LogLevel.WARN, msg, caller, filePath, lineNumber, limitDuplicates);
     }
 
-    public static void Info<T>(T msg, bool limitDuplicates = true, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0) {
+    public static void Info<T>(T msg, bool limitDuplicates = false, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0) {
         Log(LogLevel.INFO, msg, caller, filePath, lineNumber, limitDuplicates);
     }
 
-    public static void Debug<T>(T msg, bool limitDuplicates = true, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0) {
+    public static void Debug<T>(T msg, bool limitDuplicates = false, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0) {
         Log(LogLevel.DEBUG, msg, caller, filePath, lineNumber, limitDuplicates);
     }
 
-    public static void Trace<T>(T msg, bool limitDuplicates = true, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0) {
+    public static void Trace<T>(T msg, bool limitDuplicates = false, [CallerMemberName] string caller = "", [CallerFilePath] string filePath = "", [CallerLineNumber] int lineNumber = 0) {
         Log(LogLevel.TRACE, msg, caller, filePath, lineNumber, limitDuplicates);
     }
 

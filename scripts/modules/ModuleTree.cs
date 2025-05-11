@@ -90,6 +90,35 @@ public class ModuleTree {
         return true;
     }
 
+    public Module Instantiate(ModuleRegistry registry) {
+        return Instantiate(registry, rootNode);
+    }
+
+    private Module Instantiate(ModuleRegistry registry, ModuleTreeNode treeNode) {
+        Logger.Debug("Instantiate: " + treeNode.ModuleId);
+
+        Module node = registry.Instantiate(treeNode.ModuleId);
+        if (node == null) {
+            Logger.Debug("No node for: " + treeNode.ModuleId);
+            return null;
+        }
+
+        Logger.Debug("Before: " + node.Transform + " - tree has: " + treeNode.Transform);
+        node.Transform = treeNode.Transform;
+        Logger.Debug("After: " + node.Transform);
+
+        foreach (ModuleTreeNode childTreeNode in treeNode.ChildNodes) {
+            Module childNode = Instantiate(registry, childTreeNode);
+            if (childNode != null) {
+                //childNode.Reparent(node);
+                node.AddChild(childNode);
+            }
+        }
+
+        Logger.Debug("Returning: " + treeNode.ModuleId);
+        return node;
+    }
+
     private class MissingRequiredDataException : System.Exception {
         public MissingRequiredDataException(string message) : base(message) { }
     }
@@ -108,7 +137,7 @@ public class ModuleTree {
             Dictionary data = new Dictionary();
             data[MODULE_ID_PROP] = ModuleId;
             if (Transform != Transform3D.Identity) {
-                data[TRANSFORM_PROP] = Transform;
+                data[TRANSFORM_PROP] = SerializerUtils.ToJson(Transform);
             }
 
             if (ChildNodes.Count > 0) {
@@ -141,7 +170,10 @@ public class ModuleTree {
 
         private T GetRequiredData<[MustBeVariant] T>(Dictionary data, string key) {
             if (data.ContainsKey(key)) {
-                return data[key].As<T>();
+                Logger.Debug("Reading property: " + key + " -> " + data[key]);
+
+                Variant v = data[key];
+                return SerializerUtils.FromJson<T>(v);
             }
 
             throw new MissingRequiredDataException("Property " + key + " is missing");
@@ -149,8 +181,9 @@ public class ModuleTree {
 
         private T GetOptionalData<[MustBeVariant] T>(Dictionary data, string key, T defaultValue = default) {
             if (data.ContainsKey(key)) {
-                return data[key].As<T>();
+                return GetRequiredData<T>(data, key);
             } else {
+                Logger.Debug("Missing optional property: " + key);
                 return defaultValue;
             }
         }

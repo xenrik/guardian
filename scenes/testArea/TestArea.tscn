@@ -4,3 +4,9 @@
 
 [node name="TestArea" type="Node3D"]
 script = ExtResource("1_0x3n5")
+
+[node name="MainCamera" type="Camera3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0.996195, -0.0871558, 0, 0.0871558, 0.996195, 1, 4.35451e-08, -3.8097e-09, 0, 10, 0)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.757508, 0.652826, 0, -0.652826, 0.757508, 0, 5.46289, 0)

@@ -12,7 +12,7 @@ public static class Assert {
             }
 
             Logger.Log(LogLevel.ERROR, msg, caller, filePath, lineNumber, false);
-            return new AssertedType<T>(default(T));
+            return new AssertedType<T>(default);
         }
     }
 
