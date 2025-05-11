@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://dslpgnc6xiaj"]
+[gd_scene load_steps=6 format=3 uid="uid://dslpgnc6xiaj"]
 
 [ext_resource type="Script" uid="uid://b50tf41e1kfh3" path="res://scenes/shipBuilder/ShipBuilder.cs" id="1_cmeaf"]
+[ext_resource type="PackedScene" uid="uid://blmyie27gf6bq" path="res://scenes/testArea/TestArea.tscn" id="2_ylfkl"]
 [ext_resource type="PackedScene" uid="uid://c37oqse8pnvmc" path="res://assets/modules/smallCockpit/smallCockpit.tscn" id="3_bu1ke"]
 [ext_resource type="PackedScene" uid="uid://cvxyw7w0vy3b8" path="res://scenes/shipBuilder/ModuleSelector.tscn" id="6_drcga"]
 
@@ -15,6 +16,7 @@ MainCamera = NodePath("CameraPosA/MainCamera")
 MoveSpeed = 0.01
 RotateSpeed = 0.001
 CameraDamp = 6.0
+TestAreaScene = ExtResource("2_ylfkl")
 
 [node name="CameraPosA" type="Node3D" parent="." groups=["Debug.CameraPos"]]
 transform = Transform3D(-4.37114e-08, 0.996195, -0.0871549, 0, 0.0871549, 0.996195, 1, 4.35451e-08, -3.80966e-09, 0, 10, 1)
@@ -94,6 +96,10 @@ text = "Save"
 layout_mode = 2
 text = "Reset Camera"
 
+[node name="Test Ship" type="Button" parent="GUI/VBoxContainer"]
+layout_mode = 2
+text = "Test Ship"
+
 [node name="ModulesRoot" type="Node3D" parent="."]
 
 [node name="SmallCockpit" parent="ModulesRoot" instance=ExtResource("3_bu1ke")]
@@ -101,3 +107,4 @@ text = "Reset Camera"
 [connection signal="ModuleSelected" from="GUI/HBoxContainer/SelectorContainer/SubViewport/ModuleSelector" to="." method="OnModuleSelectorModuleSelected"]
 [connection signal="pressed" from="GUI/VBoxContainer/Button" to="." method="OnSaveButtonPressed"]
 [connection signal="pressed" from="GUI/VBoxContainer/ResetCamera" to="." method="OnResetCameraButtonPressed"]
+[connection signal="pressed" from="GUI/VBoxContainer/Test Ship" to="." method="OnTestShipButtonPressed"]

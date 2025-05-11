@@ -30,10 +30,16 @@ public partial class ShipBuilder : Node3D {
     private float CameraDamp = 0.75f;
 
     [Export]
-    private bool invertMouse = true;
+    private bool InvertMouse = true;
+
+    [Export]
+    private PackedScene TestAreaScene;
 
     [Node]
     private Node3D ModulesRoot;
+
+    [Singleton]
+    private GlobalData GlobalData;
 
     private Camera3D dragCamera;
 
@@ -103,7 +109,7 @@ public partial class ShipBuilder : Node3D {
                 var mousePos = GetViewport().GetMousePosition();
                 if (cameraRotating) {
                     MainCamera.RotateY((mousePos.X - mouseRotateStartPos.X) * RotateSpeed); // Yaw
-                    MainCamera.RotateX((mousePos.Y - mouseRotateStartPos.Y) * (RotateSpeed * (invertMouse ? -1 : 1))); // Pitch
+                    MainCamera.RotateX((mousePos.Y - mouseRotateStartPos.Y) * (RotateSpeed * (InvertMouse ? -1 : 1))); // Pitch
 
                     var rot = MainCamera.RotationDegrees.Clamp(cameraRotMin, cameraRotMax);
                     MainCamera.RotationDegrees = rot;
@@ -397,5 +403,13 @@ public partial class ShipBuilder : Node3D {
         cameraTarget = Vector3.Zero;
 
         MainCamera.Rotation = Vector3.Zero;
+    }
+
+    private void OnTestShipButtonPressed() {
+        ModuleTree tree = ModuleTree.ToModuleTree(RootModule);
+        tree.Save("user://ShipDesigns/temp.json");
+
+        GlobalData.SetData(TestArea.TEST_SHIP_PATH_DATA, "user://ShipDesigns/temp.json");
+        GetTree().ChangeSceneToPacked(TestAreaScene);
     }
 }

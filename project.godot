@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 DependencyInjector="*res://scripts/dependencyInjector/DependencyInjector.cs"
 DebugKeys="*res://scripts/debug/DebugKeys.cs"
 ModuleRegistry="*res://assets/modules/DefaultModuleRegistry.tscn"
+GlobalData="*res://scripts/GlobalData.cs"
 
 [display]
 
